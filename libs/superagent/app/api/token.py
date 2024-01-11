@@ -26,30 +26,34 @@ analytics.write_key = SEGMENT_WRITE_KEY
 )
 async def create(body: ApiTokenRequest,  api_user=Depends(get_current_api_user)):
     try:
-        await prisma.token.create(
-            data={
-                'agentToken': body.agentToken,
-                'userToken': body.userToken,
-                'apiUserId': api_user.id,
-                'apiUserChatwoot': body.apiUserChatwoot,
-                'isAgentActive': body.isAgentActive
-            }
-        )
+        token_data = {
+            'agentToken': body.agentToken,
+            'userToken': body.userToken,
+            'apiUserId': api_user.id,
+            'apiUserChatwoot': body.apiUserChatwoot,
+            'isAgentActive': body.isAgentActive
+        }
+        await prisma.token.create(data=token_data)
         response_data = {
             'success': True,
             'message': "Token Successfully Created",
+            'data': token_data
         }
+        if SEGMENT_WRITE_KEY:
+            analytics.track(api_user.id, "Token Created", token_data)
     except Exception as e:
         response_data = {
             'success': False,
             'message': "Failed to process the token",
+            'error': str(e)
         }
-        analytics.track(api_user.id, "token_creation_failed", {
-            'error': str(e),
-            'agentToken': body.agentToken,
-            'userToken': body.userToken,
-            'apiUserChatwoot': body.apiUserChatwoot
-        })
+        if SEGMENT_WRITE_KEY:
+            analytics.track(api_user.id, "token_creation_failed", {
+                'error': str(e),
+                'agentToken': body.agentToken,
+                'userToken': body.userToken,
+                'apiUserChatwoot': body.apiUserChatwoot
+            })
 
     return ApiTokenResponse(**response_data)
 
@@ -66,7 +70,7 @@ async def get(api_user=Depends(get_current_api_user)):
             where={"apiUserId": api_user.id},
         )
         if not data:
-            raise HTTPException(status_code=404, detail="Token not found")
+            return {"success": False, "message": "Token not found"}
         return {"success": True, "data": data}
     except Exception as e:
         handle_exception(e)
