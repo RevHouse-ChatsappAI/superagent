@@ -12,7 +12,7 @@ interface StepOneProps {
 
 const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
   //Context
-  const { userProfileChatwoot, apiAgent, handleTokenChange } = useChatwoot()
+  const { userProfileChatwoot, apiAgent, accountId, handleTokenChange } = useChatwoot()
 
   //State
   const [loading, setLoading] = useState(false)
@@ -27,14 +27,14 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
       //Agent Bot Details
       const agent_bot_name = account
       const agent_bot_description = "Agent Bot By SuperAgent"
-      const agent_bot_url = `${process.env.NEXT_PUBLIC_CHATWOOT_API_URL}/webhook/${apiAgent}/chatwoot`
+      const agent_bot_url = `${process.env.NEXT_PUBLIC_SUPERAGENT_API_URL}/webhook/${apiAgent}/chatwoot`
 
       //Create bot agent chatwoot
       const agentBotDetails = {
         name: agent_bot_name,
         description: agent_bot_description,
         outgoing_url: agent_bot_url,
-        account_id: userProfileChatwoot?.id,
+        account_id: accountId,
       }
       const agentBotResponse =
         await apiChatwoot.createAgentBot(agentBotDetails)
@@ -42,6 +42,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
       if (agentBotResponse) {
         handleTokenChange(agentBotResponse.access_token)
         nextStep()
+        return
       }
 
       throw new Error("Fallo en la creación de la cuenta.")
