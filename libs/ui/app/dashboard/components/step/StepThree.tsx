@@ -5,6 +5,7 @@ import { useAsync } from "react-use"
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
 import { useChatwoot } from "@/app/context/ChatwootContext"
+import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
   nextStep: () => void
@@ -71,7 +72,7 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h2 className="mb-4 text-lg font-bold">Paso 1: Información Básica</h2>
+      <h2 className="mb-4 text-lg font-bold">Paso 3: Creación de Agente SuperAgent</h2>
       <form onSubmit={handleAddUserChatwoot}>
         <label className="flex w-full flex-col gap-1">
           <p>Agent Name</p>
@@ -113,9 +114,9 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
             className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
             disabled={loading}
           >
-            {loading ? "Cargando Usuario..." : "Crear Usuario"}
+            {loading ? "Cargando..." : "Crear Agent SuperAgent"}
           </button>
-          <button onClick={prevStep}>Previo</button>
+          <ButtonPrev title="Previo" prevStep={prevStep}/>
         </div>
       </form>
     </div>
