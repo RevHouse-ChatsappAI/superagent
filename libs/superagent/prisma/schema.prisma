@@ -24,6 +24,7 @@ enum LLMModel {
   GPT_4_32K_0613
   GPT_4_1106_PREVIEW
   MISTRAL_7B_INSTRUCT_V01
+  MIXTRAL_8X7B_INSTRUCT_V01
 }
 
 enum ToolType {
@@ -78,6 +79,7 @@ enum VectorDbProvider {
   ASTRA_DB
   WEAVIATE
   QDRANT
+  SUPABASE
 }
 
 model ApiUser {
@@ -205,13 +207,13 @@ model WorkflowStep {
   id         String   @id @default(uuid())
   order      Int
   workflowId String
-  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   input      String?  @db.Text
   output     String?  @db.Text
   agentId    String
-  agent      Agent    @relation(fields: [agentId], references: [id])
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 }
 
 model VectorDb {

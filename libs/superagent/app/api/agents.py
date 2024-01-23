@@ -15,8 +15,6 @@ from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
 from langfuse import Langfuse
-from langfuse.model import CreateTrace
-from langsmith import Client
 
 from app.agents.base import AgentBase
 from app.models.request import (
@@ -46,7 +44,6 @@ from app.models.response import (
 from app.models.response import (
     AgentList as AgentListResponse,
 )
-from app.models.response import AgentRunList as AgentRunListResponse
 from app.models.response import (
     AgentToolList as AgentToolListResponse,
 )
@@ -204,24 +201,6 @@ async def invoke(
     agent_id: str, body: AgentInvokeRequest, api_user=Depends(get_current_api_user)
 ):
     """Endpoint for invoking an agent"""
-    try:
-        count_entry = await prisma.count.find_unique(where={"agentId": agent_id})
-        if count_entry:
-            new_count = count_entry.queryCount + 1
-            if new_count > 40:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de consultas.")
-            await prisma.count.update(
-                where={"agentId": agent_id},
-                data={"queryCount": new_count}
-            )
-        else:
-            new_count = 1
-            await prisma.count.create(
-                data={"agentId": agent_id, "queryCount": new_count}
-            )
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
     langfuse_host = config("LANGFUSE_HOST", "https://cloud.langfuse.com")
@@ -234,14 +213,48 @@ async def invoke(
         )
         session_id = f"{agent_id}-{body.sessionId}" if body.sessionId else f"{agent_id}"
         trace = langfuse.trace(
-            CreateTrace(
-                id=session_id,
-                name="Assistant",
-                userId=api_user.id,
-                metadata={"agentId": agent_id},
-            )
+            id=session_id,
+            name="Assistant",
+            tags=[agent_id],
+            metadata={"agentId": agent_id},
+            user_id=api_user.id,
         )
         langfuse_handler = trace.get_langchain_handler()
+
+    agent_config = await prisma.agent.find_unique_or_raise(
+        where={"id": agent_id},
+        include={
+            "llms": {"include": {"llm": True}},
+            "datasources": {"include": {"datasource": {"include": {"vectorDb": True}}}},
+            "tools": {"include": {"tool": True}},
+        },
+    )
+
+    def get_analytics_info(result):
+        intermediate_steps_to_obj = [
+            {
+                **vars(toolClass),
+                "message_log": str(toolClass.message_log),
+                "response": response,
+            }
+            for toolClass, response in result.get("intermediate_steps", [])
+        ]
+
+        properties = {
+            "agent": agent_config.id,
+            "llm_model": agent_config.llmModel,
+            "sessionId": session_id,
+            # default http status code is 200
+            "response": {
+                "status_code": result.get("status_code", 200),
+                "error": result.get("error", None),
+            },
+            "output": result.get("output", None),
+            "input": result.get("input", None),
+            "intermediate_steps": intermediate_steps_to_obj,
+        }
+
+        return properties
 
     async def send_message(
         agent: LLMChain | AgentExecutor,
@@ -258,10 +271,18 @@ async def invoke(
             )
 
             async for token in callback.aiter():
-                yield f"data: {token}\n\n"
+                yield ("event: message\n" f"data: {token}\n\n")
 
             await task
+
             result = task.result()
+
+            if SEGMENT_WRITE_KEY:
+                analytics.track(
+                    api_user.id,
+                    "Invoked Agent",
+                    get_analytics_info(result),
+                )
             if "intermediate_steps" in result:
                 for step in result["intermediate_steps"]:
                     agent_action_message_log = step[0]
@@ -273,19 +294,24 @@ async def invoke(
                             f'data: {{"function": "{function}", '
                             f'"args": {json.dumps(args)}}}\n\n'
                         )
-        except Exception as e:
-            logging.error(f"Error in send_message: {e}")
+        except Exception as error:
+            logging.error(f"Error in send_message: {error}")
+            if SEGMENT_WRITE_KEY:
+                analytics.track(
+                    api_user.id,
+                    "Invoked Agent",
+                    get_analytics_info({"error": str(error), "status_code": 500}),
+                )
+            yield ("event: error\n" f"data: {error}\n\n")
         finally:
             callback.done.set()
-
-    if SEGMENT_WRITE_KEY:
-        analytics.track(api_user.id, "Invoked Agent")
 
     logging.info("Invoking agent...")
     session_id = body.sessionId
     input = body.input
     enable_streaming = body.enableStreaming
     output_schema = body.outputSchema
+
     callback = CustomAsyncIteratorCallbackHandler()
     agent = await AgentBase(
         agent_id=agent_id,
@@ -293,6 +319,8 @@ async def invoke(
         enable_streaming=enable_streaming,
         output_schema=output_schema,
         callback=callback,
+        llm_params=body.llm_params.dict() if body.llm_params else {},
+        agent_config=agent_config,
     ).get_agent()
 
     if enable_streaming:
@@ -307,12 +335,19 @@ async def invoke(
         tags=[agent_id],
         callbacks=[langfuse_handler] if langfuse_handler else None,
     )
+
     if output_schema:
         try:
             output = json.loads(output.get("output"))
         except Exception as e:
             logging.error(f"Error parsing output: {e}")
-            output = None
+
+    if not enable_streaming and SEGMENT_WRITE_KEY:
+        analytics.track(
+            api_user.id,
+            "Invoked Agent",
+            get_analytics_info(output),
+        )
     return {"success": True, "data": output}
 
 
@@ -533,83 +568,3 @@ async def remove_datasource(
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
-
-
-# Agent runs
-@router.get(
-    "/agents/{agent_id}/runs",
-    name="list_runs",
-    description="List agent runs",
-    response_model=AgentRunListResponse,
-)
-async def list_runs(agent_id: str, api_user=Depends(get_current_api_user)):
-    """Endpoint for listing agent runs"""
-    is_langsmith_enabled = config("LANGCHAIN_TRACING_V2", False)
-    if is_langsmith_enabled == "True":
-        langsmith_client = Client()
-        try:
-            output = langsmith_client.list_runs(
-                project_id=config("LANGSMITH_PROJECT_ID"),
-                filter=f"has(tags, '{agent_id}')",
-            )
-            return {"success": True, "data": output}
-        except Exception as e:
-            handle_exception(e)
-
-    return {"success": False, "data": []}
-
-# Agent Bot with Chatwoot
-@router.post("/webhook/{agent_id}/chatwoot")
-async def chatwoot_webhook(agent_id: str, request: Request):
-    body = await request.json()
-    user_id = body.get("sender", {}).get("account", {}).get("id")
-    account_id = body.get("account", {}).get("id")
-    content = body.get("content")
-    conversation_id = body.get("conversation", {}).get("id")
-    message_type = body.get("message_type")
-    # Process only incoming messages (messages from clients)
-    if message_type != "incoming":
-        logging.info("Ignoring non-client message")
-        return {"message": "Non-client message ignored", "agent_id": agent_id, "ignored": True}
-    # Check if the client wants to speak with a human
-    try:
-        token = await obtener_token_supabase(user_id=user_id)
-        if not token:
-            raise HTTPException(status_code=404, detail="Token not found")
-
-        valor_token = token['data'].agentToken
-        ia_assistant_active = token['data'].isAgentActive
-
-        agent = await prisma.agent.find_unique(where={"id": agent_id})
-        if not agent:
-            raise HTTPException(status_code=404, detail="Agent not found")
-
-        agent_base = await AgentBase(agent_id=agent_id).get_agent()
-        if ia_assistant_active:
-            if content.lower() == "quiero hablar con una persona":
-                await modificar_estado_agente(user_id=user_id, es_respuesta_de_bot=False)
-                await enviar_respuesta_chatwoot(conversation_id, "Ya te derivamos con un agente...", valor_token, account_id, es_respuesta_de_bot=True)
-                return {"message": "Request to speak with a human agent received", "agent_id": agent_id}
-            # Function to send message to superagent for processing
-            async def send_message(agent: AgentBase, content: str) -> str:
-                try:
-                    result = await agent.acall(
-                        inputs={"input": content},
-                        tags=[agent_id],
-                        callbacks=None,
-                    )
-                    return result.get("output", "")
-                except Exception as e:
-                    logging.error(f"Error in send_message: {e}")
-                    raise
-
-            response = await send_message(agent_base, content)
-
-            if not response:
-                raise HTTPException(status_code=500, detail="Failed to generate a response")
-
-            await enviar_respuesta_chatwoot(conversation_id, response, valor_token, account_id, es_respuesta_de_bot=True)
-            return {"message": "Data received and processed by the Superagent bot", "agent_id": agent_id, "response": response}
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        return {"message": "An error occurred while processing the data", "agent_id": agent_id}
