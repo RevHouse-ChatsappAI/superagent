@@ -59,35 +59,32 @@ export type DataType = {
   status: string
 }
 
-export function DeleteButton({ id, profile }: { id: string; profile: Profile }) {
-  const api = new Api(profile.api_key);
-  const router = useRouter();
-
-  const handleDelete = async () => {
+export function DeleteButton({
+  id,
+  profile,
+}: {
+  id: string
+  profile: Profile
+}) {
+  const api = new Api(profile.api_key)
+  const router = useRouter()
+  const handleDeleteTool = async () => {
     try {
-      await api.deleteDatasource(id);
+      await api.deleteDatasource(id)
       toast({
         description: "Datasource deleted successfully",
-      });
-      router.refresh();
+      })
+      router.refresh()
     } catch (error: any) {
       toast({
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
-  return (
-    <Button
-      onClick={handleDelete}
-      className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
-    >
-      Borrar
-    </Button>
-  );
+  return <DropdownMenuItem onSelect={handleDeleteTool}>Delete</DropdownMenuItem>
 }
-
 
 export function CopyButton({ id }: { id: string }) {
   const { toast } = useToast()
@@ -197,15 +194,15 @@ export function EditTool({
 export const columns = (profile: Profile): ColumnDef<DataType>[] => [
   {
     accessorKey: "name",
-    header: "Nombre",
+    header: "Name",
   },
   {
     accessorKey: "description",
-    header: "Descripción",
+    header: "Description",
   },
   {
     accessorKey: "type",
-    header: "Tipo",
+    header: "Type",
     cell: ({ row, column }) => (
       <Badge variant="secondary">{row.getValue(column.id)}</Badge>
     ),
@@ -216,7 +213,7 @@ export const columns = (profile: Profile): ColumnDef<DataType>[] => [
   },
   {
     accessorKey: "status",
-    header: "Estado",
+    header: "STATUS",
     cell: getStatusBadge,
   },
   {
@@ -226,7 +223,26 @@ export const columns = (profile: Profile): ColumnDef<DataType>[] => [
 
       return (
         <div className="flex justify-end">
-          <DeleteButton id={datasource.id} profile={profile} />
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <CopyButton id={datasource.id} />
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuSeparator />
+                <DeleteButton id={datasource.id} profile={profile} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <EditTool datasource={datasource} profile={profile} />
+          </Dialog>
         </div>
       )
     },

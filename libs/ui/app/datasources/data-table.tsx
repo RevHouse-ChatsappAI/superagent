@@ -53,7 +53,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { DataTablePagination } from "@/components/data-table-pagination"
 import { UploadButton } from "@/components/upload-button"
-import { PlusIcon } from "@/components/svg/PlusIcon"
 
 interface DataTableProps<TData, TValue> {
   columns: (profile: Profile) => ColumnDef<TData, TValue>[]
@@ -253,9 +252,16 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center space-x-4 py-4">
+        <Input
+          placeholder="Filter by name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-md"
+        />
         <Button
           size="sm"
-          className="mb-5 flex items-center justify-center gap-3 rounded-sm p-3"
           onClick={() => {
             setOpen(true)
           }}
@@ -263,10 +269,7 @@ export function DataTable<TData, TValue>({
           {form.control._formState.isSubmitting || isDownloadingFile ? (
             <Spinner />
           ) : (
-            <>
-              <PlusIcon/>
-              <span>Crear nueva fuente de datos</span>
-            </>
+            "New Datasource"
           )}
         </Button>
         <Dialog
@@ -509,7 +512,7 @@ export function DataTable<TData, TValue>({
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
                             <p className="text-sm">Select files</p>
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Upload local files from your device
                             </p>
                           </div>
@@ -543,7 +546,7 @@ export function DataTable<TData, TValue>({
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
                             <p className="text-sm">Connect to your accounts</p>
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Google Drive, Dropbox, Box etc.
                             </p>
                           </div>
@@ -588,43 +591,42 @@ export function DataTable<TData, TValue>({
           </DialogContent>
         </Dialog>
       </div>
-      <div>
-        <div>
-          <div className="flex w-full">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <div className="grid flex-1 grid-cols-12 gap-4" key={headerGroup.id}>
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <div className="col-span-2 text-xs text-gray-400" key={header.id}>
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </div>
+                    </TableHead>
                   )
                 })}
-              </div>
+              </TableRow>
             ))}
-          </div>
-          <div className="mt-2 flex w-full flex-col items-center gap-2">
+          </TableHeader>
+          <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <div
-                  className="hover:bg-white-100 grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4"
+                <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <div key={cell.id} className="col-span-2 py-3">
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </div>
+                    </TableCell>
                   ))}
-                </div>
+                </TableRow>
               ))
             ) : (
               <TableRow>
@@ -633,8 +635,8 @@ export function DataTable<TData, TValue>({
                 </TableCell>
               </TableRow>
             )}
-          </div>
-        </div>
+          </TableBody>
+        </Table>
       </div>
       <DataTablePagination
         className="py-4"

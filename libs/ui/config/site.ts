@@ -7,7 +7,6 @@ import {
   RxFileText,
   RxGithubLogo,
   RxGlobe,
-  RxHome,
   RxPlay,
   RxReader,
 } from "react-icons/rx"
@@ -19,11 +18,6 @@ export const siteConfig = {
   name: "Superagent Cloud",
   description: "The agent framework for large language models",
   mainNav: [
-    {
-      title: "Home",
-      href: "/",
-      icon: RxHome,
-    },
     {
       title: "Dashboard",
       href: "/dashboard",
