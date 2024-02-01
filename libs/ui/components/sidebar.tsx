@@ -17,6 +17,7 @@ import { ChatsAppAI } from "./svg/ChatsAppAI"
 import { Button } from "./ui/button"
 import { ButtonSidebar } from "./ui/buttonSidebar"
 import { Separator } from "./ui/separator"
+import Link from "next/link"
 
 export default function Sidebar() {
   const supabase = createClientComponentClient()
@@ -89,7 +90,11 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-
+      <div className="px-2">
+        <Link href="/pricing" style={{ width: '100%', borderRadius: '0.375rem', border: '2px solid #2563EB', padding: '1rem', fontSize: '0.875rem', fontWeight: '500', color: '#fff', background: 'linear-gradient(45deg, #3B82F6, #2563EB)', transition: 'background 0.5s ease-in-out, border 0.5s ease-in-out' }} className="w-full focus:outline-none" onMouseOver={(e) => e.currentTarget.style.background = 'linear-gradient(45deg, #1D4ED8, #2563EB)'} onMouseOut={(e) => e.currentTarget.style.background = 'linear-gradient(45deg, #3B82F6, #2563EB)'} onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px #60A5FA'}>
+          Actualiza a premium
+        </Link>
+      </div>
       <div>
         <p className="px-4 text-xs text-gray-300">{helpBaseNav.title}</p>
         <div className="flex flex-col px-2">
