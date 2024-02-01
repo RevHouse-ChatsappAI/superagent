@@ -1,11 +1,10 @@
-import { Profile } from '@/types/profile'
-import React from 'react'
+
+'use client'
+import React, { useEffect, useState } from 'react'
 import { CardPrice } from './components/CardPrice'
 import Stripe from 'stripe';
+import { pricingFeatures } from '@/config/pricing';
 
-interface Props{
-  profile: Profile
-}
 
 async function loadPrices() {
   const stripeSecretKey = process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY;
@@ -15,19 +14,35 @@ async function loadPrices() {
   const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2023-08-16'
   });
-  const prices = await stripe.prices.list();
+  const prices = await stripe.prices.list({
+    product: 'prod_PQlBLHxNozr0nS'
+  });
+  console.log(prices)
   const sortedPrices = prices.data.sort((a, b) => {
     const unitAmountA = a.unit_amount || 0;
     const unitAmountB = b.unit_amount || 0;
     return unitAmountA - unitAmountB;
   });
+
   return sortedPrices;
 }
 
 
-export const DataTable = async () => {
+export const DataTable = () => {
+  const [prices, setPrices] = useState<any[]>([]);
 
-  const prices = await loadPrices()
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const loadedPrices = await loadPrices();
+        setPrices(loadedPrices);
+      } catch (error) {
+        console.error("Error loading prices:", error);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   return (
     <div className='space-y-8 sm:gap-6 lg:grid lg:grid-cols-3 lg:space-y-0 xl:gap-10'>
@@ -36,21 +51,35 @@ export const DataTable = async () => {
           <CardPrice
             key={price.id}
             priceId={price.id}
-            title={price?.nickname || ''}
-            description='Agent Free Tree Reals'
-            price={price?.unit_amount ? `$${price.unit_amount / 100}` : 'Free'}
-            features={[
-              'asdfsadfasdfasdf',
-              'asdfsadfasdfasdf',
-              'asdfsadfasdfasdf',
-              'asdfsadfasdfasdf',
-              'asdfsadfasdfasdf',
-            ]}
-            buttonLink='/sigup'
+            title={price.nickname || ''}
+            nickname={price.nickname || ''}
+            description={getPriceDescription(price)}
+            price={price.unit_amount ? `$${price.unit_amount / 100}` : 'Free'}
+            features={getFeatures(price)}
+            buttonLink='/signup'
           />
         ))
       }
     </div>
-  )
+  );
+};
+
+function getPriceDescription(price: any): string {
+  if (price.unit_amount === 0) {
+    return 'Explora nuestros servicios con el Plan Gratis, ¡perfecto para empezar!';
+  } else if (price.unit_amount < 78900) {
+    return 'Desbloquea más características con el Plan Estándar, ideal para negocios en crecimiento!';
+  } else {
+    return '¡Experimenta la suite completa con nuestro Plan Premium, diseñado para escalar!';
+  }
 }
 
+function getFeatures(price: any): string[] {
+  if (price.unit_amount === 0) {
+    return pricingFeatures.free;
+  } else if (price.unit_amount < 78900) {
+    return pricingFeatures.standard;
+  } else {
+    return pricingFeatures.premiun;
+  }
+}

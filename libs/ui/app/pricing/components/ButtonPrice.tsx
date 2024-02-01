@@ -32,7 +32,7 @@ export const ButtonPrice: React.FC<ButtonPriceProps> = ({ title, priceId }) => {
 
   return (
     <button
-      className="hover:bg-primary-700 focus:ring-primary-200 dark:focus:ring-primary-900 rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4  dark:text-white"
+      className="focus:ring-primary-200 dark:focus:ring-primary-900 rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white transition-all hover:bg-blue-500 focus:ring-4 dark:text-white"
       onClick={handleClick}
     >
       {title}

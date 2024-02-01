@@ -1,7 +1,6 @@
 import { cookies } from "next/headers"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
-import { CardPrice } from "./components/CardPrice"
 import { DataTable } from "./data-table"
 
 export default async function Pricing() {
