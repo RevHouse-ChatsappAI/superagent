@@ -19,9 +19,9 @@ export const CardIntegration = ({
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           {children}
-          <h2 className="text-xl text-black">{title}</h2>
+          <h2 className="text-lg font-bold text-gray-600">{title}</h2>
         </div>
-        <p className="text-md text-gray-600">{description}</p>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
       <div className="flex justify-center">
         <button
