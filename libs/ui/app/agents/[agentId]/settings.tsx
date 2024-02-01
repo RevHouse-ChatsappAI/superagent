@@ -182,11 +182,6 @@ export default function Settings({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-4"
         >
-          <Avatar
-            accept=".jpg, .jpeg, .png"
-            onSelect={handleUpload}
-            imageUrl={avatar || agent.avatar || "/logo.png"}
-          />
           <FormField
             control={form.control}
             name="name"
@@ -315,7 +310,7 @@ export default function Settings({
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
                 <p className="text-sm">Heads up!</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   You need to add an LLM to this agent for it work. This can be
                   done through the SDK or API.
                 </p>
