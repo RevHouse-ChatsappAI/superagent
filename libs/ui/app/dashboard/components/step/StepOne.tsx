@@ -10,9 +10,7 @@ interface StepOneProps {
 
 const StepOne = ({ nextStep }: StepOneProps) => {
   //Context
-  const {
-    handleProfileChatwoot
-  } = useChatwoot()
+  const { handleProfileChatwoot } = useChatwoot()
 
   //State
   const [loading, setLoading] = useState(false)
@@ -53,66 +51,75 @@ const StepOne = ({ nextStep }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="mb-4 text-lg font-bold">Paso 1: Creación de Usuario en Chatwoot</h2>
-      <form onSubmit={handleAddUserChatwoot}>
-        <label className="flex w-full flex-col gap-1">
-          <p>User name: </p>
-          <input
-            type="text"
-            name="name"
-            value={user.name}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                name: e.target.value,
-              })
-            }
-            className="w-full rounded-lg p-2"
-            placeholder="Eg: Revhouse"
-            required
-          />
-        </label>
-        <label className="flex w-full flex-col gap-1">
-          <p>Email: </p>
-          <input
-            type="email"
-            name="email"
-            value={user.email}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                email: e.target.value,
-              })
-            }
-            className="w-full rounded-lg p-2"
-            placeholder="Eg: chatwoot@revhouse.com"
-            required
-          />
-        </label>
+    <div className="flex flex-1 flex-col px-2">
+      <h2 className="mb-4 text-sm font-bold text-gray-500">
+        Paso 1: Creación de Usuario en chatsappAI
+      </h2>
+      <form
+        onSubmit={handleAddUserChatwoot}
+        className="flex flex-1 flex-col justify-between gap-5"
+      >
+        <div className="flex flex-col gap-4">
+          <label className="flex w-full flex-col">
+            <p className="text-sm">User name </p>
+            <input
+              type="text"
+              name="name"
+              value={user.name}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  name: e.target.value,
+                })
+              }
+              className="w-full rounded-lg p-2"
+              placeholder="Eg: Revhouse"
+              required
+            />
+          </label>
+          <label className="flex w-full flex-col gap-1">
+            <p className="text-sm">Email </p>
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  email: e.target.value,
+                })
+              }
+              className="w-full rounded-lg p-2"
+              placeholder="Eg: chatwoot@revhouse.com"
+              required
+            />
+          </label>
 
-        <label className="flex w-full flex-col gap-1">
-          <p>Password</p>
-          <input
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                password: e.target.value,
-              })
-            }
-            className="w-full rounded-lg p-2"
-          />
-        </label>
-        <button
-          type="submit"
-          className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
-          disabled={loading}
-        >
-          {loading ? "Cargando Usuario..." : "Crear Usuario"}
-        </button>
+          <label className="flex w-full flex-col gap-1">
+            <p className="text-sm">Password</p>
+            <input
+              type="password"
+              name="password"
+              value={user.password}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  password: e.target.value,
+                })
+              }
+              className="w-full rounded-lg p-2"
+            />
+          </label>
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="rounded bg-blue-500 px-4 py-2 text-white transition-all hover:bg-blue-400"
+            disabled={loading}
+          >
+            {loading ? "Cargando Usuario..." : "Crear Usuario"}
+          </button>
+        </div>
       </form>
     </div>
   )

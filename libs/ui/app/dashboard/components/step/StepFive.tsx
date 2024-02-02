@@ -1,9 +1,11 @@
 // Componente StepOne.jsx
 import React, { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
+
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/use-toast"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
@@ -14,7 +16,8 @@ interface StepOneProps {
 
 const StepFive = ({ nextStep, profile }: StepOneProps) => {
   //Context
-  const { userProfileChatwoot, agentToken, apiAgent, handleChangeActiveToken } = useChatwoot()
+  const { userProfileChatwoot, agentToken, apiAgent, handleChangeActiveToken } =
+    useChatwoot()
 
   //State
   const [loading, setLoading] = useState(false)
@@ -22,7 +25,7 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
   const [success, setSuccess] = useState(false)
   const router = useRouter()
 
-  const handleFinish = async() => {
+  const handleFinish = async () => {
     try {
       setLoading(true)
       const respToken = await api.createToken({
@@ -40,7 +43,7 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
       }
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -52,12 +55,30 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      {success  && <>
-        <h2>Creación Exitosa</h2>
-        <button onClick={redirectAgent}>Ir al Agent</button>
-      </>}
-      <button disabled={success} onClick={handleFinish}>{loading ? 'Cargando...': 'Crear Cuenta en Chatwoot'}</button>
+    <div className="flex flex-col">
+      {loading ? (
+        <Spinner />
+      ) : (
+        <div>
+          {success && (
+            <div className="flex flex-col gap-9">
+              <h2 className="text-center text-lg text-green-500">Creación Exitosa!</h2>
+              <button onClick={redirectAgent} className="hover:bg-white-100 rounded border border-gray-300 bg-transparent px-4 py-2 font-semibold transition-all hover:border-transparent">
+                Ir al Agent
+              </button>
+            </div>
+          )}
+          {!success && (
+            <button
+              disabled={success}
+              onClick={handleFinish}
+              className="border-white-500 rounded border bg-transparent px-4 py-2 font-semibold text-white transition-all hover:border-transparent hover:bg-blue-500 hover:text-white"
+            >
+              {loading ? "Cargando..." : "Crear Cuenta en Chatwoot"}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

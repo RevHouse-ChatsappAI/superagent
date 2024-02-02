@@ -17,7 +17,7 @@ export default async function Integration() {
     .single()
 
   return (
-    <div className="flex flex-col space-y-4 p-6">
+    <div className="relative flex h-screen flex-col space-y-4 p-6">
       <h2 className="mb-5 text-lg">Integraciones con Plataformas 🤖🤟</h2>
       <DataTable
         profile={profile}

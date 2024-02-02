@@ -5,6 +5,7 @@ import { useAsync } from "react-use"
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
 import { useChatwoot } from "@/app/context/ChatwootContext"
+
 import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
@@ -29,10 +30,8 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
   //Context
   const { handleAgentApi } = useChatwoot()
 
-
   //API
   const api = useMemo(() => new Api(profile.api_key), [profile.api_key])
-
 
   //Function
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +56,6 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
       const apiAgent = agent.id
 
       if (agent && agent.id) {
-
         handleAgentApi(apiAgent)
         nextStep()
         return
@@ -72,52 +70,56 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="mb-4 text-lg font-bold">Paso 3: Creación de Agente SuperAgent</h2>
-      <form onSubmit={handleAddUserChatwoot}>
-        <label className="flex w-full flex-col gap-1">
-          <p>Agent Name</p>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                name: e.target.value,
-              })
-            }
-            className="w-full rounded-lg p-2"
-            placeholder="Eg: Agent Chatwoot"
-            required
-          />
-        </label>
-        <label className="flex w-full flex-col gap-1">
-          <p>Description</p>
-          <input
-            type="text"
-            name="description"
-            value={form.description}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                description: e.target.value,
-              })
-            }
-            className="w-full rounded-lg p-2"
-            placeholder="Eg: Chatwoot Description"
-            required
-          />
-        </label>
+    <div className="flex flex-1 flex-col">
+      <h2 className="mb-4 text-sm text-gray-500">
+        Paso 3: Creación de Agente SuperAgent
+      </h2>
+      <form onSubmit={handleAddUserChatwoot} className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-col gap-4 px-3">
+          <label className="flex w-full flex-col gap-1">
+            <p className="text-sm">Agent Name</p>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  name: e.target.value,
+                })
+              }
+              className="w-full rounded-lg p-2"
+              placeholder="Eg: Agent Chatwoot"
+              required
+            />
+          </label>
+          <label className="flex w-full flex-col gap-1">
+            <p className="text-sm">Description</p>
+            <input
+              type="text"
+              name="description"
+              value={form.description}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  description: e.target.value,
+                })
+              }
+              className="w-full rounded-lg p-2"
+              placeholder="Eg: Chatwoot Description"
+              required
+            />
+          </label>
+        </div>
         <div className="flex items-center justify-between">
+          <ButtonPrev title="Previo" prevStep={prevStep} />
           <button
             type="submit"
-            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+            className="rounded bg-blue-500 px-4 py-2 text-white"
             disabled={loading}
           >
             {loading ? "Cargando..." : "Crear Agent SuperAgent"}
           </button>
-          <ButtonPrev title="Previo" prevStep={prevStep}/>
         </div>
       </form>
     </div>
