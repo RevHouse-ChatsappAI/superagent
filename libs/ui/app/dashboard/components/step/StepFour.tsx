@@ -54,11 +54,11 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="mb-4 text-lg font-bold">Paso 4: Creación de Agente Bot (Chatwoot)</h2>
-      <form onSubmit={handleAddUserChatwoot}>
+    <div className="flex flex-1 flex-col">
+      <h2 className="mb-4 text-sm text-gray-400">Paso 4: Creación de Agente Bot (Chatwoot)</h2>
+      <form className="flex flex-1 flex-col justify-between px-3" onSubmit={handleAddUserChatwoot}>
         <label className="flex w-full flex-col gap-1">
-          <p>Agent Bot Name: </p>
+          <p className="text-sm">Agent Bot Name: </p>
           <input
             type="text"
             name="name"
@@ -70,14 +70,14 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
           />
         </label>
         <div className="flex items-center justify-between">
+          <ButtonPrev title="Previo" prevStep={prevStep}/>
           <button
             type="submit"
-            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+            className="rounded bg-blue-500 px-4 py-2 text-white"
             disabled={loading}
           >
             {loading ? "Cargando..." : "Crear Agente Bot"}
           </button>
-          <ButtonPrev title="Previo" prevStep={prevStep}/>
         </div>
       </form>
     </div>

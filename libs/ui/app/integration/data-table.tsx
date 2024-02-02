@@ -13,7 +13,7 @@ export function DataTable({ profile }: Props) {
 
   return (
     <>
-      <Column/>
+      <Column profile={profile}/>
     </>
   )
 }
