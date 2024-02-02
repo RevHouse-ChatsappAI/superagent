@@ -34,6 +34,7 @@ export const Column = ({profile}: {profile: Profile}) => {
         description="Conecta tus cuentas de Whatsapp. "
         id="whatsapp"
         disabled={true}
+        titleBtn="Próximamente"
       >
         <RxCardStackPlus className="text-4xl text-black" />
       </CardIntegration>

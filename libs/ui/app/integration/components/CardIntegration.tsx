@@ -7,6 +7,7 @@ interface Props {
   description: string
   eventClick: (id: string) => void
   id: string
+  titleBtn?: string
   disabled?: boolean
 }
 
@@ -16,6 +17,7 @@ export const CardIntegration = ({
   description,
   eventClick,
   id,
+  titleBtn,
   disabled
 }: Props) => {
   return (
@@ -34,7 +36,7 @@ export const CardIntegration = ({
           className={`flex items-center justify-center gap-2 rounded-md px-4 py-2 ${disabled ? 'cursor-not-allowed bg-gray-400' : 'bg-black'}`}
         >
           <RxCursorArrow />
-          <span>Conectar</span>
+          <span>{titleBtn ? titleBtn : 'Conectar'}</span>
         </button>
       </div>
     </div>
