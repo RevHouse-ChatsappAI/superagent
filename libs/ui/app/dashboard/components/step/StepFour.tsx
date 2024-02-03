@@ -23,6 +23,8 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    console.log(apiAgent)
+    console.log(accountId)
     try {
       //Agent Bot Details
       const agent_bot_name = account

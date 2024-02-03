@@ -3,14 +3,20 @@ import React, { useState } from "react"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
+
 import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
   nextStep: () => void
   prevStep: () => void
+  btnPrevActive?: boolean
 }
 
-const StepTwo = ({ nextStep, prevStep }: StepOneProps) => {
+const StepTwo = ({
+  nextStep,
+  prevStep,
+  btnPrevActive = true,
+}: StepOneProps) => {
   //Context
   const { userProfileChatwoot, handleAccountId } = useChatwoot()
 
@@ -28,11 +34,13 @@ const StepTwo = ({ nextStep, prevStep }: StepOneProps) => {
         name: account,
       }
       const accountResponse = await apiChatwoot.createAccount(accountDetails)
+
       if (accountResponse && accountResponse.id) {
         const adminUserDetails = {
-          user_id: userProfileChatwoot?.id?.toString() || '',
+          user_id: userProfileChatwoot?.id?.toString() || "",
           role: "administrator",
         }
+        console.log(adminUserDetails)
         await apiChatwoot.createAccountUser(
           accountResponse.id,
           adminUserDetails
@@ -52,8 +60,13 @@ const StepTwo = ({ nextStep, prevStep }: StepOneProps) => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-4 text-sm text-gray-400">Paso 2: Creación de Cuenta en Chatwoot</h2>
-      <form onSubmit={handleAddUserChatwoot} className="flex flex-1 flex-col justify-between px-3">
+      <h2 className="mb-4 text-sm text-gray-400">
+        Paso 2: Creación de Cuenta en Chatwoot
+      </h2>
+      <form
+        onSubmit={handleAddUserChatwoot}
+        className="flex flex-1 flex-col justify-between px-3"
+      >
         <label className="flex w-full flex-col gap-1">
           <p className="text-sm">Account: </p>
           <input
@@ -66,8 +79,12 @@ const StepTwo = ({ nextStep, prevStep }: StepOneProps) => {
             required
           />
         </label>
-        <div className="flex justify-between">
-          <ButtonPrev title="Previo" prevStep={prevStep}/>
+        <div
+          className={`flex items-center ${
+            btnPrevActive ? "justify-between" : "justify-end"
+          }`}
+        >
+          {btnPrevActive && <ButtonPrev title="Previo" prevStep={prevStep} />}
           <button
             type="submit"
             className="rounded bg-blue-500 px-4 py-2 text-white"

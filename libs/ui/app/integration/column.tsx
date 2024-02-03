@@ -1,21 +1,30 @@
-'use client'
+"use client"
+
 import React, { useState } from "react"
-import { RxCardStackPlus } from "react-icons/rx"
-
-import { CardIntegration } from "./components/CardIntegration"
+import { BsWhatsapp } from "react-icons/bs"
+//Icons
+import { SiMicrosoftazure } from "react-icons/si"
+import { GiPentarrowsTornado } from "react-icons/gi";
 import { ChatwootIcon } from "@/components/svg/integrations/ChatwootIcon"
-import { Modal } from "./components/Modal"
-import { Profile } from "@/types/profile"
 
-export const Column = ({profile}: {profile: Profile}) => {
+
+//Components
+import { Profile } from "@/types/profile"
+import { useChatwoot } from "../context/ChatwootContext"
+import { CardIntegration } from "./components/CardIntegration"
+import { Modal } from "./components/Modal"
+
+export const Column = ({ profile }: { profile: Profile }) => {
+  const { tokenActive } = useChatwoot()
+
   const [modal, setModal] = useState({
-    integration: 'default'
+    integration: "default",
   })
   const handleClick = (id: string) => {
     setModal({ integration: id })
   }
   const onClose = () => {
-    setModal({integration: 'default'})
+    setModal({ integration: "default" })
   }
 
   return (
@@ -25,8 +34,31 @@ export const Column = ({profile}: {profile: Profile}) => {
         title="ChatsappAI Connect"
         description="Conecta tus cuentas de Whatsapp a tus agentes de IA de chatsappAI. "
         id="chatwoot"
+        disabled={tokenActive}
+        isTokenActive={tokenActive}
+        titleBtn={tokenActive ? "Habilitado" : "Conectar"}
       >
         <ChatwootIcon />
+      </CardIntegration>
+      <CardIntegration
+        eventClick={handleClick}
+        title="Pinecone"
+        description="Pinecone te ayuda a construir y escalar tus aplicaciones de búsqueda vectorial con facilidad y rapidez."
+        id="whatsapp"
+        disabled={true}
+        titleBtn="Habilitado"
+      >
+        <GiPentarrowsTornado className="text-4xl text-black" />
+      </CardIntegration>
+      <CardIntegration
+        eventClick={handleClick}
+        title="Azure OpenAI"
+        description="Utiliza Azure OpenAI para potenciar tus asistentes con los últimos modelos de OpenAI."
+        id="whatsapp"
+        disabled={true}
+        titleBtn="Habilitado"
+      >
+        <SiMicrosoftazure className="text-4xl text-black" />
       </CardIntegration>
       <CardIntegration
         eventClick={handleClick}
@@ -35,12 +67,17 @@ export const Column = ({profile}: {profile: Profile}) => {
         id="whatsapp"
         disabled={true}
         titleBtn="Próximamente"
+        commingSoon={true}
       >
-        <RxCardStackPlus className="text-4xl text-black" />
+        <BsWhatsapp className="text-4xl text-black" />
       </CardIntegration>
-      {
-        modal.integration === 'chatwoot' && <Modal handleModalClose={onClose} profile={profile}/>
-      }
+      {modal.integration === "chatwoot" && (
+        <Modal
+          isTokenActive={tokenActive}
+          handleModalClose={onClose}
+          profile={profile}
+        />
+      )}
     </div>
   )
 }
