@@ -16,7 +16,7 @@ interface StepOneProps {
 
 const StepFive = ({ nextStep, profile }: StepOneProps) => {
   //Context
-  const { userProfileChatwoot, agentToken, apiAgent, handleChangeActiveToken } =
+  const { userProfileChatwoot, agentToken, apiAgent, handleChangeActiveToken, accountId } =
     useChatwoot()
 
   //State
@@ -29,7 +29,7 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
     try {
       setLoading(true)
       const respToken = await api.createToken({
-        apiUserChatwoot: userProfileChatwoot?.id?.toString() || "",
+        apiUserChatwoot: accountId || "",
         userToken: userProfileChatwoot?.access_token || "",
         agentToken: agentToken?.toString() || "",
       })
