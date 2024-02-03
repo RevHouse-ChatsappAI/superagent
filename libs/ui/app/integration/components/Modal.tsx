@@ -31,7 +31,7 @@ export const Modal = ({
     <div className="bg-white-100 absolute inset-y-0 end-0 left-0 flex items-center justify-center">
       <div className="animate__animated animate__fadeInDown flex h-[600px] w-[520px] flex-col gap-3 rounded-3xl border-2 bg-black p-4">
         <div className="flex justify-between border-b p-3 ">
-          <h2 className="text-lg text-gray-300">Conectar con chatsappAI</h2>
+          <h2 className="text-lg text-gray-300">{isTokenActive ? 'Agregar una nueva conexión' : 'Conectar con Chatwoot'}</h2>
           <button onClick={handleModalClose}>
             <RxCross2 />
           </button>

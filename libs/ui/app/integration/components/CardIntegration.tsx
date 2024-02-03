@@ -1,6 +1,6 @@
 import React from "react"
-import { RxCursorArrow } from "react-icons/rx"
-import { RxCommit } from "react-icons/rx";
+import { CiCircleCheck } from "react-icons/ci"
+import { RxCommit, RxCursorArrow } from "react-icons/rx"
 
 interface Props {
   children?: React.ReactNode
@@ -46,11 +46,16 @@ export const CardIntegration = ({
             disabled ? "cursor-not-allowed bg-gray-400" : "bg-black"
           }`}
         >
-          <RxCursorArrow />
+          {
+            disabled && !commingSoon ? <CiCircleCheck/> : <RxCursorArrow />
+          }
           <span>{titleBtn ? titleBtn : "Conectar"}</span>
         </button>
         {isTokenActive && (
-          <button onClick={() => eventClick(id)} className="flex flex-1 items-center gap-2 rounded-md bg-black px-4 py-2 transition-all hover:bg-slate-400">
+          <button
+            onClick={() => eventClick(id)}
+            className="flex flex-1 items-center gap-2 rounded-md bg-black px-4 py-2 transition-all hover:bg-slate-400"
+          >
             <RxCommit />
             <span>Agregar otra conexión</span>
           </button>
