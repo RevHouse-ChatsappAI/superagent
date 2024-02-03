@@ -25,15 +25,15 @@ export const ProfileChatwoot = ({profile}: Props) => {
   }
 
   return (
-    <div className='mt-5 w-[500px] rounded-lg border-2 p-3'>
-      <h2 className='text-2xl underline underline-offset-4'>User Chatwoot</h2>
+    <div className='mt-5 w-full rounded-lg border-2 p-3'>
+      <h2 className='text-sm'>Usuario de Chatwoot</h2>
 
       <div className='mt-5 flex flex-col gap-3'>
-        <p className='rounded-lg bg-yellow-300 p-2 text-black'><span className='mr-2 font-semibold'>User Name:</span> {profile?.available_name}</p>
-        <div className='relative flex items-center rounded-lg bg-yellow-300 p-2 text-black'>
-          <span className='mr-2 font-semibold'>Email: </span> {profile?.email}
+        <p className='rounded-sm bg-yellow-300 p-2 text-sm text-black'><span className='mr-2 text-sm font-semibold text-gray-600'>User Name:</span> {profile?.available_name}</p>
+        <div className='relative flex items-center rounded-sm bg-yellow-300 p-2 text-sm text-black'>
+          <span className='mr-2 text-sm font-semibold text-gray-600'>Email: </span> {profile?.email}
           <button
-            className='absolute right-0 top-0 ml-2 rounded-s-sm bg-gray-500 px-3 py-1 text-xs text-white transition-all active:scale-110'
+            className='absolute right-0 top-0 ml-2 rounded-tr-sm bg-gray-500 px-3 py-1 text-xs text-white transition-all active:scale-110'
             onClick={() => copyToClipboard(profile?.email || '')}
           >
             Copy

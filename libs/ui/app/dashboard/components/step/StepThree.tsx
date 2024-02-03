@@ -11,10 +11,11 @@ import { ButtonPrev } from "../btn/ButtonPrev"
 interface StepOneProps {
   nextStep: () => void
   prevStep: () => void
+  btnPrevActive?: boolean
   profile: Profile
 }
 
-const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
+const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOneProps) => {
   //State
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
@@ -111,8 +112,10 @@ const StepThree = ({ nextStep, prevStep, profile }: StepOneProps) => {
             />
           </label>
         </div>
-        <div className="flex items-center justify-between">
-          <ButtonPrev title="Previo" prevStep={prevStep} />
+        <div className={`flex items-center ${btnPrevActive ? 'justify-between' : 'justify-end'}`}>
+          {
+            btnPrevActive && <ButtonPrev title="Previo" prevStep={prevStep} />
+          }
           <button
             type="submit"
             className="rounded bg-blue-500 px-4 py-2 text-white"

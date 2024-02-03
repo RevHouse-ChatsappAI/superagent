@@ -6,8 +6,11 @@ import { CardIntegration } from "./components/CardIntegration"
 import { ChatwootIcon } from "@/components/svg/integrations/ChatwootIcon"
 import { Modal } from "./components/Modal"
 import { Profile } from "@/types/profile"
+import { useChatwoot } from "../context/ChatwootContext"
 
 export const Column = ({profile}: {profile: Profile}) => {
+  const { tokenActive } = useChatwoot()
+
   const [modal, setModal] = useState({
     integration: 'default'
   })
@@ -25,6 +28,9 @@ export const Column = ({profile}: {profile: Profile}) => {
         title="ChatsappAI Connect"
         description="Conecta tus cuentas de Whatsapp a tus agentes de IA de chatsappAI. "
         id="chatwoot"
+        disabled={tokenActive}
+        isTokenActive={tokenActive}
+        titleBtn={tokenActive ? 'Conectado' : 'Conectar'}
       >
         <ChatwootIcon />
       </CardIntegration>
@@ -35,11 +41,12 @@ export const Column = ({profile}: {profile: Profile}) => {
         id="whatsapp"
         disabled={true}
         titleBtn="Próximamente"
+        commingSoon={true}
       >
         <RxCardStackPlus className="text-4xl text-black" />
       </CardIntegration>
       {
-        modal.integration === 'chatwoot' && <Modal handleModalClose={onClose} profile={profile}/>
+        modal.integration === 'chatwoot' && <Modal isTokenActive={tokenActive} handleModalClose={onClose} profile={profile}/>
       }
     </div>
   )
