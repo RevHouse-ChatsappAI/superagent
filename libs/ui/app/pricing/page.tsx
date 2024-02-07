@@ -22,7 +22,7 @@ export default async function Pricing() {
             <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               SuperAgent Elite Membership
             </h2>
-            <p className="mb-5 font-light text-gray-500 sm:text-xl dark:text-gray-400">
+            <p className="mb-5 font-light text-gray-700 sm:text-xl dark:text-gray-400">
             Con <span className="font-bold">SuperAgent Elite Membership</span> no solo mejoras tu eficiencia y organización, sino que también elevas tu experiencia de trabajo a un nivel superior. ¡Únete hoy y transforma tu manera de trabajar!
             </p>
           </div>

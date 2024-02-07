@@ -11,7 +11,7 @@ export default function Logo({
     <NextImage
       className="rounded-sm"
       src="/logo.png"
-      alt="Superagent Cloud"
+      alt="ChatsAppAi Cloud"
       width={width}
       height={height}
     />

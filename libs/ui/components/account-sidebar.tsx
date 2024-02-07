@@ -36,7 +36,7 @@ export function SettingsSidebar({
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
             pathname === item.href && "bg-muted hover:bg-muted",
-            item.disabled && "text-muted",
+            item.disabled && "text-muted cursor-not-allowed text-black opacity-50",
             "justify-start"
           )}
         >
