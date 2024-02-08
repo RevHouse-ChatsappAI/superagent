@@ -16,7 +16,7 @@ import { TbBrain, TbDatabase } from "react-icons/tb"
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Superagent Cloud",
+  name: "ChatsappAI Cloud",
   description: "The agent framework for large language models",
   mainNav: [
     {

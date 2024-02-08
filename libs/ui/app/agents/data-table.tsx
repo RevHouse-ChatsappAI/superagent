@@ -342,26 +342,26 @@ export function DataTable<TData, TValue>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <div
-                className="grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 hover:bg-white-100"
+                className="dark:hover:bg-white-100 grid w-full cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 transition-all hover:bg-slate-300"
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() ? "selected" : undefined}
                 onClick={() =>
                   router.push(`/agents/${(row.original as any).id}`)
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <div key={cell.id} className="col-span-3 py-3">
+                  <div key={cell.id} className="col-span-3 py-3 text-start">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </div>
                 ))}
               </div>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+            <div className="flex w-full justify-center">
+              <div className="h-24 w-full text-center">
                 No results.
-              </TableCell>
-            </TableRow>
+              </div>
+            </div>
           )}
         </div>
       </div>
