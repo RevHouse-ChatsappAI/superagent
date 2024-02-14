@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 
 from os import getenv
 
-CHATWOOT_API_URL = getenv("CHATWOOT") + "accounts/"
+CHATWOOT_API_URL = getenv("CHATWOOT") + "/accounts/"
 SUBSCRIPTION = getenv("SUBSCRIPTION")
 
 
@@ -22,6 +22,8 @@ async def enviar_respuesta_chatwoot(conversation_id, respuesta, token, account_i
     async with ClientSession() as session:
         async with session.post(url, headers=headers, json=data) as response:
             if response.status != 200:
-                error_message = f"Failed to send message, status: {response.status}"
+                response_body = await response.text()
+                print(f"Response body: {response_body}")
+                error_message = f"Failed to send message, status: {response.status}, response: {response_body}"
                 return {"error": error_message}
-            return await response.json()
+            return {"status": response.status, "data": "Message sent successfully"}
