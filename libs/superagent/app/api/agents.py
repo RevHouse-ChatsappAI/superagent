@@ -567,6 +567,7 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     content = body.get("content")
     conversation_id = body.get("conversation", {}).get("id")
     message_type = body.get("message_type")
+    print(conversation_id)
     # Process only incoming messages (messages from clients)
     if message_type != "incoming":
         logging.info("Ignoring non-client message")
