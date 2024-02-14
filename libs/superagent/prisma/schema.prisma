@@ -92,6 +92,7 @@ model ApiUser {
   workflows   Workflow[]
   vectorDb    VectorDb[]
   tokens Token[]
+  subscriptions Subscription[]
 }
 
 model Agent {
@@ -239,7 +240,7 @@ model Count {
 model Token {
   id            String   @id @default(uuid())
   agentToken    String   @unique
-  userToken     String   @unique
+  userToken     String
   apiUserChatwoot String @unique
   apiUserId     String
   apiUser       ApiUser? @relation(fields: [apiUserId], references: [id])
@@ -247,3 +248,16 @@ model Token {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model Subscription {
+  id             String   @id @default(uuid())
+  apiUserId      String
+  apiUser        ApiUser  @relation(fields: [apiUserId], references: [id])
+  stripeCustomerId String @unique
+  tier           String   @default("BASE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([apiUserId])
+}
+
