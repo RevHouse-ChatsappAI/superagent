@@ -14,8 +14,15 @@ class ApiToken(BaseModel):
     apiUserChatwoot: str
     isAgentActive: bool = True
 
+class ApiPayment(BaseModel):
+    user_customer_id: str
+    nickname: str
+
 class ApiTokenUpdate(BaseModel):
     userToken: str
+
+class ApiUserChatwootUpdate(BaseModel):
+    accountId: str
 
 class Agent(BaseModel):
     isActive: bool = True
