@@ -4,16 +4,16 @@ import React from 'react'
 interface ButtonPriceProps {
   title: string;
   priceId: string;
+  profile: any;
+  nickname: string;
 }
 
-export const ButtonPrice: React.FC<ButtonPriceProps> = ({ title, priceId }) => {
+export const ButtonPrice: React.FC<ButtonPriceProps> = ({ title, priceId, profile, nickname }) => {
   const handleClick = async () => {
-    console.log("Price ID:", priceId);
-
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ priceId, customer_id: profile.stripe_customer_id, user_id: profile.user_id, api_key: profile.api_key, nickname: nickname }),
         headers: {
           'Content-Type': 'application/json'
         }
@@ -22,9 +22,8 @@ export const ButtonPrice: React.FC<ButtonPriceProps> = ({ title, priceId }) => {
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
-
       const data = await res.json();
-      window.location.href = data.url
+      window.open(data.url, '_blank');
     } catch (error) {
       console.error("Fetch error:", error);
     }

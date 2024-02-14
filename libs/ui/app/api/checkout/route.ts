@@ -3,7 +3,6 @@ import Stripe from 'stripe';
 
 export async function POST(request: Request) {
     const res = await request.json()
-
     const stripeSecretKey = process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY;
     if (!stripeSecretKey) {
       throw new Error('The Stripe secret key is not defined in the environment variables.');
@@ -14,6 +13,12 @@ export async function POST(request: Request) {
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
+    metadata: {
+      user_customer_id: res.customer_id,
+      user_id: res.user_id,
+      api_key: res.api_key,
+      nickname: res.nickname
+    },
     payment_method_types: ["card"],
     line_items: [
       {
