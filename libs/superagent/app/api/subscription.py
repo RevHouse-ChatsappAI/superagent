@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.api import get_current_api_user
 from app.utils.prisma import prisma
+from prisma.errors import TransactionError
 
 from app.models.request import ApiPayment as ApiPaymentRequest
-
 from app.models.response import GetPyment as GetPaymentResponse
-
 
 router = APIRouter()
 
@@ -16,21 +15,52 @@ router = APIRouter()
     response_model=GetPaymentResponse,
 )
 async def create(body: ApiPaymentRequest, api_user=Depends(get_current_api_user)):
-    # Crear un nuevo pago en la base de datos
+    valid_tiers = ["BASE", "STANDARD", "PREMIUM"]
+    tier_name = body.nickname.upper()
+    if tier_name not in valid_tiers:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Tier name must be one of {valid_tiers}."
+        )
+
+    tier_record = await prisma.tiercredit.find_unique(
+        where={'tier': tier_name}
+    )
+    if not tier_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid tier name provided."
+        )
+
+    credits = tier_record.credits
+
+    payment_data = {
+        'apiUserId': api_user.id,
+        'stripeCustomerId': body.user_customer_id,
+        'tier': tier_name
+    }
+
+    credit_data = {
+        'apiUserId': api_user.id,
+        'credits': credits,
+        'subscriptionId': None
+    }
+
     try:
-        payment_data = {
-          'apiUserId': api_user.id,
-          'stripeCustomerId': body.user_customer_id,
-          'tier': body.nickname
-        }
-        await prisma.subscription.create(data=payment_data)
-        response_data = {
-            'success': True,
-            'message': "El pago fue exitoso"
-        }
-        return GetPaymentResponse(**response_data)
+        subscription = await prisma.subscription.create(data=payment_data)
+        credit_data['subscriptionId'] = subscription.id
+        await prisma.credit.create(data=credit_data)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+    response_data = {
+        'success': True,
+        'message': "El pago y los créditos se han guardado correctamente",
+    }
+    return GetPaymentResponse(**response_data)
 
 @router.get(
     "/payment",

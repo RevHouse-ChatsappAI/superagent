@@ -93,6 +93,7 @@ model ApiUser {
   vectorDb    VectorDb[]
   tokens Token[]
   subscriptions Subscription[]
+  credits Credit[]
 }
 
 model Agent {
@@ -257,7 +258,27 @@ model Subscription {
   tier           String   @default("BASE")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  credits Credit[]
 
   @@unique([apiUserId])
 }
 
+model Credit {
+  id            String       @id @default(uuid())
+  apiUserId     String
+  apiUser       ApiUser      @relation(fields: [apiUserId], references: [id])
+  subscription  Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  credits       Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([apiUserId, subscriptionId])
+}
+
+model TierCredit {
+  tier       String   @id
+  credits    Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
