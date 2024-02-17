@@ -205,22 +205,27 @@ async def invoke(
 ):
     """Endpoint for invoking an agent"""
     try:
-        count_entry = await prisma.count.find_unique(where={"agentId": agent_id})
+        credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
+        if not credit_entry:
+            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+        available_credits = credit_entry.credits
+        count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
         if count_entry:
             new_count = count_entry.queryCount + 1
-            if new_count > 40:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de consultas.")
+            if new_count > available_credits:
+                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
             await prisma.count.update(
-                where={"agentId": agent_id},
+                where={"apiUserId": api_user.id},
                 data={"queryCount": new_count}
             )
         else:
-            new_count = 1
+            if available_credits <= 0:
+                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
             await prisma.count.create(
-                data={"agentId": agent_id, "queryCount": new_count}
+                data={"apiUserId": api_user.id, "queryCount": 1}
             )
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        handle_exception(e)
 
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")

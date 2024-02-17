@@ -94,6 +94,7 @@ model ApiUser {
   tokens Token[]
   subscriptions Subscription[]
   credits Credit[]
+  counts Count[]
 }
 
 model Agent {
@@ -113,7 +114,6 @@ model Agent {
   datasources    AgentDatasource[]
   tools          AgentTool[]
   workflowSteps  WorkflowStep[]
-  count Count?
 }
 
 model Datasource {
@@ -228,14 +228,14 @@ model VectorDb {
 }
 
 model Count {
-  id        String   @id @default(uuid())
-  agentId   String
-  agent     Agent    @relation(fields: [agentId], references: [id])
-  queryCount Int     @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  apiUserId   String
+  apiUser     ApiUser  @relation(fields: [apiUserId], references: [id])
+  queryCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@unique([agentId])
+  @@unique([apiUserId])
 }
 
 model Token {
