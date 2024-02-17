@@ -3,8 +3,8 @@ import React from "react"
 export const ChatsAppLogoAI = () => {
   return (
     <svg
-      width="50"
-      height="32"
+      width="60"
+      height="38"
       viewBox="0 0 50 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -61,3 +61,4 @@ export const ChatsAppLogoAI = () => {
     </svg>
   )
 }
+

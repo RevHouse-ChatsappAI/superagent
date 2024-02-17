@@ -6,8 +6,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { FiExternalLink, FiMenu } from "react-icons/fi"
+import { TbPremiumRights } from "react-icons/tb"
 import { useAsync } from "react-use"
-import { TbPremiumRights } from "react-icons/tb";
 
 import {
   apiBaseNav,
@@ -17,8 +17,8 @@ import {
 } from "@/config/aside"
 
 import { ChatsAppAI } from "./svg/ChatsAppAI"
-import { ButtonSidebar } from "./ui/buttonSidebar"
 import { ChatsAppLogoAI } from "./svg/ChatsAppLogoAI"
+import { ButtonSidebar } from "./ui/buttonSidebar"
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true)
@@ -41,10 +41,12 @@ export default function Sidebar() {
         !session && "hidden"
       }`}
     >
-      <div className={`flex flex-col ${isCollapsed ? "gap-4" : "gap-2"} 2xl:gap-8`}>
+      <div
+        className={`flex flex-col ${isCollapsed ? "gap-7" : "gap-2"} 2xl:gap-8`}
+      >
         <div
           onClick={toggleSidebar}
-          className="flex cursor-pointer items-center justify-center border-b-2 px-2"
+          className="flex cursor-pointer items-center justify-center border-b-2 p-2"
         >
           {isCollapsed ? <ChatsAppLogoAI /> : <ChatsAppAI />}
         </div>
@@ -53,7 +55,11 @@ export default function Sidebar() {
             isCollapsed ? "items-center" : "items-start"
           } px-2`}
         >
-          {!isCollapsed && <h2 className="px-2 text-xs dark:text-gray-300">{workspaceNav.title}</h2>}
+          {!isCollapsed && (
+            <h2 className="px-2 text-xs dark:text-gray-300">
+              {workspaceNav.title}
+            </h2>
+          )}
           {workspaceNav.items.map((navItem) => (
             <NextLink
               href={navItem.href}
@@ -63,14 +69,23 @@ export default function Sidebar() {
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
+                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
               >
-                <navItem.icon className={`${isCollapsed ? "text-lg" : "text-sm"}`} />
-                {!isCollapsed && (
-                  <span className="text-xs">{navItem.title}</span>
-                )}
-                {navItem.title === "CRM" && !isCollapsed && (
-                  <FiExternalLink className="text-xs 2xl:text-lg" />
+                <div className="flex items-center justify-center">
+                  <navItem.icon
+                    className={`${isCollapsed ? "text-lg" : "text-sm"}`}
+                  />
+                  {!isCollapsed && (
+                    <span className="ml-2 text-xs">{navItem.title}</span>
+                  )}
+                  {navItem.title === "CRM" && !isCollapsed && (
+                    <FiExternalLink className="ml-1 text-xs 2xl:text-lg" />
+                  )}
+                </div>
+                {isCollapsed && (
+                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                    {navItem.title}
+                  </span>
                 )}
               </ButtonSidebar>
             </NextLink>
@@ -81,17 +96,30 @@ export default function Sidebar() {
             isCollapsed ? "items-center" : "items-start"
           } px-2`}
         >
-          {!isCollapsed && <h2 className="px-2 text-xs dark:text-gray-300">{knowledgeBaseNav.title}</h2>}
+          {!isCollapsed && (
+            <h2 className="px-2 text-xs dark:text-gray-300">
+              {knowledgeBaseNav.title}
+            </h2>
+          )}
           {knowledgeBaseNav.items.map((navItem) => (
             <NextLink href={navItem.href} key={navItem.title}>
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="flex h-8 w-full items-center justify-center bg-transparent px-3 dark:text-white"
+                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
               >
-                <navItem.icon className={`mr-2 ${isCollapsed ? "text-lg" : "text-sm"}`} />
-                {!isCollapsed && (
-                  <span className="text-xs">{navItem.title}</span>
+                <div className="flex items-center justify-center">
+                  <navItem.icon
+                    className={`${isCollapsed ? "text-lg" : "text-sm"}`}
+                  />
+                  {!isCollapsed && (
+                    <span className="ml-2 text-xs">{navItem.title}</span>
+                  )}
+                </div>
+                {isCollapsed && (
+                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                    {navItem.title}
+                  </span>
                 )}
               </ButtonSidebar>
             </NextLink>
@@ -102,17 +130,33 @@ export default function Sidebar() {
             isCollapsed ? "items-center" : "items-start"
           } px-2`}
         >
-          {!isCollapsed && <h2 className="px-2 text-xs dark:text-gray-300">{apiBaseNav.title}</h2>}
+          {!isCollapsed && (
+            <h2 className="px-2 text-xs dark:text-gray-300">
+              {apiBaseNav.title}
+            </h2>
+          )}
           {apiBaseNav.items.map((navItem) => (
             <NextLink href={navItem.href} key={navItem.title}>
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="flex h-8 w-full items-center justify-center bg-transparent px-3 dark:text-white"
+                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
               >
-                <navItem.icon className={`mr-2 ${isCollapsed ? "text-lg" : "text-sm"}`} />
-                {!isCollapsed && (
-                  <span className="text-xs">{navItem.title}</span>
+                <div className="flex items-center justify-center">
+                  <navItem.icon
+                    className={`${isCollapsed ? "text-lg" : "text-sm"}`}
+                  />
+                  {!isCollapsed && (
+                    <span className="ml-2 text-xs">{navItem.title}</span>
+                  )}
+                  {navItem.title === "CRM" && !isCollapsed && (
+                    <FiExternalLink className="ml-1 text-xs 2xl:text-lg" />
+                  )}
+                </div>
+                {isCollapsed && (
+                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                    {navItem.title}
+                  </span>
                 )}
               </ButtonSidebar>
             </NextLink>
@@ -131,7 +175,9 @@ export default function Sidebar() {
               <p className="text-xs dark:text-gray-300">Mensajes sobrantes</p>
               <span className="text-xs 2xl:text-base">1000</span>
             </div>
-            <button className="text-start text-xs text-green-500 2xl:text-base">Manejar plan</button>
+            <button className="text-start text-xs text-green-500 2xl:text-base">
+              Manejar plan
+            </button>
           </div>
         </div>
       )}
@@ -139,17 +185,35 @@ export default function Sidebar() {
         className={`flex flex-col ${
           isCollapsed ? "items-center" : "items-start"
         } px-2`}
-        >
-        {!isCollapsed && <h2 className="px-1 text-xs dark:text-gray-300">{helpBaseNav.title}</h2>}
+      >
+        {!isCollapsed && (
+          <h2 className="px-1 text-xs dark:text-gray-300">
+            {helpBaseNav.title}
+          </h2>
+        )}
         {helpBaseNav.items.map((navItem) => (
           <NextLink href={navItem.href} key={navItem.title}>
             <ButtonSidebar
               variant={pathname.includes(navItem.href) ? "active" : "ghost"}
               size="icon"
-              className="flex h-8 w-full items-center justify-center gap-2 bg-transparent px-2 dark:text-white"
+              className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-2 dark:text-white"
             >
-              <navItem.icon className={`${isCollapsed ? "text-lg" : "text-sm"}`} />
-              {!isCollapsed && <span className="text-xs">{navItem.title}</span>}
+              <div className="flex items-center justify-center">
+                <navItem.icon
+                  className={`${isCollapsed ? "text-lg" : "text-sm"}`}
+                />
+                {!isCollapsed && (
+                  <span className="ml-2 text-xs">{navItem.title}</span>
+                )}
+                {navItem.title === "CRM" && !isCollapsed && (
+                  <FiExternalLink className="ml-1 text-xs 2xl:text-lg" />
+                )}
+              </div>
+              {isCollapsed && (
+                <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                  {navItem.title}
+                </span>
+              )}
             </ButtonSidebar>
           </NextLink>
         ))}
