@@ -27,7 +27,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
     try {
       //Agent Bot Details
       const agent_bot_name = account
-      const agent_bot_description = "Agent Bot By SuperAgent"
+      const agent_bot_description = "Agent Bot By ChatsAppAI"
       const agent_bot_url = `${process.env.NEXT_PUBLIC_SUPERAGENT_API_URL}/webhook/${apiAgent}/chatwoot`
 
       //Create bot agent chatwoot

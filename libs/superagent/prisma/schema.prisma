@@ -228,12 +228,14 @@ model VectorDb {
 }
 
 model Count {
-  id          String   @id @default(uuid())
-  apiUserId   String
-  apiUser     ApiUser  @relation(fields: [apiUserId], references: [id])
-  queryCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(uuid())
+  apiUserId      String
+  apiUser        ApiUser  @relation(fields: [apiUserId], references: [id])
+  queryCount     Int      @default(0)
+  agentCount     Int      @default(0)
+  datasourceCount Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([apiUserId])
 }
@@ -277,8 +279,10 @@ model Credit {
 }
 
 model TierCredit {
-  tier       String   @id
-  credits    Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  tier          String   @id
+  credits       Int
+  agentLimit    Int      @default(1)
+  datasourceLimit Int    @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

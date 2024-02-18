@@ -72,8 +72,21 @@ logging.basicConfig(level=logging.INFO)
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
     try:
-        if SEGMENT_WRITE_KEY:
-            analytics.track(api_user.id, "Created Agent", {**body.dict()})
+        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        if subscription is None:
+            raise HTTPException(status_code=404, detail="Subscription not found.")
+        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        if tier_credits is None:
+            raise HTTPException(status_code=404, detail="Tier credits not found.")
+        agent_limit = tier_credits.agentLimit
+        agent_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count.agentCount >= agent_limit:
+            raise HTTPException(status_code=400, detail="Agent limit reached.")
+        await prisma.count.update(
+            where={"apiUserId": api_user.id},
+            data={"agentCount": agent_count.agentCount + 1}
+        )
+
         agent = await prisma.agent.create(
             {**body.dict(), "apiUserId": api_user.id},
             include={
@@ -93,8 +106,11 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
         await prisma.agentllm.create({"agentId": agent.id, "llmId": llm.id})
         return {"success": True, "data": agent}
     except Exception as e:
-        handle_exception(e)
-
+        if "Agent limit reached" in str(e):
+            raise
+        else:
+            handle_exception(e)
+            return {"success": False, "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists."}
 
 @router.get(
     "/agents",
@@ -456,7 +472,6 @@ async def add_datasource(
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Added Agent Datasource")
-
         agent_datasource = await prisma.agentdatasource.find_unique(
             where={
                 "agentId_datasourceId": {

@@ -73,7 +73,7 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
   return (
     <div className="flex flex-1 flex-col">
       <h2 className="mb-4 text-sm text-gray-500">
-        Paso 3: Creación de Agente SuperAgent
+        Paso 3: Creación de Agente ChatsAppAI
       </h2>
       <form onSubmit={handleAddUserChatwoot} className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-4 px-3">

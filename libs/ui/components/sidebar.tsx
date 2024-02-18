@@ -83,7 +83,7 @@ export default function Sidebar() {
                   )}
                 </div>
                 {isCollapsed && (
-                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                  <span className="invisible absolute left-full top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
                     {navItem.title}
                   </span>
                 )}
@@ -117,7 +117,7 @@ export default function Sidebar() {
                   )}
                 </div>
                 {isCollapsed && (
-                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                  <span className="invisible absolute left-full top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
                     {navItem.title}
                   </span>
                 )}
@@ -154,7 +154,7 @@ export default function Sidebar() {
                   )}
                 </div>
                 {isCollapsed && (
-                  <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                  <span className="invisible absolute left-full top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
                     {navItem.title}
                   </span>
                 )}
@@ -196,7 +196,7 @@ export default function Sidebar() {
             <ButtonSidebar
               variant={pathname.includes(navItem.href) ? "active" : "ghost"}
               size="icon"
-              className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-2 dark:text-white"
+              className="group relative z-50 flex h-8 w-full items-center justify-center gap-2 bg-transparent px-2 dark:text-white"
             >
               <div className="flex items-center justify-center">
                 <navItem.icon
@@ -210,7 +210,7 @@ export default function Sidebar() {
                 )}
               </div>
               {isCollapsed && (
-                <span className="invisible absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
+                <span className="invisible absolute left-full top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded border-2 bg-black px-2 py-1 text-xs text-white shadow-lg group-hover:visible dark:bg-white dark:text-black">
                   {navItem.title}
                 </span>
               )}
