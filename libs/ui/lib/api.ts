@@ -140,6 +140,21 @@ export class Api {
     return this.fetchFromApi("/token")
   }
 
+  async getTokens() {
+    return this.fetchFromApi("/tokens")
+  }
+
+  async getSubscription(){
+    return this.fetchFromApi("/payment")
+  }
+
+  // async updateSelectUserAccountChatwoot() {
+  //   return this.fetchFromApi(`/token/userchatwoot`, {
+  //     method: "PATCH",
+  //     body: JSON.stringify(payload),
+  //   })
+  // }
+
   async getDatasources(
     searchParams: { take?: number; skip?: number } = { skip: 0, take: 50 }
   ) {

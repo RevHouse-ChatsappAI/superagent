@@ -38,7 +38,7 @@ export const CardIntegration = ({
         </div>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className="flex flex-col justify-center gap-2">
         <button
           disabled={disabled}
           onClick={() => eventClick(id)}
@@ -54,7 +54,7 @@ export const CardIntegration = ({
         {isTokenActive && (
           <button
             onClick={() => eventClick(id)}
-            className="flex flex-1 items-center gap-2 rounded-md bg-black px-4 py-2 transition-all hover:bg-slate-400"
+            className="flex flex-1 items-center justify-center gap-2 rounded-md bg-black px-4 py-2 transition-all hover:bg-slate-400"
           >
             <RxCommit />
             <span>Agregar otra conexión</span>

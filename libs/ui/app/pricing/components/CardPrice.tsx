@@ -3,6 +3,7 @@ import React from "react"
 
 import { ButtonPrice } from "./ButtonPrice"
 import { CalendarIcon } from "@/components/svg/CalendarIcon"
+import { Profile } from "@/types/profile"
 
 interface CardPriceProps {
   title: string
@@ -12,6 +13,7 @@ interface CardPriceProps {
   buttonLink: string
   priceId: string
   nickname: string
+  profile: Profile
 }
 
 export const CardPrice: React.FC<CardPriceProps> = ({
@@ -22,9 +24,10 @@ export const CardPrice: React.FC<CardPriceProps> = ({
   buttonLink,
   priceId,
   nickname,
+  profile
 }) => {
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col justify-between rounded-lg border border-gray-100 bg-white p-6 text-center text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+    <div className="mx-auto flex w-full max-w-lg flex-col justify-between rounded-lg border border-gray-100 bg-white p-6 text-start text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
       <div>
         <h3 className="mb-4 text-2xl font-semibold">{title}</h3>
         <p className="text-base font-light text-gray-500 dark:text-gray-400">
@@ -55,17 +58,7 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </ul>
       </div>
       <div className="flex flex-col gap-2">
-        {nickname !== "FREE" && (
-          <button
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
-          >
-            <CalendarIcon/>
-            <span>
-              Agendar una llamada
-            </span>
-          </button>
-        )}
-        <ButtonPrice priceId={priceId} title="Asignar Pago" />
+        <ButtonPrice nickname={nickname} profile={profile} priceId={priceId} title="Asignar Pago" />
       </div>
     </div>
   )

@@ -73,7 +73,7 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
   return (
     <div className="flex flex-1 flex-col">
       <h2 className="mb-4 text-sm text-gray-500">
-        Paso 3: Creación de Agente SuperAgent
+        Paso 3: Creación de Agente ChatsAppAI
       </h2>
       <form onSubmit={handleAddUserChatwoot} className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-4 px-3">
@@ -112,13 +112,13 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
             />
           </label>
         </div>
-        <div className={`flex items-center ${btnPrevActive ? 'justify-between' : 'justify-end'}`}>
+        <div className={`mt-3 flex items-center ${btnPrevActive ? 'justify-between' : 'justify-end'}`}>
           {
             btnPrevActive && <ButtonPrev title="Previo" prevStep={prevStep} />
           }
           <button
             type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white"
+            className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
             {loading ? "Cargando..." : "Crear Agent SuperAgent"}

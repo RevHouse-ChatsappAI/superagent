@@ -114,7 +114,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white transition-all hover:bg-blue-400"
+            className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
             {loading ? "Cargando Usuario..." : "Crear Usuario"}

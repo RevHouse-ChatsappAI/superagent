@@ -20,13 +20,20 @@ export default async function Pricing() {
         <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16">
           <div className="mx-auto mb-8 max-w-screen-md text-center lg:mb-12">
             <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-              SuperAgent Elite Membership
+              Simple, transparente, rentable.
             </h2>
-            <p className="mb-5 font-light text-gray-700 sm:text-xl dark:text-gray-400">
-            Con <span className="font-bold">SuperAgent Elite Membership</span> no solo mejoras tu eficiencia y organización, sino que también elevas tu experiencia de trabajo a un nivel superior. ¡Únete hoy y transforma tu manera de trabajar!
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="font-light text-gray-700 sm:text-xl dark:text-gray-400">
+                Sin burocracia📄. Sin costos sorpresa💸. Cancela cuando quieras
+                🏗️.
+              </p>
+              <span className="text-base font-bold text-gray-700 dark:text-gray-400">
+                *Si en 30 días no estas satisfecho con el servicio te devolvemos
+                tu dinero**Precios expresados en U$D*
+              </span>
+            </div>
           </div>
-          <DataTable />
+          <DataTable profile={profile} />
         </div>
       </section>
     </div>

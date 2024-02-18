@@ -80,14 +80,14 @@ const StepTwo = ({
           />
         </label>
         <div
-          className={`flex items-center ${
+          className={`mt-3 flex items-center ${
             btnPrevActive ? "justify-between" : "justify-end"
           }`}
         >
           {btnPrevActive && <ButtonPrev title="Previo" prevStep={prevStep} />}
           <button
             type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white"
+            className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
             {loading ? "Cargando..." : "Crear Cuenta"}

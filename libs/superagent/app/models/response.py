@@ -35,7 +35,9 @@ from prisma.models import (
 from prisma.models import (
     Token as ApiTokenModel,
 )
-
+from prisma.models import (
+    Subscription as ApiSubscriptionModel,
+)
 class ApiUser(BaseModel):
     success: bool
     data: Optional[ApiUserModel]
@@ -48,6 +50,15 @@ class GetToken(BaseModel):
     success: bool
     data: Optional[ApiTokenModel]
 
+class GetTokens(BaseModel):
+    success: bool
+    message: str
+    data: Optional[List[ApiTokenModel]]
+
+class GetPyment(BaseModel):
+    success: bool
+    message: str
+    data: Optional[ApiSubscriptionModel]
 
 class Agent(BaseModel):
     success: bool

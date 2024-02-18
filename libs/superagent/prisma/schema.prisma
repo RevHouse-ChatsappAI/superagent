@@ -92,6 +92,9 @@ model ApiUser {
   workflows   Workflow[]
   vectorDb    VectorDb[]
   tokens Token[]
+  subscriptions Subscription[]
+  credits Credit[]
+  counts Count[]
 }
 
 model Agent {
@@ -111,7 +114,6 @@ model Agent {
   datasources    AgentDatasource[]
   tools          AgentTool[]
   workflowSteps  WorkflowStep[]
-  count Count?
 }
 
 model Datasource {
@@ -226,24 +228,61 @@ model VectorDb {
 }
 
 model Count {
-  id        String   @id @default(uuid())
-  agentId   String
-  agent     Agent    @relation(fields: [agentId], references: [id])
-  queryCount Int     @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid())
+  apiUserId      String
+  apiUser        ApiUser  @relation(fields: [apiUserId], references: [id])
+  queryCount     Int      @default(0)
+  agentCount     Int      @default(0)
+  datasourceCount Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@unique([agentId])
+  @@unique([apiUserId])
 }
 
 model Token {
   id            String   @id @default(uuid())
   agentToken    String   @unique
-  userToken     String   @unique
+  userToken     String
   apiUserChatwoot String @unique
   apiUserId     String
   apiUser       ApiUser? @relation(fields: [apiUserId], references: [id])
   isAgentActive Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Subscription {
+  id             String   @id @default(uuid())
+  apiUserId      String
+  apiUser        ApiUser  @relation(fields: [apiUserId], references: [id])
+  stripeCustomerId String @unique
+  tier           String   @default("BASE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  credits Credit[]
+
+  @@unique([apiUserId])
+}
+
+model Credit {
+  id            String       @id @default(uuid())
+  apiUserId     String
+  apiUser       ApiUser      @relation(fields: [apiUserId], references: [id])
+  subscription  Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  credits       Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([apiUserId, subscriptionId])
+}
+
+model TierCredit {
+  tier          String   @id
+  credits       Int
+  agentLimit    Int      @default(1)
+  datasourceLimit Int    @default(1)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

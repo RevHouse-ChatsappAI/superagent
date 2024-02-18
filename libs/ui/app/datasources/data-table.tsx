@@ -461,7 +461,7 @@ export function DataTable<TData, TValue>({
                           <FormLabel>URL</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="E.g https://www.superagent.sh"
+                              placeholder="E.g https://www.chatsappai.sh"
                               {...field}
                             />
                           </FormControl>
@@ -480,7 +480,7 @@ export function DataTable<TData, TValue>({
                             <FormLabel>URLs</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="E.g https://github.com/homanp/superagent"
+                                placeholder="E.g chatsappai"
                                 {...field}
                               />
                             </FormControl>

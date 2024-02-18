@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { CardPrice } from './components/CardPrice'
 import Stripe from 'stripe';
 import { pricingFeatures } from '@/config/pricing';
+import { Profile } from '@/types/profile';
+import { CardScheduleLink } from './components/CardScheduleLink';
 
 
 async function loadPrices() {
@@ -11,13 +13,13 @@ async function loadPrices() {
   if (!stripeSecretKey) {
     throw new Error('Stripe secret key is undefined.');
   }
+  //Production
   const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2023-08-16'
   });
   const prices = await stripe.prices.list({
     product: 'prod_PQlBLHxNozr0nS'
   });
-  console.log(prices)
   const sortedPrices = prices.data.sort((a, b) => {
     const unitAmountA = a.unit_amount || 0;
     const unitAmountB = b.unit_amount || 0;
@@ -28,7 +30,7 @@ async function loadPrices() {
 }
 
 
-export const DataTable = () => {
+export const DataTable = ({profile}: {profile: Profile}) => {
   const [prices, setPrices] = useState<any[]>([]);
 
   useEffect(() => {
@@ -57,9 +59,11 @@ export const DataTable = () => {
             price={price.unit_amount ? `$${price.unit_amount / 100}` : 'Free'}
             features={getFeatures(price)}
             buttonLink='/signup'
+            profile={profile}
           />
         ))
       }
+      <CardScheduleLink/>
     </div>
   );
 };

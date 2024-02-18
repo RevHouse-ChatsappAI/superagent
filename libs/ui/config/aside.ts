@@ -1,4 +1,8 @@
 import { RxClock, RxColorWheel, RxCountdownTimer, RxFileText, RxGear, RxHome, RxPaperPlane, RxReader, RxRocket, RxShare2, RxStack } from "react-icons/rx";
+import { FiSend } from "react-icons/fi";
+import { IoCodeSlashOutline } from "react-icons/io5";
+import { CiCloudOn } from "react-icons/ci";
+import { CiHeadphones } from "react-icons/ci";
 
 export const workspaceNav = {
   title: "Espacio de trabajo",
@@ -10,25 +14,15 @@ export const workspaceNav = {
       icon: RxHome,
     },
     {
-      title: "Configuración",
-      href: "/settings",
-      icon: RxGear,
-    },
-    {
       title: "Agentes de IA",
       href: "/agents",
       icon: RxColorWheel,
     },
     {
-      title: "Automatizaciones",
-      href: "/workflows",
-      icon: RxCountdownTimer,
-    },
-    {
-      title: "Inbox",
-      href: "/settings  ",
-      icon: RxShare2,
-    },
+      title: "CRM",
+      href: "https://app.chatsappai.com/",
+      icon: FiSend,
+    }
   ],
 };
 
@@ -57,12 +51,12 @@ export const apiBaseNav = {
     {
       title: "APIs",
       href: "/apis",
-      icon: RxClock,
+      icon: CiCloudOn,
     },
     {
       title: "Plataformas",
       href: "/integration",
-      icon: RxRocket,
+      icon: IoCodeSlashOutline,
     },
   ],
 };
@@ -72,19 +66,14 @@ export const helpBaseNav = {
   description: "Obtener Ayuda",
   items: [
     {
-      title: "Tutoriales",
-      href: "/datasources",
-      icon: RxFileText,
-    },
-    {
-      title: "Documentacion",
-      href: "/faqs",
-      icon: RxFileText,
-    },
-    {
       title: "Soporte",
       href: "/faqs",
-      icon: RxPaperPlane,
+      icon: CiHeadphones,
+    },
+    {
+      title: "Configuración",
+      href: "/settings",
+      icon: RxGear,
     },
   ],
 };

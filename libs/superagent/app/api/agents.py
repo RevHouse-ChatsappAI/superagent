@@ -72,8 +72,21 @@ logging.basicConfig(level=logging.INFO)
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
     try:
-        if SEGMENT_WRITE_KEY:
-            analytics.track(api_user.id, "Created Agent", {**body.dict()})
+        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        if subscription is None:
+            raise HTTPException(status_code=404, detail="Subscription not found.")
+        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        if tier_credits is None:
+            raise HTTPException(status_code=404, detail="Tier credits not found.")
+        agent_limit = tier_credits.agentLimit
+        agent_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count.agentCount >= agent_limit:
+            raise HTTPException(status_code=400, detail="Agent limit reached.")
+        await prisma.count.update(
+            where={"apiUserId": api_user.id},
+            data={"agentCount": agent_count.agentCount + 1}
+        )
+
         agent = await prisma.agent.create(
             {**body.dict(), "apiUserId": api_user.id},
             include={
@@ -93,8 +106,11 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
         await prisma.agentllm.create({"agentId": agent.id, "llmId": llm.id})
         return {"success": True, "data": agent}
     except Exception as e:
-        handle_exception(e)
-
+        if "Agent limit reached" in str(e):
+            raise
+        else:
+            handle_exception(e)
+            return {"success": False, "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists."}
 
 @router.get(
     "/agents",
@@ -205,22 +221,27 @@ async def invoke(
 ):
     """Endpoint for invoking an agent"""
     try:
-        count_entry = await prisma.count.find_unique(where={"agentId": agent_id})
+        credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
+        if not credit_entry:
+            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+        available_credits = credit_entry.credits
+        count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
         if count_entry:
             new_count = count_entry.queryCount + 1
-            if new_count > 40:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de consultas.")
+            if new_count > available_credits:
+                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
             await prisma.count.update(
-                where={"agentId": agent_id},
+                where={"apiUserId": api_user.id},
                 data={"queryCount": new_count}
             )
         else:
-            new_count = 1
+            if available_credits <= 0:
+                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
             await prisma.count.create(
-                data={"agentId": agent_id, "queryCount": new_count}
+                data={"apiUserId": api_user.id, "queryCount": 1}
             )
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        handle_exception(e)
 
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
@@ -451,7 +472,6 @@ async def add_datasource(
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Added Agent Datasource")
-
         agent_datasource = await prisma.agentdatasource.find_unique(
             where={
                 "agentId_datasourceId": {
@@ -567,6 +587,7 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     content = body.get("content")
     conversation_id = body.get("conversation", {}).get("id")
     message_type = body.get("message_type")
+    print(conversation_id)
     # Process only incoming messages (messages from clients)
     if message_type != "incoming":
         logging.info("Ignoring non-client message")

@@ -80,7 +80,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
 
           if (response.success && response.data) {
             setTokenActive(true)
-            setToken(response.data.userToken)
+            setToken(response?.data?.userToken)
             // setAccountId(response.data.userProfileChatwoot)
             const apiChatwoot = new ApiChatwoot(response.data.userToken)
 

@@ -55,11 +55,11 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center justify-center">
       {loading ? (
         <Spinner />
       ) : (
-        <div>
+        <div className="flex flex-col items-center justify-center gap-3">
           {success && (
             <div className="flex flex-col gap-9">
               <h2 className="text-center text-lg text-green-500">Creación Exitosa!</h2>
