@@ -28,14 +28,14 @@ export async function middleware(req: NextRequest) {
     }
     // Check if the user has a subscription, redirect to pricing if not
     try {
-      const api = new Api(profile.api_key)
-      const subscription = await api.getSubscription()
-      if (!subscription.success) {
-        // To prevent an infinite loop, check if the current path is already /pricing before redirecting
-        if (req.nextUrl.pathname !== "/pricing") {
-          return NextResponse.redirect(new URL("/pricing", req.url))
-        }
-      }
+      // const api = new Api(profile.api_key)
+      // const subscription = await api.getSubscription()
+      // if (!subscription.success) {
+      //   // To prevent an infinite loop, check if the current path is already /pricing before redirecting
+      //   if (req.nextUrl.pathname !== "/pricing") {
+      //     return NextResponse.redirect(new URL("/pricing", req.url))
+      //   }
+      // }
     } catch (error) {
       console.error("Failed to check user subscription:", error)
       // Handle error appropriately, potentially redirect to an error page or display a message
