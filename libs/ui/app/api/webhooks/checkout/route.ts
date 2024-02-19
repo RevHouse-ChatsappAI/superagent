@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-const secret = process.env.STRIPE_WEBHOOK_SECRET ?? ''
+const secret = process.env.STRIPE_WEBHOOK_SECRET
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
 const stripe = new Stripe(stripeSecretKey as string, {
@@ -43,6 +43,20 @@ async function handleCheckoutSession(session: any) {
 
 export async function POST(req: Request) {
   if (!stripeSecretKey) {
+    const errorMessage = 'The Stripe secret key is not defined in the environment variables.';
+    console.error(errorMessage);
+    return new NextResponse(JSON.stringify({
+      message: errorMessage,
+      ok: false,
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  if(!secret){
     const errorMessage = 'The Stripe secret key is not defined in the environment variables.';
     console.error(errorMessage);
     return new NextResponse(JSON.stringify({
