@@ -108,10 +108,11 @@ export default function IndexPage() {
         </form>
       </Form>
       <p className="my-6 text-center uppercase">Or continue with</p>
-      <div className="flex flex-col gap-5">
+      {/* TODO: Enable to Login */}
+      {/* <div className="flex flex-col gap-5">
         <ButtonAuth className="flex items-center gap-3"><GoogleIcon/> <span>Sign In with Google</span></ButtonAuth>
         <ButtonAuth className="flex items-center gap-3"><MicrosoftIcon/> <span>Sign In with Microsoft</span></ButtonAuth>
-      </div>
+      </div> */}
       <p className="mx-auto w-[60%] justify-center text-center text-xs text-gray-300">
         By clicking continue, you agree to our Terms of Service and Privacy
         Policy.
