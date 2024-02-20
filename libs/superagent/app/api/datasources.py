@@ -37,21 +37,21 @@ async def create(
 ):
     """Endpoint for creating an datasource"""
     try:
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
-        if subscription is None:
-            raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
-        if tier_credits is None:
-            raise HTTPException(status_code=404, detail="Tier credits not found.")
-        datasource_limit = tier_credits.datasourceLimit
-        datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        if datasource_count.datasourceCount >= datasource_limit:
-            raise HTTPException(status_code=400, detail="Datasource limit reached for your tier.")
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"datasourceCount": datasource_count.datasourceCount + 1}
-        )
-        vector_db = None
+        # subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        # if subscription is None:
+        #     raise HTTPException(status_code=404, detail="Subscription not found.")
+        # tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        # if tier_credits is None:
+        #     raise HTTPException(status_code=404, detail="Tier credits not found.")
+        # datasource_limit = tier_credits.datasourceLimit
+        # datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        # if datasource_count.datasourceCount >= datasource_limit:
+        #     raise HTTPException(status_code=400, detail="Datasource limit reached for your tier.")
+        # await prisma.count.update(
+        #     where={"apiUserId": api_user.id},
+        #     data={"datasourceCount": datasource_count.datasourceCount + 1}
+        # )
+        # vector_db = None
 
         if body.vectorDbId is not None:
             vector_db = await prisma.vectordb.find_first(
