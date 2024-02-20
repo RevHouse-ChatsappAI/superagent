@@ -17,6 +17,10 @@ async function loadPrices() {
   const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2023-08-16'
   });
+  // Production
+  // const prices = await stripe.prices.list({
+  //   product: 'prod_PQlBLHxNozr0nS'
+  // });
   const prices = await stripe.prices.list();
   const sortedPrices = prices.data.sort((a, b) => {
     const unitAmountA = a.unit_amount || 0;
