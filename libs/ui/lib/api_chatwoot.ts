@@ -123,7 +123,7 @@ export class ApiChatwootPlatform {
           //TODO: Save enviroment Develop/Cloud
           // Localhost: AceQA5vCC5Cn9PVrTYkwyuyA
           //Cloud: eh2iJ7QoiBRxZSRAp59f19c1
-          'api_access_token': 'AceQA5vCC5Cn9PVrTYkwyuyA',
+          'api_access_token': 'eh2iJ7QoiBRxZSRAp59f19c1',
           'Ocp-Apim-Subscription-Key': `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`
         },
       }
