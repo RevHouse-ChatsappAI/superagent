@@ -92,7 +92,10 @@ export default function IndexPage() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="Enter your email" {...field} />
+                  <Input
+                    placeholder="Ingresa tu correo electrónico"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,20 +105,35 @@ export default function IndexPage() {
             {form.control._formState.isSubmitting ? (
               <Spinner />
             ) : (
-              "Send password"
+              "Enviar contraseña"
             )}
           </Button>
         </form>
       </Form>
-      <p className="my-6 text-center uppercase">Or continue with</p>
+      <p className="my-6 text-center uppercase">O continuar con</p>
+      <div className="flex flex-col items-center justify-center">
+        <div className="mb-4 text-xl font-semibold">Próximamente</div>
+        <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
+            <GoogleIcon />
+          </div>
+          <div className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
+            <MicrosoftIcon />
+          </div>
+        </div>
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Estamos trabajando para traerte nuevas formas de conectarte. ¡Mantente
+          al tanto!
+        </p>
+      </div>
       {/* TODO: Enable to Login */}
       {/* <div className="flex flex-col gap-5">
         <ButtonAuth className="flex items-center gap-3"><GoogleIcon/> <span>Sign In with Google</span></ButtonAuth>
         <ButtonAuth className="flex items-center gap-3"><MicrosoftIcon/> <span>Sign In with Microsoft</span></ButtonAuth>
       </div> */}
-      <p className="mx-auto w-[60%] justify-center text-center text-xs text-gray-300">
-        By clicking continue, you agree to our Terms of Service and Privacy
-        Policy.
+      <p className="mx-auto justify-center text-xs dark:text-gray-300">
+        Al hacer click en continuar, aceptas nuestros Términos de Servicio y
+        Política de Privacidad.
       </p>
       <Toaster />
     </section>

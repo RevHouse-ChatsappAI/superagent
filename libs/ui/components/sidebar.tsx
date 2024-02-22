@@ -37,7 +37,7 @@ export default function Sidebar() {
     <div
       className={`dark:bg-white-100 flex h-full ${
         isCollapsed ? "w-[50px]" : "w-[200px]"
-      } flex-col justify-between space-y-3 rounded-r-2xl border-r bg-slate-50 pb-4 align-top ${
+      } flex-col justify-between space-y-3 rounded-r-2xl border-r bg-slate-100 pb-4 align-top ${
         !session && "hidden"
       }`}
     >
@@ -46,7 +46,7 @@ export default function Sidebar() {
       >
         <div
           onClick={toggleSidebar}
-          className="flex cursor-pointer items-center justify-center border-b-2 p-2"
+          className="flex cursor-pointer items-center justify-center rounded-tr-lg border-b-2 bg-gray-500 p-2 dark:bg-transparent"
         >
           {isCollapsed ? <ChatsAppLogoAI /> : <ChatsAppAI />}
         </div>
@@ -69,7 +69,11 @@ export default function Sidebar() {
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
+                className={`group relative flex h-8 w-full items-center justify-center gap-2 px-3 dark:text-white ${
+                  isCollapsed && pathname.includes(navItem.href)
+                    ? "bg-gray-200 dark:bg-gray-700"
+                    : "bg-transparent"
+                }`}
               >
                 <div className="flex items-center justify-center">
                   <navItem.icon
@@ -106,7 +110,11 @@ export default function Sidebar() {
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
+                className={`group relative flex h-8 w-full items-center justify-center gap-2 px-3 dark:text-white ${
+                  isCollapsed && pathname.includes(navItem.href)
+                    ? "bg-gray-200 dark:bg-gray-700"
+                    : "bg-transparent"
+                }`}
               >
                 <div className="flex items-center justify-center">
                   <navItem.icon
@@ -140,7 +148,11 @@ export default function Sidebar() {
               <ButtonSidebar
                 variant={pathname.includes(navItem.href) ? "active" : "ghost"}
                 size="icon"
-                className="group relative flex h-8 w-full items-center justify-center gap-2 bg-transparent px-3 dark:text-white"
+                className={`group relative flex h-8 w-full items-center justify-center gap-2 px-3 dark:text-white ${
+                  isCollapsed && pathname.includes(navItem.href)
+                    ? "bg-gray-200 dark:bg-gray-700"
+                    : "bg-transparent"
+                }`}
               >
                 <div className="flex items-center justify-center">
                   <navItem.icon
@@ -175,7 +187,7 @@ export default function Sidebar() {
               <p className="text-xs dark:text-gray-300">Mensajes sobrantes</p>
               <span className="text-xs 2xl:text-base">1000</span>
             </div>
-            <button className="text-start text-xs text-green-500 2xl:text-base">
+            <button className="text-start text-xs text-green-600 2xl:text-base dark:text-green-500">
               Manejar plan
             </button>
           </div>
@@ -196,7 +208,11 @@ export default function Sidebar() {
             <ButtonSidebar
               variant={pathname.includes(navItem.href) ? "active" : "ghost"}
               size="icon"
-              className="group relative z-50 flex h-8 w-full items-center justify-center gap-2 bg-transparent px-2 dark:text-white"
+              className={`group relative flex h-8 w-full items-center justify-center gap-2 px-3 dark:text-white ${
+                isCollapsed && pathname.includes(navItem.href)
+                  ? "bg-gray-200 dark:bg-gray-700"
+                  : "bg-transparent"
+              }`}
             >
               <div className="flex items-center justify-center">
                 <navItem.icon

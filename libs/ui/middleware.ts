@@ -56,6 +56,7 @@ export const config = {
     "/pricing",
     "/home",
     "/integration",
+    "/faqs",
     "/agents/:path*",
     "/settings/:path*",
     "/apis/:path*",
