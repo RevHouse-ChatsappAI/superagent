@@ -375,7 +375,7 @@ export function DataTable<TData, TValue>({
                         <div className="flex flex-col">
                           <AlertTitle>Github</AlertTitle>
                           <AlertDescription className="text-muted-foreground">
-                            Import a repository.
+                            Importar un repositorio.
                           </AlertDescription>
                         </div>
                         <Button
@@ -612,7 +612,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <div
-                  className="hover:bg-white-100 grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4"
+                  className="hover:dark:bg-white-100 grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 hover:bg-slate-200"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

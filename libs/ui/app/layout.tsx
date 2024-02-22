@@ -75,7 +75,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <div className="relative flex min-h-screen flex-col overflow-hidden">
                 <div className="flex flex-1">
-                  <div className="bg-white-100 flex w-1/2 flex-col justify-between border-r-2 border-white p-2 md:p-10">
+                  <div className="dark:bg-white-100 flex w-1/2 flex-col justify-between border-r-2 border-white bg-slate-400 p-2 md:p-10">
                     <ChatsAppAI/>
                     <p className="w-[80%]">“Los Agentes de IA nos ahorraron mas de 1000 horas de trabajo manual en solo un mes, una locura para una empresa como la nuestra.”Martin David</p>
                   </div>

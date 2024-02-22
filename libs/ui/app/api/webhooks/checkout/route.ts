@@ -1,14 +1,14 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-const secret = process.env.STRIPE_WEBHOOK_SECRET
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
-const stripe = new Stripe(stripeSecretKey as string, {
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-08-16",
 });
 
-async function handleCheckoutSession(session: any) {
+async function handleCheckoutSession(session: Stripe.Checkout.Session) {
   // Retrieve the checkout session with the payment intent, line items, and customer details expanded
   const checkoutSession = await stripe.checkout.sessions.retrieve(session.id, {
     expand: ['payment_intent', 'line_items', 'customer'],
@@ -21,15 +21,15 @@ async function handleCheckoutSession(session: any) {
   }
 
   // The following code has been rewritten to include additional information in the POST request to the backend
-  const metadataResponse = await fetch(superagentApiUrl + '/payment', {
+  const metadataResponse = await fetch(`${superagentApiUrl}/payment`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${checkoutSession?.metadata?.api_key}`,
+      'Authorization': `Bearer ${checkoutSession.metadata?.api_key}`,
     },
     body: JSON.stringify({
-      user_customer_id: checkoutSession?.metadata?.user_customer_id,
-      nickname: checkoutSession?.metadata?.nickname
+      user_customer_id: checkoutSession.metadata?.user_customer_id,
+      nickname: checkoutSession.metadata?.nickname
     }),
   });
 
@@ -42,60 +42,15 @@ async function handleCheckoutSession(session: any) {
 }
 
 export async function POST(req: Request) {
-  if (!stripeSecretKey) {
-    const errorMessage = 'The Stripe secret key is not defined in the environment variables.';
-    console.error(errorMessage);
-    return new NextResponse(JSON.stringify({
-      message: errorMessage,
-      ok: false,
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }
-
-  if(!secret){
-    const errorMessage = 'The Stripe secret key is not defined in the environment variables.';
-    console.error(errorMessage);
-    return new NextResponse(JSON.stringify({
-      message: errorMessage,
-      ok: false,
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }
-
-  const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: "2023-08-16",
-  });
 
   try {
     const body = await req.text();
-    const signature = req.headers.get("stripe-signature");
-
-    if (!signature) {
-      const errorMessage = "Missing Stripe signature.";
-      console.error(errorMessage);
-      return new NextResponse(JSON.stringify({
-        message: errorMessage,
-        ok: false,
-      }), {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-    }
+    const signature = headers().get("stripe-signature") ?? "";
 
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(body, signature, secret);
+      event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
     } catch (err: any) {
       return new NextResponse(JSON.stringify({
         message: `Webhook Error: ${err.message}`,
@@ -111,8 +66,8 @@ export async function POST(req: Request) {
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
-        const session = event.data.object as any;
-        handleCheckoutSession(session);
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutSession(session);
         break;
       // ... handle other event types
       default:
@@ -135,4 +90,3 @@ export async function POST(req: Request) {
     });
   }
 }
-

@@ -51,7 +51,8 @@ async def create(
         #     where={"apiUserId": api_user.id},
         #     data={"datasourceCount": datasource_count.datasourceCount + 1}
         # )
-        # vector_db = None
+
+        vector_db = None
 
         if body.vectorDbId is not None:
             vector_db = await prisma.vectordb.find_first(
