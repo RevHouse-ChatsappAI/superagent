@@ -1,11 +1,11 @@
-'use client'
 import React from "react"
 
-import { ButtonPrice } from "./ButtonPrice"
-import { CalendarIcon } from "@/components/svg/CalendarIcon"
+
 import { Profile } from "@/types/profile"
+import { ButtonPrice } from "@/components/ButtonPrice"
 
 interface CardPriceProps {
+  uiMode: string
   title: string
   description: string
   price: string | number
@@ -17,6 +17,7 @@ interface CardPriceProps {
 }
 
 export const CardPrice: React.FC<CardPriceProps> = ({
+  uiMode,
   title,
   description,
   price,
@@ -58,7 +59,7 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </ul>
       </div>
       <div className="flex flex-col gap-2">
-        <ButtonPrice nickname={nickname} profile={profile} priceId={priceId} title="Asignar Pago" />
+        <ButtonPrice uiMode="hosted" nickname={nickname} profile={profile} priceId={priceId} title="Asignar Pago" />
       </div>
     </div>
   )

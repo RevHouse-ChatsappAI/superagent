@@ -1,6 +1,14 @@
 import { cookies } from "next/headers"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Donate with hosted Checkout | Next.js + TypeScript Example",
+};
+
+
 import { DataTable } from "./data-table"
 
 export default async function Pricing() {
