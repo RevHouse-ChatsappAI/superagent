@@ -53,7 +53,7 @@ export const ButtonPrice: React.FC<ButtonPriceProps> = ({ uiMode, title, priceId
       onClick={formAction}
       disabled={loading}
     >
-      {loading ? 'Processing...' : title}
+      {loading ? 'Procesando...' : title}
     </button>
   );
 };
