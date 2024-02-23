@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 
 export const metadata: Metadata = {
-  title: "Donate with hosted Checkout | Next.js + TypeScript Example",
+  title: "ChatsAppAI - Subscripciones",
 };
 
 
