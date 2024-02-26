@@ -31,14 +31,11 @@ interface TabTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsTrig
   value: string;
 }
 
-const TabTrigger = React.forwardRef<HTMLDivElement, TabTriggerProps>(
+const TabTrigger = React.forwardRef<HTMLButtonElement, TabTriggerProps>(
   ({ className, value, ...props }, ref) => (
     <TabsTrigger
       ref={ref}
-      className={cn("font-inherit flex h-10 flex-1 select-none items-center justify-center px-4 text-sm leading-none data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-gray-900 dark:bg-black dark:text-white data-[state=active]:dark:border-b-2 data-[state=active]:dark:border-white data-[state=active]:dark:text-gray-500", className, {
-        "bg-white text-gray-500 hover:text-gray-600": props['data-state'] !== 'active',
-        "focus:z-10 focus:shadow-outline": true,
-      })}
+      className={cn("font-inherit flex h-10 flex-1 select-none items-center justify-center px-4 text-sm leading-none data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-gray-900 dark:bg-black dark:text-white data-[state=active]:dark:border-b-2 data-[state=active]:dark:border-white data-[state=active]:dark:text-gray-500", className)}
       value={value}
       {...props}
     />
