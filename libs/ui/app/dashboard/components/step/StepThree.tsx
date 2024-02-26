@@ -7,6 +7,7 @@ import { Api } from "@/lib/api"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
 import { ButtonPrev } from "../btn/ButtonPrev"
+import { Spinner } from "@/components/ui/spinner"
 
 interface StepOneProps {
   nextStep: () => void
@@ -72,13 +73,13 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-4 text-sm text-gray-500">
-        Paso 3: Creación de Agente ChatsAppAI
+      <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">
+        Creación de Agente ChatsAppAI
       </h2>
       <form onSubmit={handleAddUserChatwoot} className="flex flex-1 flex-col justify-between">
-        <div className="flex flex-col gap-4 px-3">
+        <div className="flex flex-col gap-4">
           <label className="flex w-full flex-col gap-1">
-            <p className="text-sm">Agent Name</p>
+            <p className="text-sm">Nombre del agente</p>
             <input
               type="text"
               name="name"
@@ -89,8 +90,8 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
                   name: e.target.value,
                 })
               }
-              className="w-full rounded-lg p-2"
-              placeholder="Eg: Agent Chatwoot"
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Ej: Asistente Carlos Carniceria"
               required
             />
           </label>
@@ -106,8 +107,8 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
                   description: e.target.value,
                 })
               }
-              className="w-full rounded-lg p-2"
-              placeholder="Eg: Chatwoot Description"
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Ej: Agente de soporte técnico para clientes VIP"
               required
             />
           </label>
@@ -121,7 +122,7 @@ const StepThree = ({ nextStep, prevStep, profile, btnPrevActive = true }: StepOn
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? "Cargando..." : "Crear Agent SuperAgent"}
+            {loading ? <Spinner/> : "Crear Agent SuperAgent"}
           </button>
         </div>
       </form>

@@ -29,29 +29,6 @@ export const Dashboard = <TData extends {}>({
         <Title title="Miembros del Equipo" value="1982" />
         <Title title="Agentes de IA" value={data.length} />
       </div>
-      <div className="flex items-center justify-center gap-5">
-        <Link
-          className="rounded-lg bg-white px-4 py-2 text-black"
-          href="agents"
-        >
-          ▶ Agentes de IA
-        </Link>
-        <Link
-          className="rounded-lg bg-white px-4 py-2 text-black"
-          href="datasource"
-        >
-          ℹ️ ️Bases de Datos
-        </Link>
-        <Link className="rounded-lg bg-white px-4 py-2 text-black" href="faqs">
-          ❓ FAQs
-        </Link>
-        <Link className="rounded-lg bg-white px-4 py-2 text-black" href="">
-          🔦 Funciones
-        </Link>
-        <Link className="rounded-lg bg-white px-4 py-2 text-black" href="">
-          📞 ️Conexiones
-        </Link>
-      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg border-2 p-7">

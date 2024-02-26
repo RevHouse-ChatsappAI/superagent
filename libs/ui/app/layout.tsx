@@ -1,5 +1,6 @@
 import "@/styles/globals.css"
-import 'animate.css';
+import "animate.css"
+
 import { Metadata } from "next"
 import { cookies } from "next/headers"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
@@ -7,10 +8,10 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import { ChatsAppAI } from "@/components/svg/ChatsAppAI"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import Container from "./container"
-import { ChatsAppAI } from "@/components/svg/ChatsAppAI"
 
 export const metadata: Metadata = {
   title: {
@@ -60,7 +61,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           </ThemeProvider>
         </body>
       </html>
-    );
+    )
   } else {
     return (
       <>
@@ -76,8 +77,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <div className="relative flex min-h-screen flex-col overflow-hidden">
                 <div className="flex flex-1">
                   <div className="dark:bg-white-100 flex w-1/2 flex-col justify-between border-r-2 border-white bg-slate-400 p-2 md:p-10">
-                    <ChatsAppAI/>
-                    <p className="w-[80%]">“Los Agentes de IA nos ahorraron mas de 1000 horas de trabajo manual en solo un mes, una locura para una empresa como la nuestra.”Martin David</p>
+                    <ChatsAppAI />
+                    <p className="w-[80%]">
+                      “Los Agentes de IA nos ahorraron mas de 1000 horas de
+                      trabajo manual en solo un mes, una locura para una empresa
+                      como la nuestra.”Martin David
+                    </p>
                   </div>
                   <div className="w-1/2">
                     <Container session={session}>{children}</Container>
@@ -88,6 +93,6 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           </body>
         </html>
       </>
-    );
+    )
   }
 }

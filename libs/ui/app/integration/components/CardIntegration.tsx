@@ -2,6 +2,21 @@ import React from "react"
 import { CiCircleCheck } from "react-icons/ci"
 import { RxCommit, RxCursorArrow } from "react-icons/rx"
 
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { PlusIcon } from "@/components/svg/PlusIcon"
+import { BtnConecctionChatsAppAI } from "./BtnConecctionChatsAppAI"
+import { Profile } from "@/types/profile"
+
 interface Props {
   children?: React.ReactNode
   title: string
@@ -12,6 +27,7 @@ interface Props {
   disabled?: boolean
   commingSoon?: boolean
   isTokenActive?: boolean
+  profile?: Profile
 }
 
 export const CardIntegration = ({
@@ -24,6 +40,7 @@ export const CardIntegration = ({
   disabled,
   commingSoon,
   isTokenActive,
+  profile
 }: Props) => {
   return (
     <div
@@ -43,22 +60,19 @@ export const CardIntegration = ({
           disabled={disabled}
           onClick={() => eventClick(id)}
           className={`flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 ${
-            disabled ? "cursor-not-allowed bg-slate-300 dark:bg-gray-400" : "bg-black"
+            disabled
+              ? "cursor-not-allowed bg-slate-300 dark:bg-gray-400"
+              : "bg-black"
           }`}
         >
-          {
-            disabled && !commingSoon ? <CiCircleCheck/> : <RxCursorArrow />
-          }
+          {disabled && !commingSoon ? <CiCircleCheck /> : <RxCursorArrow />}
           <span>{titleBtn ? titleBtn : "Conectar"}</span>
         </button>
         {isTokenActive && (
-          <button
-            onClick={() => eventClick(id)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-md bg-slate-300 px-4 py-2 transition-all hover:bg-slate-200 dark:bg-black hover:dark:bg-slate-400"
-          >
-            <RxCommit />
-            <span>Agregar otra conexión</span>
-          </button>
+          <BtnConecctionChatsAppAI
+          isTokenActive={isTokenActive}
+          profile={profile!}
+          />
         )}
       </div>
     </div>

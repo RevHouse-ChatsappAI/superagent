@@ -5,6 +5,7 @@ import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
 import { ButtonPrev } from "../btn/ButtonPrev"
+import { Spinner } from "@/components/ui/spinner"
 
 interface StepOneProps {
   nextStep: () => void
@@ -60,22 +61,22 @@ const StepTwo = ({
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-4 text-sm text-gray-400">
-        Paso 2: Creación de Cuenta en Chatwoot
+      <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">
+        Creación de Cuenta en Chatwoot
       </h2>
       <form
         onSubmit={handleAddUserChatwoot}
-        className="flex flex-1 flex-col justify-between px-3"
+        className="flex flex-1 flex-col justify-between"
       >
         <label className="flex w-full flex-col gap-1">
-          <p className="text-sm">Account: </p>
+          <p className="text-sm">Cuenta: </p>
           <input
             type="text"
             name="name"
             value={account}
             onChange={(e) => setAccount(e.target.value)}
-            className="w-full rounded-lg p-2"
-            placeholder="Eg: Account Company"
+            className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+            placeholder="Ej: Empresa Cuenta"
             required
           />
         </label>
@@ -90,7 +91,7 @@ const StepTwo = ({
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? "Cargando..." : "Crear Cuenta"}
+            {loading ? <Spinner/> : "Crear Cuenta"}
           </button>
         </div>
       </form>

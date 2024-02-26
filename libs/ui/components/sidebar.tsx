@@ -21,7 +21,7 @@ import { ChatsAppLogoAI } from "./svg/ChatsAppLogoAI"
 import { ButtonSidebar } from "./ui/buttonSidebar"
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const supabase = createClientComponentClient()
   const { value: session } = useAsync(async () => {
     const {

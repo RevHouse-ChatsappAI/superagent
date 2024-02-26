@@ -3,6 +3,7 @@ import React, { useState } from "react"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
+import { Spinner } from "@/components/ui/spinner"
 
 interface StepOneProps {
   nextStep: () => void
@@ -51,9 +52,9 @@ const StepOne = ({ nextStep }: StepOneProps) => {
   }
 
   return (
-    <div className="flex flex-1 flex-col px-2">
-      <h2 className="mb-4 text-sm font-bold text-gray-500">
-        Paso 1: Creación de Usuario en chatsappAI
+    <div className="flex flex-1 flex-col">
+      <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">
+        Creación de Usuario en chatsappAI
       </h2>
       <form
         onSubmit={handleAddUserChatwoot}
@@ -61,7 +62,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
       >
         <div className="flex flex-col gap-4">
           <label className="flex w-full flex-col">
-            <p className="text-sm">User name </p>
+            <p className="text-sm">Nombre de usuario</p>
             <input
               type="text"
               name="name"
@@ -72,13 +73,13 @@ const StepOne = ({ nextStep }: StepOneProps) => {
                   name: e.target.value,
                 })
               }
-              className="w-full rounded-lg p-2"
-              placeholder="Eg: Revhouse"
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Ej: Julian"
               required
             />
           </label>
           <label className="flex w-full flex-col gap-1">
-            <p className="text-sm">Email </p>
+            <p className="text-sm">Correo Electronico </p>
             <input
               type="email"
               name="email"
@@ -89,8 +90,8 @@ const StepOne = ({ nextStep }: StepOneProps) => {
                   email: e.target.value,
                 })
               }
-              className="w-full rounded-lg p-2"
-              placeholder="Eg: chatwoot@revhouse.com"
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Ej: usuario@ejemplo.com"
               required
             />
           </label>
@@ -107,7 +108,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
                   password: e.target.value,
                 })
               }
-              className="w-full rounded-lg p-2"
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
             />
           </label>
         </div>
@@ -117,7 +118,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? "Cargando Usuario..." : "Crear Usuario"}
+            {loading ? <Spinner/> : "Crear Usuario"}
           </button>
         </div>
       </form>

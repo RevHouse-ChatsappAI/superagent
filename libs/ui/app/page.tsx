@@ -55,7 +55,7 @@ export default function IndexPage() {
     }
 
     toast({
-      description: "🎉 Yay! Check your email for sign in link.",
+      description: "🎉 ¡Hurra! Revisa tu correo electrónico para el enlace de inicio de sesión.",
     })
   }
 
@@ -63,7 +63,7 @@ export default function IndexPage() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, _session) => {
         if (event === "SIGNED_IN") {
-          window.location.href = "/agents"
+          window.location.href = "/home"
         }
       }
     )
@@ -105,7 +105,7 @@ export default function IndexPage() {
             {form.control._formState.isSubmitting ? (
               <Spinner />
             ) : (
-              "Enviar contraseña"
+              "Ingresar"
             )}
           </Button>
         </form>
