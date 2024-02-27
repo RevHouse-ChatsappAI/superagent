@@ -38,7 +38,7 @@ import { useToast } from "@/components/ui/use-toast"
 import DeleteAgentButton from "./delete-agent-button"
 
 const baseUrl =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "production"
     ? "https://development.chatsappai.com"
     : "http://localhost:3000"
 
