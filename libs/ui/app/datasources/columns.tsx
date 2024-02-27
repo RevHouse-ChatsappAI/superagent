@@ -42,10 +42,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast, useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
-  nombre: z.string().nonempty({
+  name: z.string().nonempty({
     message: "El nombre es obligatorio",
   }),
-  descripcion: z.string().nonempty({
+  description: z.string().nonempty({
     message: "La descripción es obligatoria",
   }),
 })
