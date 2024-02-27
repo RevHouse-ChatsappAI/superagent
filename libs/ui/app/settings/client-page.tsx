@@ -68,9 +68,8 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
 
       return
     }
-
     toast({
-      description: `Settings have been saved!`,
+      description: `¡Los ajustes han sido guardados!`,
     })
   }
 

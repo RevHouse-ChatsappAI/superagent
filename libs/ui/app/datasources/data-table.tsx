@@ -52,8 +52,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { DataTablePagination } from "@/components/data-table-pagination"
-import { UploadButton } from "@/components/upload-button"
 import { PlusIcon } from "@/components/svg/PlusIcon"
+import { UploadButton } from "@/components/upload-button"
 
 interface DataTableProps<TData, TValue> {
   columns: (profile: Profile) => ColumnDef<TData, TValue>[]
@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({
         vectorDbId: vectorDbs[0]?.id,
       })
       toast({
-        description: "Datasource created successfully",
+        description: "Fuente de datos creada con éxito",
       })
       router.refresh()
       setOpen(false)
@@ -223,7 +223,7 @@ export function DataTable<TData, TValue>({
     const storageName = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_NAME
     if (!storageName) {
       throw new Error(
-        "Storage name is not defined in the environment variables."
+        "El nombre del almacenamiento no está definido en las variables de entorno."
       )
     }
     const { data, error } = await supabase.storage
@@ -244,7 +244,7 @@ export function DataTable<TData, TValue>({
 
     if (error) {
       toast({
-        description: "Ooops, something went wrong, please try again!",
+        description: "Vaya, algo salió mal, ¡intenta de nuevo!",
         variant: "destructive",
       })
     }
@@ -264,7 +264,7 @@ export function DataTable<TData, TValue>({
             <Spinner />
           ) : (
             <>
-              <PlusIcon/>
+              <PlusIcon />
               <span>Crear nueva fuente de datos</span>
             </>
           )}
@@ -287,9 +287,9 @@ export function DataTable<TData, TValue>({
                 className="w-full space-y-6"
               >
                 <DialogHeader>
-                  <DialogTitle>Create new datasource</DialogTitle>
+                  <DialogTitle>Crear nueva fuente de datos</DialogTitle>
                   <DialogDescription>
-                    Connect your to your custom datasources or files.
+                    Conecta a tus fuentes de datos o archivos personalizados.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -299,9 +299,11 @@ export function DataTable<TData, TValue>({
                       {process.env.NEXT_PUBLIC_APIDECK_API_ID && (
                         <Alert className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <AlertTitle>Cloud Storage Services</AlertTitle>
+                            <AlertTitle>
+                              Servicios de Almacenamiento en la Nube
+                            </AlertTitle>
                             <AlertDescription className="text-muted-foreground">
-                              Import from Google Drive, Dropbox, Box etc.
+                              Importa desde Google Drive, Dropbox, Box, etc.
                             </AlertDescription>
                           </div>
                           <Button
@@ -320,9 +322,9 @@ export function DataTable<TData, TValue>({
                       )}
                       <Alert className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <AlertTitle>Local files</AlertTitle>
+                          <AlertTitle>Archivos locales</AlertTitle>
                           <AlertDescription className="text-muted-foreground">
-                            Import local files.
+                            Importa archivos locales.
                           </AlertDescription>
                         </div>
                         <Button
@@ -339,7 +341,7 @@ export function DataTable<TData, TValue>({
                         <div className="flex flex-col">
                           <AlertTitle>YouTube</AlertTitle>
                           <AlertDescription className="text-muted-foreground">
-                            Import from YouTube
+                            Importar desde YouTube
                           </AlertDescription>
                         </div>
                         <Button
@@ -350,14 +352,14 @@ export function DataTable<TData, TValue>({
                             form.setValue("type", "YOUTUBE")
                           }}
                         >
-                          Import
+                          Importar
                         </Button>
                       </Alert>
                       <Alert className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <AlertTitle>Webpages</AlertTitle>
+                          <AlertTitle>Páginas web</AlertTitle>
                           <AlertDescription className="text-muted-foreground">
-                            Import from any webpage or URL.
+                            Importa desde cualquier página web o URL.
                           </AlertDescription>
                         </div>
                         <Button
@@ -368,7 +370,7 @@ export function DataTable<TData, TValue>({
                             form.setValue("type", "WEBPAGE")
                           }}
                         >
-                          Add webpage
+                          Añadir página web
                         </Button>
                       </Alert>
                       <Alert className="flex items-center justify-between">
@@ -386,18 +388,18 @@ export function DataTable<TData, TValue>({
                             form.setValue("type", "GITHUB_REPOSITORY")
                           }}
                         >
-                          Add repo
+                          Añadir repositorio
                         </Button>
                       </Alert>
                       <Alert className="flex items-center justify-between">
                         <div className="flex flex-col">
                           <AlertTitle>Apps</AlertTitle>
                           <AlertDescription className="text-muted-foreground">
-                            Connect third-party applications.
+                            Conectar aplicaciones de terceros.
                           </AlertDescription>
                         </div>
                         <Button variant="outline" size="sm">
-                          Coming soon
+                          Próximamente
                         </Button>
                       </Alert>
                     </div>
@@ -408,9 +410,9 @@ export function DataTable<TData, TValue>({
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Nombre</FormLabel>
                             <FormControl>
-                              <Input placeholder="E.g My API" {...field} />
+                              <Input placeholder="Ej. Mi API" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -421,10 +423,10 @@ export function DataTable<TData, TValue>({
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>Descripción</FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Useful for doing X..."
+                                placeholder="Útil para hacer X..."
                                 {...field}
                               />
                             </FormControl>
@@ -440,10 +442,10 @@ export function DataTable<TData, TValue>({
                       name="url"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>YouTube URL</FormLabel>
+                          <FormLabel>URL de YouTube</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="E.g https://www.youtube.com/watch?v=qhygOGPlC74"
+                              placeholder="Ej. https://www.youtube.com/watch?v=qhygOGPlC74"
                               {...field}
                             />
                           </FormControl>
@@ -461,7 +463,7 @@ export function DataTable<TData, TValue>({
                           <FormLabel>URL</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="E.g https://www.chatsappai.sh"
+                              placeholder="Ej. https://www.chatsappai.sh"
                               {...field}
                             />
                           </FormControl>
@@ -479,10 +481,7 @@ export function DataTable<TData, TValue>({
                           <FormItem>
                             <FormLabel>URLs</FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="E.g chatsappai"
-                                {...field}
-                              />
+                              <Input placeholder="Ej. chatsappai" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -493,9 +492,9 @@ export function DataTable<TData, TValue>({
                         name="metadata.branch"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Branch</FormLabel>
+                            <FormLabel>Rama</FormLabel>
                             <FormControl>
-                              <Input placeholder="E.g main" {...field} />
+                              <Input placeholder="Ej. main" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -508,14 +507,14 @@ export function DataTable<TData, TValue>({
                       {!selectedFile ? (
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
-                            <p className="text-sm">Select files</p>
+                            <p className="text-sm">Seleccionar archivos</p>
                             <p className="text-muted-foreground text-sm">
-                              Upload local files from your device
+                              Subir archivos locales desde tu dispositivo
                             </p>
                           </div>
                           <UploadButton
                             accept={supportedMimeTypes.join(",")}
-                            label="Upload file"
+                            label="Subir archivo"
                             onSelect={async (file) => {
                               handleLocalFileUpload(file)
                               setSelectedFile(file)
@@ -542,9 +541,9 @@ export function DataTable<TData, TValue>({
                       {!selectedFile ? (
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
-                            <p className="text-sm">Connect to your accounts</p>
+                            <p className="text-sm">Conectar a tus cuentas</p>
                             <p className="text-muted-foreground text-sm">
-                              Google Drive, Dropbox, Box etc.
+                              Google Drive, Dropbox, Box, etc.
                             </p>
                           </div>
                           <Button
@@ -552,7 +551,7 @@ export function DataTable<TData, TValue>({
                             onClick={() => openVault()}
                             variant="secondary"
                           >
-                            Select file
+                            Seleccionar archivo
                           </Button>
                         </div>
                       ) : (
@@ -578,7 +577,7 @@ export function DataTable<TData, TValue>({
                       isDownloadingFile ? (
                         <Spinner />
                       ) : (
-                        "Create datasource"
+                        "Crear fuente de datos"
                       )}
                     </Button>
                   </DialogFooter>
@@ -592,10 +591,16 @@ export function DataTable<TData, TValue>({
         <div>
           <div className="flex w-full">
             {table.getHeaderGroups().map((headerGroup) => (
-              <div className="grid flex-1 grid-cols-12 gap-4" key={headerGroup.id}>
+              <div
+                className="grid flex-1 grid-cols-12 gap-4"
+                key={headerGroup.id}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <div className="col-span-2 text-xs text-gray-400" key={header.id}>
+                    <div
+                      className="col-span-2 text-xs text-gray-400"
+                      key={header.id}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -629,7 +634,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  No datasources found.
+                  No se encontraron fuentes de datos.
                 </TableCell>
               </TableRow>
             )}

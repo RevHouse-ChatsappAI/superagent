@@ -15,16 +15,15 @@ const ApiKeysClientPage: React.FC<ApiKeysPageProps> = ({ profile }) => {
   const { toast } = useToast()
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profile.api_key)
-    toast({ description: "API key copied to clipboard" })
+    toast({ description: "Clave API copiada al portapapeles" })
   }
 
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex flex-col space-y-2">
         <p className="text-sm font-bold">API keys</p>
-        <p className="text-sm text-muted-foreground">
-          Use the following API key to connect to Superagent via the REST API or
-          SDK
+        <p className="text-muted-foreground text-sm">
+          Utilice la siguiente clave API para conectarse a Superagent a través de la API REST o el SDK
         </p>
       </div>
       <div className="flex w-full max-w-sm justify-between space-x-2">

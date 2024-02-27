@@ -84,19 +84,19 @@ export const siteConfig = {
   ],
   settingsNav: [
     {
-      title: "User",
+      title: "Usuario",
       href: "/settings",
     },
     {
-      title: "Api keys",
+      title: "Claves de API",
       href: "/settings/api-keys",
     },
     {
-      title: "Appearance",
+      title: "Apariencia",
       href: "/settings/appearance",
     },
     {
-      title: "Billing",
+      title: "Facturación",
       href: "/settings/billing",
       disabled: true,
     },

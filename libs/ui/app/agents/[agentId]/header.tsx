@@ -38,8 +38,8 @@ import { useToast } from "@/components/ui/use-toast"
 import DeleteAgentButton from "./delete-agent-button"
 
 const baseUrl =
-  process.env.NODE_ENV === "production"
-    ? "https://beta.superagent.sh"
+  process.env.NODE_ENV === "development"
+    ? "https://development.chatsappai.com"
     : "http://localhost:3000"
 
 export default function Header({
@@ -56,7 +56,7 @@ export default function Header({
   const handleDelete = async () => {
     await api.deleteAgentById(agent.id)
     toast({
-      description: `Agent with ID: ${agent.id} deleted!`,
+      description: `Agente con ID: ${agent.id} eliminado!`,
     })
     router.refresh()
     router.push("/agents")
@@ -65,15 +65,14 @@ export default function Header({
   const handleCopyIdToClipboard = () => {
     navigator.clipboard.writeText(agent.id)
     toast({
-      description: "Copied ID to clipboard",
+      description: "ID copiado al portapapeles",
     })
   }
 
-  const embedCode = `<!-- This can be placed anywhere -->
+  const embedCode = `<!-- Esto puede ser colocado en cualquier lugar -->
 <div id="superagent-chat"></div>
 
-<!-- This should be placed before the 
-closing </body> tag -->
+<!-- Esto debe ser colocado antes de la etiqueta de cierre </body> -->
 <script src="https://unpkg.com/superagent-chat-embed-v01/dist/web.js"></script>
 <script>
 Superagent({
@@ -99,18 +98,17 @@ Superagent({
             <DialogTrigger
               className={cn(buttonVariants({ variant: "default", size: "sm" }))}
             >
-              Share
+              Compartir
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Share or embed your agent</DialogTitle>
+                <DialogTitle>Compartir o incrustar tu agente</DialogTitle>
                 <DialogDescription>
-                  Share this agent with anyone or embed it into your
-                  application.
+                  Comparte este agente con cualquier persona o incústralo en tu aplicación.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col space-y-2">
-                <p className="font-bold">Share</p>
+                <p className="font-bold">Compartir</p>
                 <div className="flex justify-between space-x-2">
                   <Input
                     value={`${baseUrl}/share/${encodeToIdentifier(
@@ -129,21 +127,20 @@ Superagent({
                         )}`
                       )
                       toast({
-                        description: "Link copied to clipboard!",
+                        description: "Enlace copiado al portapapeles!",
                       })
                     }}
                   >
                     <RxCopy />
-                    <p>Copy</p>
+                    <p>Copiar</p>
                   </Button>
                 </div>
               </div>
               <Separator />
               <div className="flex flex-col space-y-2">
-                <p className="font-bold">Embed</p>
-                <p className="text-sm text-muted-foreground">
-                  Copy the following code and place it before the closing body
-                  tag. You can choose between inline or popup as options.
+                <p className="font-bold">Incrustar</p>
+                <p className="text-muted-foreground text-sm">
+                  Copia el siguiente código y colócalo antes de la etiqueta de cierre del cuerpo. Puedes elegir entre las opciones de incrustación en línea o emergente.
                 </p>
                 <div className="relative max-w-full font-mono text-sm">
                   <CodeBlock
