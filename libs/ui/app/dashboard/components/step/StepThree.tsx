@@ -90,7 +90,7 @@ const StepThree = ({
   const [modalActiveAgent, setModalActiveAgent] = useState(true)
 
   return (
-    <div className="flex flex-1 flex-col dark:bg-gray-800">
+    <div className="flex flex-1 flex-col">
       <button
         type="button"
         className="mb-4 rounded bg-gray-300 px-4 py-2 text-sm text-black transition-all hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
