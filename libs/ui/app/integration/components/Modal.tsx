@@ -94,7 +94,7 @@ export const Modal = ({
                     prevStep={prevStep}
                   />
                 )}
-                {currentStep === 2 && (
+                {currentStep === 1 && (
                   <StepThree
                     nextStep={nextStep}
                     prevStep={prevStep}

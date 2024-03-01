@@ -80,14 +80,14 @@ interface Tool {
 
 const formSchema = z.object({
   name: z.string().nonempty({
-    message: "Name is required",
+    message: "El nombre es requerido",
   }),
   description: z.string().nonempty({
-    message: "Description is required",
+    message: "La descripción es requerida",
   }),
   isActive: z.boolean().default(true),
   llmModel: z.string().nonempty({
-    message: "Model is required",
+    message: "El modelo es requerido",
   }),
   tools: z.array(z.string()),
   datasources: z.array(z.string()),
@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
       isActive: true,
       tools: [],
       datasources: [],
-      prompt: "You are an helpful AI Assistant",
+      prompt: "Eres un asistente de IA útil",
     },
   })
   const { value: llms = [] } = useAsync(async () => {
@@ -167,7 +167,7 @@ export function DataTable<TData, TValue>({
       }
 
       toast({
-        description: "New agent created!",
+        description: "¡Nuevo agente creado!",
       })
       router.refresh()
       router.push(`/agents/${agent.id}`)
@@ -190,7 +190,7 @@ export function DataTable<TData, TValue>({
             className={cn(buttonVariants({ variant: "default", size: "sm" })) + "flex gap-3 p-3 rounded-sm items-center mb-5"}
           >
             <PlusIcon/>
-            <p>Crear un nuevo Agente</p>
+            <p>Crear un nuevo agente</p>
           </DialogTrigger>
           <DialogContent>
             <Form {...form}>
@@ -199,23 +199,23 @@ export function DataTable<TData, TValue>({
                 className="w-full space-y-4"
               >
                 <DialogHeader>
-                  <DialogTitle>Create new agent</DialogTitle>
+                  <DialogTitle>Crear nuevo agente</DialogTitle>
                   <DialogDescription>
-                    Attach datasources and APIs to you agent to make it more
-                    powerful.
+                    Adjunta fuentes de datos y APIs a tu agente para hacerlo más
+                    poderoso.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col space-y-2">
                   {llms.length === 0 && (
                     <Alert className="flex justify-between">
                       <div className="flex flex-col">
-                        <AlertTitle>Heads up!</AlertTitle>
+                        <AlertTitle>¡Atención!</AlertTitle>
                         <AlertDescription className="text-gray-500">
-                          You haven&apos;t configured a LLM.
+                          No has configurado un LLM.
                         </AlertDescription>
                       </div>
                       <Link passHref href="/llms">
-                        <Button size="sm">Configure</Button>
+                        <Button size="sm">Configurar</Button>
                       </Link>
                     </Alert>
                   )}
@@ -224,9 +224,9 @@ export function DataTable<TData, TValue>({
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input placeholder="E.g My agent" {...field} />
+                          <Input placeholder="Por ejemplo, Mi agente" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -237,10 +237,10 @@ export function DataTable<TData, TValue>({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="E.g this agent is an expert at..."
+                            placeholder="Por ejemplo, este agente es experto en..."
                             {...field}
                           />
                         </FormControl>
@@ -257,7 +257,7 @@ export function DataTable<TData, TValue>({
                           <FormLabel>APIs</FormLabel>
                           <FormControl>
                             <MultiSelect
-                              placeholder="Select API..."
+                              placeholder="Selecciona una API..."
                               data={tools.map((tool: Tool) => ({
                                 value: tool.id,
                                 label: tool.name,
@@ -278,10 +278,10 @@ export function DataTable<TData, TValue>({
                       name="datasources"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Datasources</FormLabel>
+                          <FormLabel>Fuentes de datos</FormLabel>
                           <FormControl>
                             <MultiSelect
-                              placeholder="Select datasource..."
+                              placeholder="Selecciona una fuente de datos..."
                               data={datasources.map(
                                 (datasource: Datasource) => ({
                                   value: datasource.id,
@@ -309,7 +309,7 @@ export function DataTable<TData, TValue>({
                     {form.control._formState.isSubmitting ? (
                       <Spinner />
                     ) : (
-                      "Create agent"
+                      "Crear agente"
                     )}
                   </Button>
                 </DialogFooter>
@@ -359,7 +359,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <div className="flex w-full justify-center">
               <div className="h-24 w-full text-center">
-                No results.
+                Sin resultados.
               </div>
             </div>
           )}

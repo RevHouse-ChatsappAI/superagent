@@ -43,10 +43,10 @@ import { toast, useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   name: z.string().nonempty({
-    message: "Name is required",
+    message: "El nombre es obligatorio",
   }),
   description: z.string().nonempty({
-    message: "Description is required",
+    message: "La descripción es obligatoria",
   }),
 })
 
@@ -67,7 +67,7 @@ export function DeleteButton({ id, profile }: { id: string; profile: Profile }) 
     try {
       await api.deleteDatasource(id);
       toast({
-        description: "Datasource deleted successfully",
+        description: "Fuente de datos eliminada con éxito",
       });
       router.refresh();
     } catch (error: any) {
@@ -96,7 +96,7 @@ export function CopyButton({ id }: { id: string }) {
       onClick={() => {
         navigator.clipboard.writeText(id)
         toast({
-          description: "API id copied to clipboard",
+          description: "ID de API copiado al portapapeles",
         })
       }}
     >
@@ -130,7 +130,7 @@ export function EditTool({
         ...values,
       })
       toast({
-        description: "Datasouce updated successfully",
+        description: "Fuente de datos actualizada con éxito",
       })
       router.refresh()
     } catch (error: any) {
@@ -149,7 +149,7 @@ export function EditTool({
           className="w-full space-y-4"
         >
           <DialogHeader>
-            <DialogTitle>Update datasource</DialogTitle>
+            <DialogTitle>Actualizar fuente de datos</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col space-y-2">
             <FormField
@@ -157,9 +157,9 @@ export function EditTool({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="E.g My API" {...field} />
+                    <Input placeholder="Ej. Mi API" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,9 +170,9 @@ export function EditTool({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Useful for doing X..." {...field} />
+                    <Textarea placeholder="Útil para hacer X..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -184,7 +184,7 @@ export function EditTool({
               {form.control._formState.isSubmitting ? (
                 <Spinner />
               ) : (
-                "Update datasource"
+                "Actualizar fuente de datos"
               )}
             </Button>
           </DialogFooter>
@@ -237,11 +237,11 @@ const getStatusBadge = ({ row, column }: any) => {
   const status = row.getValue(column.id)
 
   if (status === DatasourceStatus[DatasourceStatus.IN_PROGRESS])
-    return <Badge variant="outline">In progress</Badge>
+    return <Badge variant="outline">En progreso</Badge>
   else if (status === DatasourceStatus[DatasourceStatus.DONE])
-    return <Badge variant="secondary">Ready</Badge>
+    return <Badge variant="secondary">Listo</Badge>
   else if (status === DatasourceStatus[DatasourceStatus.FAILED])
-    return <Badge variant="destructive">Failed</Badge>
+    return <Badge variant="destructive">Fallido</Badge>
 
-  return <Badge variant="outline">Loading...</Badge>
+  return <Badge variant="outline">Cargando...</Badge>
 }

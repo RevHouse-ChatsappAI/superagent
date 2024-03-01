@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 import { ButtonPrev } from "../btn/ButtonPrev"
+import { Spinner } from "@/components/ui/spinner"
 
 interface StepOneProps {
   nextStep: () => void
@@ -56,8 +57,8 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-4 text-sm text-gray-400">Paso 4: Creación de Agente Bot (Chatwoot)</h2>
-      <form className="flex flex-1 flex-col justify-between px-3" onSubmit={handleAddUserChatwoot}>
+      <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">Creación de Agente Bot (Chatwoot)</h2>
+      <form className="flex flex-1 flex-col justify-between" onSubmit={handleAddUserChatwoot}>
         <label className="flex w-full flex-col gap-1">
           <p className="text-sm">Agent Bot Name: </p>
           <input
@@ -77,7 +78,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? "Cargando..." : "Crear Agente Bot"}
+            {loading ? <Spinner/> : "Crear Agente Bot"}
           </button>
         </div>
       </form>

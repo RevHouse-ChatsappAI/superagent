@@ -1,15 +1,16 @@
 "use client"
 
+
 import React, { useState } from "react"
 import { BsWhatsapp } from "react-icons/bs"
+import { GiPentarrowsTornado } from "react-icons/gi"
 //Icons
 import { SiMicrosoftazure } from "react-icons/si"
-import { GiPentarrowsTornado } from "react-icons/gi";
-import { ChatwootIcon } from "@/components/svg/integrations/ChatwootIcon"
-
 
 //Components
 import { Profile } from "@/types/profile"
+import { ChatwootIcon } from "@/components/svg/integrations/ChatwootIcon"
+
 import { useChatwoot } from "../context/ChatwootContext"
 import { CardIntegration } from "./components/CardIntegration"
 import { Modal } from "./components/Modal"
@@ -29,6 +30,7 @@ export const Column = ({ profile }: { profile: Profile }) => {
 
   return (
     <div className="flex flex-wrap gap-4">
+
       <CardIntegration
         eventClick={handleClick}
         title="ChatsappAI Connect"
@@ -37,6 +39,7 @@ export const Column = ({ profile }: { profile: Profile }) => {
         disabled={tokenActive}
         isTokenActive={tokenActive}
         titleBtn={tokenActive ? "Habilitado" : "Conectar"}
+        profile={profile}
       >
         <ChatwootIcon />
       </CardIntegration>

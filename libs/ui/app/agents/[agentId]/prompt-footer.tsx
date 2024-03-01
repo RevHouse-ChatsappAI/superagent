@@ -9,14 +9,14 @@ export function PromptFooter({
   return (
     <p
       className={cn(
-        "px-2 text-center text-xs leading-normal text-muted-foreground",
+        "text-muted-foreground px-2 text-center text-xs leading-normal",
         className
       )}
       {...props}
     >
       Powered by{" "}
-      <Link passHref href="https://www.superagent.sh">
-        <span className="text-foreground">Superagent.sh</span>
+      <Link passHref href="https://development.chatsappai.com/">
+        <span className="text-foreground">Chatsappai.com/</span>
       </Link>
     </p>
   )

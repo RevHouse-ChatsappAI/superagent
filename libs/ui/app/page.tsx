@@ -55,15 +55,29 @@ export default function IndexPage() {
     }
 
     toast({
-      description: "🎉 Yay! Check your email for sign in link.",
+      description: "🎉 ¡Hurra! Revisa tu correo electrónico para el enlace de inicio de sesión.",
     })
+  }
+
+  async function handleGithubLogin() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    })
+
+    if (error) {
+      toast({
+        description: `Ooops! ${error?.message}`,
+      })
+
+      return
+    }
   }
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, _session) => {
         if (event === "SIGNED_IN") {
-          window.location.href = "/agents"
+          window.location.href = "/home"
         }
       }
     )
@@ -105,7 +119,7 @@ export default function IndexPage() {
             {form.control._formState.isSubmitting ? (
               <Spinner />
             ) : (
-              "Enviar contraseña"
+              "Ingresar"
             )}
           </Button>
         </form>
@@ -114,12 +128,12 @@ export default function IndexPage() {
       <div className="flex flex-col items-center justify-center">
         <div className="mb-4 text-xl font-semibold">Próximamente</div>
         <div className="flex flex-wrap justify-center gap-4">
-          <div className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
+          <button onClick={handleGithubLogin} className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
             <GoogleIcon />
-          </div>
-          <div className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
+          </button>
+          <button className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
             <MicrosoftIcon />
-          </div>
+          </button>
         </div>
         <p className="mt-4 text-center text-sm text-gray-500">
           Estamos trabajando para traerte nuevas formas de conectarte. ¡Mantente

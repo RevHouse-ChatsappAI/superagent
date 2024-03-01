@@ -62,9 +62,14 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
         <div className="flex flex-col items-center justify-center gap-3">
           {success && (
             <div className="flex flex-col gap-9">
-              <h2 className="text-center text-lg text-green-500">Creación Exitosa!</h2>
-              <button onClick={redirectAgent} className="hover:bg-white-100 rounded border border-gray-300 bg-transparent px-4 py-2 font-semibold transition-all hover:border-transparent">
-                Ir al Agent
+              <div className="flex items-center justify-center space-x-2">
+                <svg className="h-6 w-6 text-green-500" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <h2 className="text-center text-lg text-green-500 dark:text-green-400">Creación Exitosa!</h2>
+              </div>
+              <button onClick={redirectAgent} className="rounded border bg-transparent px-4 py-2 font-semibold transition-all hover:bg-gray-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                Ir al agente
               </button>
             </div>
           )}
@@ -72,7 +77,7 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
             <button
               disabled={success}
               onClick={handleFinish}
-              className="border-white-500 rounded border bg-transparent px-4 py-2 font-semibold text-white transition-all hover:border-transparent hover:bg-blue-500 hover:text-white"
+              className="rounded border bg-transparent px-4 py-2 font-semibold text-white transition-all hover:border-transparent hover:bg-blue-500 hover:text-white dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-blue-600"
             >
               {loading ? "Cargando..." : "Crear Cuenta en Chatwoot"}
             </button>

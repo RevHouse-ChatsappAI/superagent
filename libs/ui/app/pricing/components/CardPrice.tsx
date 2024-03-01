@@ -1,11 +1,11 @@
-'use client'
 import React from "react"
 
-import { ButtonPrice } from "./ButtonPrice"
-import { CalendarIcon } from "@/components/svg/CalendarIcon"
+
 import { Profile } from "@/types/profile"
+import { ButtonPrice } from "@/components/ButtonPrice"
 
 interface CardPriceProps {
+  uiMode: string
   title: string
   description: string
   price: string | number
@@ -17,6 +17,7 @@ interface CardPriceProps {
 }
 
 export const CardPrice: React.FC<CardPriceProps> = ({
+  uiMode,
   title,
   description,
   price,
@@ -27,9 +28,18 @@ export const CardPrice: React.FC<CardPriceProps> = ({
   profile
 }) => {
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col justify-between rounded-lg border border-gray-100 bg-white p-6 text-start text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+    <div className="mx-auto flex w-full max-w-lg flex-col justify-between rounded-lg border border-gray-100 bg-slate-200 p-6 text-start text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
       <div>
-        <h3 className="mb-4 text-2xl font-semibold">{title}</h3>
+        <div className="flex items-start gap-3">
+          <h3 className="mb-4 text-2xl font-semibold">
+            {nickname === 'STANDARD' && 'PyMEs'}
+            {nickname === 'BASE' && 'PyMEs con alto volumen'}
+            {nickname === 'PREMIUM' && 'Premium personalizado'}
+          </h3>
+          {nickname === 'STANDARD' && (
+            <span className="rounded-lg bg-blue-400 px-2 py-1 text-xs font-semibold text-white">Popular</span>
+          )}
+        </div>
         <p className="text-base font-light text-gray-500 dark:text-gray-400">
           {description}
         </p>
@@ -58,7 +68,7 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </ul>
       </div>
       <div className="flex flex-col gap-2">
-        <ButtonPrice nickname={nickname} profile={profile} priceId={priceId} title="Asignar Pago" />
+        <ButtonPrice uiMode="hosted" nickname={nickname} profile={profile} priceId={priceId} title="Asignar Pago" />
       </div>
     </div>
   )

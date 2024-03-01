@@ -9,7 +9,7 @@ export const workspaceNav = {
   description: "Espacio de trabajo",
   items: [
     {
-      title: "Home",
+      title: "Inicio",
       href: "/home",
       icon: RxHome,
     },
