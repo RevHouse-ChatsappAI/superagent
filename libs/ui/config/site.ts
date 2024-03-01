@@ -62,16 +62,6 @@ export const siteConfig = {
   ],
   footerNav: [
     {
-      title: "Discord",
-      href: "https://discord.com/invite/mhmJUTjW4b",
-      icon: RxDiscordLogo,
-    },
-    {
-      title: "Github",
-      href: "https://github.com/homanp/superagent",
-      icon: RxGithubLogo,
-    },
-    {
       title: "Documentation",
       href: "https://docs.superagent.sh",
       icon: RxFileText,
