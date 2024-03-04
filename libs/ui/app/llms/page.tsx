@@ -23,7 +23,7 @@ export default async function LLM() {
   return (
     <div className="flex min-h-full flex-col space-y-4 px-4 py-6">
       <p className="text-lg">Language models</p>
-      <LLMClientPage profile={profile} llms={llms} />
+      <h2>Proximamente...</h2>
     </div>
   )
 }
