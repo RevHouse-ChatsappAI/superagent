@@ -7,6 +7,7 @@ import { Api } from "@/lib/api"
 import { Spinner } from "@/components/ui/spinner"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
+import { MdNavigateNext } from "react-icons/md";
 import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
@@ -158,7 +159,7 @@ const StepThree = ({
                 className={`rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400 ${loading || !!apiAgent ? 'cursor-not-allowed' : ''} dark:hover:bg-blue-600`}
                 disabled={loading || !!apiAgent}
               >
-                {loading ? <Spinner /> : "Crear Agent SuperAgent"}
+                {loading ? <Spinner /> : <MdNavigateNext />}
               </button>
             </div>
           </form>
@@ -199,10 +200,10 @@ const StepThree = ({
             <div className="mt-4 flex justify-end">
               <button
                 type="button"
-                className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400 dark:hover:bg-blue-600"
+                className="rounded bg-blue-500 px-4 py-2 text-center text-sm text-white transition-all hover:bg-blue-400 dark:hover:bg-blue-600"
                 onClick={() => nextStep()}
               >
-                Siguiente
+                <MdNavigateNext />
               </button>
             </div>
           )}

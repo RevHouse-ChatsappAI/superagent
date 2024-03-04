@@ -1,38 +1,57 @@
-// Componente StepOne.jsx
 import React, { useState } from "react"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
+
 import { Spinner } from "@/components/ui/spinner"
+import { MdNavigateNext } from "react-icons/md";
 
 interface StepOneProps {
   nextStep: () => void
 }
 
 const StepOne = ({ nextStep }: StepOneProps) => {
-  //Context
-  const { handleProfileChatwoot } = useChatwoot()
 
   //State
   const [loading, setLoading] = useState(false)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
   const [user, setUser] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: ""
   })
+
+  //Context
+  const { handleProfileChatwoot } = useChatwoot()
 
   //Function
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    setPasswordError(null)
+
+    // Password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    if (!passwordRegex.test(user.password)) {
+      setPasswordError("La contraseña debe tener al menos una letra mayúscula, un número y un mínimo de 8 caracteres.")
+      setLoading(false)
+      return;
+    }
+
+    if (user.password !== user.confirmPassword) {
+      setPasswordError("Las contraseñas no coinciden.")
+      setLoading(false)
+      return;
+    }
+
     try {
       const apiChatwoot = new ApiChatwootPlatform()
       const mock = {
         name: user.name,
         email: user.email,
         password: user.password,
-        type: "SuperAdmin",
         custom_attributes: {},
       }
       const response = await apiChatwoot.createUser(mock)
@@ -45,7 +64,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
 
       throw new Error("No se ha podido crear el usuario.")
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -79,7 +98,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
             />
           </label>
           <label className="flex w-full flex-col gap-1">
-            <p className="text-sm">Correo Electronico </p>
+            <p className="text-sm">Correo Electrónico</p>
             <input
               type="email"
               name="email"
@@ -95,9 +114,8 @@ const StepOne = ({ nextStep }: StepOneProps) => {
               required
             />
           </label>
-
-          <label className="flex w-full flex-col gap-1">
-            <p className="text-sm">Password</p>
+          <label className="flex w-full flex-col">
+            <p className="text-sm">Contraseña</p>
             <input
               type="password"
               name="password"
@@ -109,8 +127,37 @@ const StepOne = ({ nextStep }: StepOneProps) => {
                 })
               }
               className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Ej: Abc#123"
+              required
+            />
+            {passwordError && (
+              <p className="mt-1 text-xs text-red-500">{passwordError}</p>
+            )}
+          </label>
+          <p className="text-xs text-gray-600 dark:text-gray-400">
+            La contraseña debe contener al menos una mayúscula, un símbolo (.
+            o #) y un número.
+          </p>
+          <label className="flex w-full flex-col">
+            <p className="text-sm">Confirmar Contraseña</p>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={user.confirmPassword}
+              onChange={(e) =>
+                setUser({
+                  ...user,
+                  confirmPassword: e.target.value,
+                })
+              }
+              className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              placeholder="Reingrese su contraseña"
+              required
             />
           </label>
+          <p className="text-xs text-gray-600 dark:text-gray-400">
+            Por favor, confirme su contraseña.
+          </p>
         </div>
         <div className="flex justify-end">
           <button
@@ -118,7 +165,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? <Spinner/> : "Crear Usuario"}
+            {loading ? <Spinner /> : <MdNavigateNext />}
           </button>
         </div>
       </form>

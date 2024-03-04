@@ -5,6 +5,7 @@ import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 import { ButtonPrev } from "../btn/ButtonPrev"
 import { Spinner } from "@/components/ui/spinner"
+import { MdNavigateNext } from "react-icons/md";
 
 interface StepOneProps {
   nextStep: () => void
@@ -57,16 +58,17 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">Creación de Agente Bot (Chatwoot)</h2>
-      <form className="flex flex-1 flex-col justify-between" onSubmit={handleAddUserChatwoot}>
+      <h2 className="mb-2 text-sm dark:text-gray-500">Configuración del Agente Bot de Chatwoot</h2>
+      <p className="text-xs text-gray-600 dark:text-gray-400">Este Agente Bot actuará como intermediario para conectar a los usuarios con nuestro agente de inteligencia artificial, facilitando una comunicación fluida y eficiente a través del CRM de ChatsappAI.</p>
+      <form className="mt-5 flex flex-1 flex-col justify-between" onSubmit={handleAddUserChatwoot}>
         <label className="flex w-full flex-col gap-1">
-          <p className="text-sm">Agent Bot Name: </p>
+          <p className="text-sm">Nombre del Agente Bot: </p>
           <input
             type="text"
             name="name"
             value={account}
             onChange={(e) => setAccount(e.target.value)}
-            className="w-full rounded-lg p-2"
+            className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
             placeholder="Eg: Account Company"
             required
           />
@@ -78,7 +80,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? <Spinner/> : "Crear Agente Bot"}
+            {loading ? <Spinner/> : <MdNavigateNext />}
           </button>
         </div>
       </form>
