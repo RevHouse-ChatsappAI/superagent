@@ -6,6 +6,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { FiExternalLink, FiMenu } from "react-icons/fi"
+import { IoIosArrowForward } from "react-icons/io"
 import { TbPremiumRights } from "react-icons/tb"
 import { useAsync } from "react-use"
 
@@ -19,24 +20,43 @@ import {
 import { ChatsAppAI } from "./svg/ChatsAppAI"
 import { ChatsAppLogoAI } from "./svg/ChatsAppLogoAI"
 import { ButtonSidebar } from "./ui/buttonSidebar"
+import { Api } from "@/lib/api"
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const supabase = createClientComponentClient()
-  const { value: session } = useAsync(async () => {
+  const [credit, setCredit] = useState<any | null>(null)
+  const { value: session, loading, error } = useAsync(async () => {
     const {
       data: { session },
-    } = await supabase.auth.getSession()
-    return session
+    } = await createClientComponentClient().auth.getSession()
+    let profile = null;
+    let count = null;
+    if (session) {
+      const { data: profileData } = await createClientComponentClient()
+        .from("profiles")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .single()
+      profile = profileData;
+      const api = new Api(profile.api_key)
+      const creditResponse = await api.getCredit();
+      if (creditResponse.success) {
+        setCredit(creditResponse.data);
+      }
+      const countResponse = await api.getCount();
+      if (countResponse.success) {
+        count = countResponse.data;
+      }
+    }
+    return { session, profile, count }
   }, [])
   const pathname = usePathname()
-
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
 
   return (
     <div
       className={`dark:bg-white-100 flex h-full ${
-        isCollapsed ? "w-[50px]" : "w-[200px]"
+        isCollapsed ? "w-[50px]" : "w-[180px]"
       } flex-col justify-between space-y-3 rounded-r-2xl border-r bg-slate-100 pb-4 align-top ${
         !session && "hidden"
       }`}
@@ -45,10 +65,20 @@ export default function Sidebar() {
         className={`flex flex-col ${isCollapsed ? "gap-7" : "gap-2"} 2xl:gap-8`}
       >
         <div
-          onClick={toggleSidebar}
-          className="flex cursor-pointer items-center justify-center rounded-tr-lg border-b-2 bg-gray-500 p-2 dark:bg-transparent"
+          className={`flex ${isCollapsed ? 'flex-col' : 'items-center'} rounded-tr-lg border-b-2 bg-gray-500 px-1 py-2 dark:bg-transparent`}
         >
-          {isCollapsed ? <ChatsAppLogoAI /> : <ChatsAppAI />}
+          <div className="flex justify-center">
+            <ChatsAppLogoAI />
+          </div>
+          {!isCollapsed && (
+            <div className="flex flex-col text-white">
+              <p className="text-sm">{session?.profile.first_name}</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">{session?.count.datasourceCount} /<strong> {credit?.credits}</strong> creditos</p>
+            </div>
+          )}
+          {isCollapsed && (
+            <div className="text-center text-xs text-white">0</div>
+          )}
         </div>
         <div
           className={`flex flex-col ${
@@ -175,7 +205,7 @@ export default function Sidebar() {
           ))}
         </div>
       </div>
-      {!isCollapsed && (
+      {/* {!isCollapsed && (
         <div>
           <div className="mb-3 flex flex-col gap-1 px-4 2xl:mb-10 2xl:gap-3">
             <h2 className="text-xs 2xl:text-base dark:text-gray-300">Uso</h2>
@@ -192,7 +222,7 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
       <div
         className={`flex flex-col ${
           isCollapsed ? "items-center" : "items-start"
@@ -233,36 +263,17 @@ export default function Sidebar() {
             </ButtonSidebar>
           </NextLink>
         ))}
+        <div className="flex w-full items-center border-t">
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="hover:bg-opacity/25 dark:hover:bg-opacity/25 mt-2 flex w-full items-center gap-2 rounded-lg p-3 text-xs transition-all hover:bg-black/25 hover:text-white dark:hover:bg-black"
+          >
+            <IoIosArrowForward className={`${isCollapsed ? 'rotate-0' : 'rotate-180'} transition-all`} />
+            {!isCollapsed && <span>Ocultar Sidebar</span>}
+          </button>
+        </div>
       </div>
-      {/* <div className="my-2 flex px-2 2xl:p-2">
-        <Link
-          href="/pricing"
-          className={`w-full rounded-md border-2 py-2 transition-all duration-500 ease-in-out focus:outline-none ${
-            isCollapsed ? "flex items-center justify-center" : "flex flex-col items-center gap-2 px-4"
-          }`}
-          style={{
-            border: "2px solid #2563EF",
-            background: "linear-gradient(45deg, #3B82F6, #2563EB)",
-            color: "#fff",
-            fontSize: isCollapsed ? "0" : "0.775rem",
-            fontWeight: "500",
-          }}
-          onMouseOver={(e) =>
-            (e.currentTarget.style.background =
-              "linear-gradient(45deg, #1D4ED8, #2563EB)")
-          }
-          onMouseOut={(e) =>
-            (e.currentTarget.style.background =
-              "linear-gradient(45deg, #3B82F6, #2563EB)")
-          }
-          onFocus={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 0 2px #60A5FA")
-          }
-        >
-          <TbPremiumRights className="text-lg" />
-          {!isCollapsed && <span>Actualiza a premium</span>}
-        </Link>
-      </div> */}
     </div>
   )
 }
