@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
     // Check if the user has a subscription, redirect to pricing if not
     // TODO: Fixing
     try {
-      const api = new Api(profile.api_key)
+      const api = new Api(profile?.api_key)
       const subscription = await api.getSubscription()
       if (!subscription.success) {
         // To prevent an infinite loop, check if the current path is already /pricing before redirecting
