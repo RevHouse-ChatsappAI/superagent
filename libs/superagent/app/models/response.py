@@ -38,6 +38,13 @@ from prisma.models import (
 from prisma.models import (
     Subscription as ApiSubscriptionModel,
 )
+from prisma.models import (
+    Credit as ApiCreditModel,
+)
+from prisma.models import (
+    Count as ApiCountModel,
+)
+
 class ApiUser(BaseModel):
     success: bool
     data: Optional[ApiUserModel]
@@ -59,6 +66,16 @@ class GetPyment(BaseModel):
     success: bool
     message: str
     data: Optional[ApiSubscriptionModel]
+
+class GetCredit(BaseModel):
+    success: bool
+    message: str
+    data: Optional[ApiCreditModel]
+
+class GetCount(BaseModel):
+    success: bool
+    message: str
+    data: Optional[ApiCountModel]
 
 class Agent(BaseModel):
     success: bool
