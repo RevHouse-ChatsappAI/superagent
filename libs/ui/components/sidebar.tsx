@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import NextLink from "next/link"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -25,12 +25,12 @@ import { Api } from "@/lib/api"
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [credit, setCredit] = useState<any | null>(null)
+  const [count, setCount] = useState<any | null>(null)
   const { value: session, loading, error } = useAsync(async () => {
     const {
       data: { session },
     } = await createClientComponentClient().auth.getSession()
     let profile = null;
-    let count = null;
     if (session) {
       const { data: profileData } = await createClientComponentClient()
         .from("profiles")
@@ -45,11 +45,25 @@ export default function Sidebar() {
       }
       const countResponse = await api.getCount();
       if (countResponse.success) {
-        count = countResponse.data;
+        setCount(countResponse.data);
       }
     }
-    return { session, profile, count }
+    return { session, profile }
   }, [])
+
+  useEffect(() => {
+    if (session) {
+      const api = new Api(session.profile.api_key)
+      const interval = setInterval(async () => {
+        const countResponse = await api.getCount();
+        if (countResponse.success) {
+          setCount(countResponse.data);
+        }
+      }, 5000); // Poll every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [session]);
+
   const pathname = usePathname()
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
 
@@ -73,7 +87,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <div className="flex flex-col text-white">
               <p className="text-sm">{session?.profile.first_name}</p>
-              <p className="text-xs text-gray-300 dark:text-gray-500">{session?.count.datasourceCount} /<strong> {credit?.credits}</strong> creditos</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">{count?.queryCount} /<strong> {credit?.credits}</strong> creditos</p>
             </div>
           )}
           {isCollapsed && (
