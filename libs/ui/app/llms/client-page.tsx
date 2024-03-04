@@ -241,7 +241,7 @@ export default function LLMClientPage({
                                 {form.control._formState.isSubmitting ? (
                                   <Spinner />
                                 ) : (
-                                  "Save settings"
+                                  "Guardar configuración"
                                 )}
                               </Button>
                             </DialogFooter>

@@ -20,7 +20,9 @@ async function loadPrices() {
     apiVersion: "2023-08-16",
   })
 
-  const prices = await stripe.prices.list()
+  const prices = await stripe.prices.list({
+    product: 'prod_PQlBLHxNozr0nS'
+  });
   const filteredPrices = prices.data.filter(
     (price) =>
       price.nickname === "BASE" ||
@@ -33,7 +35,6 @@ async function loadPrices() {
     return unitAmountA - unitAmountB
   })
 
-  console.log(sortedPrices)
   return sortedPrices
 }
 

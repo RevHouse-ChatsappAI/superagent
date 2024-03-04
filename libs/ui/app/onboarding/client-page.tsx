@@ -56,7 +56,7 @@ export default function OnboardingClientPage() {
     } = await supabase.auth.getUser()
     if (!user?.email) {
       toast({
-        description: `Ooops! User email is missing!`,
+        description: `¡Vaya! Falta el correo electrónico del usuario.`,
         variant: "destructive",
       })
       return
@@ -93,10 +93,10 @@ export default function OnboardingClientPage() {
     }
 
     toast({
-      description: "Settings updated!",
+      description: "¡Configuraciones actualizadas!",
     })
 
-    window.location.href = "/llms"
+    window.location.href = "/home"
   }
 
   return (
@@ -109,9 +109,9 @@ export default function OnboardingClientPage() {
           >
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Welcome!</CardTitle>
+                <CardTitle className="text-lg">¡Bienvenido!</CardTitle>
                 <CardDescription>
-                  Tell us a bit more about yourself.
+                  Cuéntanos un poco más sobre ti.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -122,10 +122,10 @@ export default function OnboardingClientPage() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>First name</FormLabel>
+                          <FormLabel>Nombre</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Enter your first name"
+                              placeholder="Ingresa tu nombre"
                               {...field}
                             />
                           </FormControl>
@@ -138,10 +138,10 @@ export default function OnboardingClientPage() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Last name</FormLabel>
+                          <FormLabel>Apellido</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Enter your last name"
+                              placeholder="Ingresa tu apellido"
                               {...field}
                             />
                           </FormControl>
@@ -155,10 +155,10 @@ export default function OnboardingClientPage() {
                     name="company"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Company name</FormLabel>
+                        <FormLabel>Nombre de la empresa</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter your company name"
+                            placeholder="Ingresa el nombre de tu empresa"
                             {...field}
                           />
                         </FormControl>
@@ -170,7 +170,7 @@ export default function OnboardingClientPage() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" size="sm" className="w-full">
-                  {form.control._formState.isSubmitting ? <Spinner /> : "Save"}
+                  {form.control._formState.isSubmitting ? <Spinner /> : "Guardar"}
                 </Button>
               </CardFooter>
             </Card>

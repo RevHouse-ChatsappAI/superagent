@@ -72,20 +72,21 @@ logging.basicConfig(level=logging.INFO)
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
     try:
-        # subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
-        # if subscription is None:
-        #     raise HTTPException(status_code=404, detail="Subscription not found.")
-        # tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
-        # if tier_credits is None:
-        #     raise HTTPException(status_code=404, detail="Tier credits not found.")
-        # agent_limit = tier_credits.agentLimit
-        # agent_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        # if agent_count.agentCount >= agent_limit:
-        #     raise HTTPException(status_code=400, detail="Agent limit reached.")
-        # await prisma.count.update(
-        #     where={"apiUserId": api_user.id},
-        #     data={"agentCount": agent_count.agentCount + 1}
-        # )
+        # TODO: Fixing
+        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        if subscription is None:
+            raise HTTPException(status_code=404, detail="Subscription not found.")
+        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        if tier_credits is None:
+            raise HTTPException(status_code=404, detail="Tier credits not found.")
+        agent_limit = tier_credits.agentLimit
+        agent_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count.agentCount >= agent_limit:
+            raise HTTPException(status_code=400, detail="Agent limit reached.")
+        await prisma.count.update(
+            where={"apiUserId": api_user.id},
+            data={"agentCount": agent_count.agentCount + 1}
+        )
 
         agent = await prisma.agent.create(
             {**body.dict(), "apiUserId": api_user.id},
@@ -220,28 +221,29 @@ async def invoke(
     agent_id: str, body: AgentInvokeRequest, api_user=Depends(get_current_api_user)
 ):
     """Endpoint for invoking an agent"""
-    # try:
-    #     credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
-    #     if not credit_entry:
-    #         raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
-    #     available_credits = credit_entry.credits
-    #     count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-    #     if count_entry:
-    #         new_count = count_entry.queryCount + 1
-    #         if new_count > available_credits:
-    #             raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
-    #         await prisma.count.update(
-    #             where={"apiUserId": api_user.id},
-    #             data={"queryCount": new_count}
-    #         )
-    #     else:
-    #         if available_credits <= 0:
-    #             raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
-    #         await prisma.count.create(
-    #             data={"apiUserId": api_user.id, "queryCount": 1}
-    #         )
-    # except Exception as e:
-    #     handle_exception(e)
+    # TODO: Fixing
+    try:
+        credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
+        if not credit_entry:
+            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+        available_credits = credit_entry.credits
+        count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if count_entry:
+            new_count = count_entry.queryCount + 1
+            if new_count > available_credits:
+                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"queryCount": new_count}
+            )
+        else:
+            if available_credits <= 0:
+                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
+            await prisma.count.create(
+                data={"apiUserId": api_user.id, "queryCount": 1}
+            )
+    except Exception as e:
+        handle_exception(e)
 
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")

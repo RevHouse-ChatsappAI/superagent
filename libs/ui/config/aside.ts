@@ -1,8 +1,10 @@
 import { RxClock, RxColorWheel, RxCountdownTimer, RxFileText, RxGear, RxHome, RxPaperPlane, RxReader, RxRocket, RxShare2, RxStack } from "react-icons/rx";
 import { FiSend } from "react-icons/fi";
+import { LiaRobotSolid } from "react-icons/lia";
 import { IoCodeSlashOutline } from "react-icons/io5";
 import { CiCloudOn } from "react-icons/ci";
 import { CiHeadphones } from "react-icons/ci";
+import { TbPlugConnected } from "react-icons/tb";
 
 export const workspaceNav = {
   title: "Espacio de trabajo",
@@ -16,7 +18,7 @@ export const workspaceNav = {
     {
       title: "Agentes de IA",
       href: "/agents",
-      icon: RxColorWheel,
+      icon: LiaRobotSolid,
     },
     {
       title: "CRM",
@@ -56,7 +58,7 @@ export const apiBaseNav = {
     {
       title: "Plataformas",
       href: "/integration",
-      icon: IoCodeSlashOutline,
+      icon: TbPlugConnected,
     },
   ],
 };

@@ -148,6 +148,14 @@ export class Api {
     return this.fetchFromApi("/payment")
   }
 
+  async getCredit(){
+    return this.fetchFromApi("/credit")
+  }
+
+  async getCount(){
+    return this.fetchFromApi("/count")
+  }
+
   // async updateSelectUserAccountChatwoot() {
   //   return this.fetchFromApi(`/token/userchatwoot`, {
   //     method: "PATCH",
