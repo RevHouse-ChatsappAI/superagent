@@ -24,10 +24,7 @@ async function loadPrices() {
     product: 'prod_PQlBLHxNozr0nS'
   });
   const filteredPrices = prices.data.filter(
-    (price) =>
-      price.nickname === "BASE" ||
-      price.nickname === "STANDARD" ||
-      price.nickname === "PREMIUM"
+    (price) => price.active === true
   )
   const sortedPrices = filteredPrices.sort((a, b) => {
     const unitAmountA = a.unit_amount || 0
@@ -86,6 +83,7 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
             price={`$${price.unit_amount / 100}`}
             features={getFeatures(price)}
             buttonLink="/signup"
+            status={price.metadata.status}
             profile={profile}
             uiMode="hosted"
           />
