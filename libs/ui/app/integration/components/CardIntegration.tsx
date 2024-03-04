@@ -62,7 +62,7 @@ export const CardIntegration = ({
           className={`flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 ${
             disabled
               ? "cursor-not-allowed bg-slate-300 dark:bg-gray-400"
-              : "bg-black"
+              : "bg-slate-300 dark:bg-black"
           }`}
         >
           {disabled && !commingSoon ? <CiCircleCheck /> : <RxCursorArrow />}
@@ -70,8 +70,8 @@ export const CardIntegration = ({
         </button>
         {isTokenActive && (
           <BtnConecctionChatsAppAI
-          isTokenActive={isTokenActive}
-          profile={profile!}
+            isTokenActive={isTokenActive}
+            profile={profile!}
           />
         )}
       </div>

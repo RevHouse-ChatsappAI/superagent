@@ -36,102 +36,40 @@ export const Modal = ({
   }
   const prevStep = () => setCurrentStep(currentStep - 1)
   return (
-    <div className="bg-white-100 absolute inset-y-0 end-0 left-0 flex items-center justify-center">
-      <div className="animate__animated animate__fadeInDown flex w-[520px] flex-col gap-3 rounded-lg border-2 bg-black p-4">
+    <div className="absolute inset-y-0 end-0 left-0 flex items-center justify-center bg-white/60">
+      <div className="animate__animated animate__fadeIn flex w-[520px] flex-col gap-3 rounded-lg border-2 bg-white p-4 dark:bg-black">
         <div className="flex justify-between border-b py-3 ">
-          <h2 className="text-lg text-gray-300">
+          <h2 className="text-lg text-black dark:text-gray-300">
             {isTokenActive
               ? "Agregar una nueva conexión"
-              : "Conectar con Chatwoot"}
+              : "Conectar con ChatsappAI CRM"}
           </h2>
           <button onClick={handleModalClose}>
             <RxCross2 />
           </button>
         </div>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Usuario de Chatwoot</AccordionTrigger>
-            <AccordionContent>
-              {userProfileChatwoot && (
-                <div className="flex justify-center">
-                  {userProfileChatwoot && (
-                    <ProfileChatwoot profile={userProfileChatwoot} />
-                  )}
-                </div>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>Cuentas dentro de Chatwoot</AccordionTrigger>
-            <AccordionContent>
-              {userProfileChatwoot && (
-                <div className="flex justify-center">
-                  {userProfileChatwoot && (
-                    <AccountProfile
-                      profileSAgent={profile}
-                      profile={userProfileChatwoot}
-                    />
-                  )}
-                </div>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
         <div className="flex h-full flex-col gap-3 p-3">
-          <h2 className="text-gray-500 underline underline-offset-2">
-            {isTokenActive
-              ? "Crear un nuevo agente"
-              : "Creación de usuario en chatsappAI"}
-          </h2>
-          {isTokenActive ? (
-            <div className="flex flex-1 flex-col pt-8">
-              <div className="flex flex-1 flex-col gap-5">
-                {currentStep === 1 && (
-                  <StepTwo
-                    btnPrevActive={false}
-                    nextStep={nextStep}
-                    prevStep={prevStep}
-                  />
-                )}
-                {currentStep === 1 && (
-                  <StepThree
-                    nextStep={nextStep}
-                    prevStep={prevStep}
-                    profile={profile}
-                  />
-                )}
-                {currentStep === 3 && (
-                  <StepFour nextStep={nextStep} prevStep={prevStep} />
-                )}
-                {currentStep === 4 && (
-                  <StepFive nextStep={prevStep} profile={profile} />
-                )}
-              </div>
+          <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col gap-5">
+              {currentStep === 1 && <StepOne nextStep={nextStep} />}
+              {currentStep === 2 && (
+                <StepTwo nextStep={nextStep} prevStep={prevStep} />
+              )}
+              {currentStep === 3 && (
+                <StepThree
+                  nextStep={nextStep}
+                  prevStep={prevStep}
+                  profile={profile}
+                />
+              )}
+              {currentStep === 4 && (
+                <StepFour nextStep={nextStep} prevStep={prevStep} />
+              )}
+              {currentStep === 5 && (
+                <StepFive nextStep={prevStep} profile={profile} />
+              )}
             </div>
-          ) : (
-            <div className="flex flex-1 flex-col pt-8">
-              <div className="flex flex-1 flex-col gap-5">
-                {currentStep === 1 && <StepOne nextStep={nextStep} />}
-                {currentStep === 2 && (
-                  <StepTwo nextStep={nextStep} prevStep={prevStep} />
-                )}
-                {currentStep === 3 && (
-                  <StepThree
-                    nextStep={nextStep}
-                    prevStep={prevStep}
-                    profile={profile}
-                  />
-                )}
-                {currentStep === 4 && (
-                  <StepFour nextStep={nextStep} prevStep={prevStep} />
-                )}
-                {currentStep === 5 && (
-                  <StepFive nextStep={prevStep} profile={profile} />
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
