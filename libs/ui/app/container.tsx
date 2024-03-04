@@ -11,7 +11,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
   return (
     <ChatwootProvider>
       <section className="flex h-screen">
-        <Sidebar />
+        {session && <Sidebar />}
         <div className="flex-1 overflow-auto">{children}</div>
       </section>
     </ChatwootProvider>

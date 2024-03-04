@@ -140,11 +140,6 @@ export default function IndexPage() {
           al tanto!
         </p>
       </div>
-      {/* TODO: Enable to Login */}
-      {/* <div className="flex flex-col gap-5">
-        <ButtonAuth className="flex items-center gap-3"><GoogleIcon/> <span>Sign In with Google</span></ButtonAuth>
-        <ButtonAuth className="flex items-center gap-3"><MicrosoftIcon/> <span>Sign In with Microsoft</span></ButtonAuth>
-      </div> */}
       <p className="mx-auto justify-center text-xs dark:text-gray-300">
         Al hacer click en continuar, aceptas nuestros Términos de Servicio y
         Política de Privacidad.
