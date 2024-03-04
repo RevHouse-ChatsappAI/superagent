@@ -35,15 +35,15 @@ export default function Sidebar() {
       const { data: profileData } = await createClientComponentClient()
         .from("profiles")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", session?.user?.id)
         .single()
       profile = profileData;
-      const api = new Api(profile.api_key)
-      const creditResponse = await api.getCredit();
+      const api = new Api(profile?.api_key)
+      const creditResponse = await api?.getCredit();
       if (creditResponse.success) {
         setCredit(creditResponse.data);
       }
-      const countResponse = await api.getCount();
+      const countResponse = await api?.getCount();
       if (countResponse.success) {
         setCount(countResponse.data);
       }
@@ -53,9 +53,9 @@ export default function Sidebar() {
 
   useEffect(() => {
     if (session) {
-      const api = new Api(session.profile.api_key)
+      const api = new Api(session?.profile?.api_key)
       const interval = setInterval(async () => {
-        const countResponse = await api.getCount();
+        const countResponse = await api?.getCount();
         if (countResponse.success) {
           setCount(countResponse.data);
         }
