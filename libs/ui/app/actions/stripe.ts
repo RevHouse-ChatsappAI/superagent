@@ -21,13 +21,18 @@ export async function createCheckoutSession(
   const checkoutSession: Stripe.Checkout.Session =
     await stripe.checkout.sessions.create({
       mode: "subscription",
+      payment_method_types: ["card"],
+      discounts: [
+        {
+          coupon: 'SALE',
+        },
+      ],
       metadata: {
         user_customer_id: metadata.customer_id as string,
         user_id: metadata.user_id as string,
         api_key: metadata.api_key as string,
         nickname: metadata.nickname as string
       },
-      payment_method_types: ["card"],
       line_items: [
         {
           price: data.get("priceId") as string,
