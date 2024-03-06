@@ -3,11 +3,15 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { siteConfig } from "@/config/site"
+import { stripe } from "@/lib/stripe"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 interface SettingsSidebarProps extends React.HTMLAttributes<HTMLElement> {
+  profile: any
   items: {
+    id: string
     href: string
     title: string
     disabled?: boolean
@@ -15,6 +19,7 @@ interface SettingsSidebarProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function SettingsSidebar({
+  profile,
   className,
   items,
   ...props

@@ -23,17 +23,20 @@ export class Api {
     const response = await fetch(url.toString(), {
       ...options,
       headers: {
-        ...options.headers,
         "Content-Type": "application/json",
         authorization: `Bearer ${this.apiKey}`,
+        ...options.headers,
       },
     })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
     return await response.json()
+  }
+
+  async indentifyUser(payload: any) {
+    return this.fetchFromApi("/api-users/identify", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
   }
 
   async createAgent(payload: any) {
@@ -57,11 +60,33 @@ export class Api {
     })
   }
 
-  async createApiKey(email: string) {
+  async createApiUser(payload: any) {
     return this.fetchFromApi("/api-users", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(payload),
     })
+  }
+
+  async createApiKey(payload: any) {
+    return this.fetchFromApi("/api-keys", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  }
+
+  async getApiKeys() {
+    return this.fetchFromApi("/api-keys")
+  }
+
+  async updateApiKey(id: string, payload: any) {
+    return this.fetchFromApi(`/api-keys/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    })
+  }
+
+  async deleteApiKey(id: string) {
+    return this.fetchFromApi(`/api-keys/${id}`, { method: "DELETE" })
   }
 
   async createDatasource(payload: any) {
@@ -123,7 +148,7 @@ export class Api {
   }
 
   async getAgents(
-    searchParams: { take?: number; skip?: number } = { skip: 0, take: 50 }
+    searchParams: { take?: number; skip?: number } = { skip: 0, take: 300 }
   ) {
     return this.fetchFromApi("/agents", {}, searchParams)
   }
@@ -179,6 +204,16 @@ export class Api {
     return this.fetchFromApi("/tools", {}, searchParams)
   }
 
+  async getRuns(searchParams?: {
+    workflow_id?: string
+    agent_id?: string
+    limit?: number
+    from_page?: number
+    to_page?: number
+  }) {
+    return this.fetchFromApi("/runs", {}, searchParams)
+  }
+
   async patchAgent(id: string, payload: any) {
     return this.fetchFromApi(`/agents/${id}`, {
       method: "PATCH",
@@ -222,6 +257,21 @@ export class Api {
       method: "POST",
       body: JSON.stringify(payload),
     })
+  }
+
+  async generateWorkflow(workflowId: string, payload: any) {
+    // TODO: update fetchFromApi and use it
+    return fetch(
+      `${process.env.NEXT_PUBLIC_SUPERAGENT_API_URL}/workflows/${workflowId}/config`,
+      {
+        method: "POST",
+        body: payload,
+        headers: {
+          "Content-Type": "application/x-yaml",
+          authorization: `Bearer ${this.apiKey}`,
+        },
+      }
+    )
   }
 
   async getWorkflowSteps(id: string) {

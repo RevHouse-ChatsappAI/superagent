@@ -15,6 +15,9 @@ from prisma.models import (
     AgentTool as AgentToolModel,
 )
 from prisma.models import (
+    ApiKey as ApiKeyModel,
+)
+from prisma.models import (
     ApiUser as ApiUserModel,
 )
 from prisma.models import (
@@ -76,6 +79,25 @@ class GetCount(BaseModel):
     success: bool
     message: str
     data: Optional[ApiCountModel]
+
+class _ApiKeyCreateModel(ApiKeyModel):
+    apiKey: str
+
+
+class ApiKeyCreate(BaseModel):
+    success: bool
+    data: Optional[_ApiKeyCreateModel]
+
+
+class ApiKey(BaseModel):
+    success: bool
+    data: Optional[ApiKeyModel]
+
+
+class ApiKeyList(BaseModel):
+    success: bool
+    data: Optional[list[ApiKeyModel]]
+
 
 class Agent(BaseModel):
     success: bool

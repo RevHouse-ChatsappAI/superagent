@@ -22,11 +22,6 @@ export async function createCheckoutSession(
     await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      discounts: [
-        {
-          coupon: 'SALE',
-        },
-      ],
       metadata: {
         user_customer_id: metadata.customer_id as string,
         user_id: metadata.user_id as string,

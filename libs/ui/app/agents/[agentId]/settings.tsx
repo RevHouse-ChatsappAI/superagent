@@ -30,26 +30,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
+import AddDatasource from "./add-datasource"
+import AddTool from "./add-tool"
 import Avatar from "./avatar"
 
 const formSchema = z.object({
-  name: z.string().nonempty({
-    message: "Name is required",
-  }),
-  description: z.string().nonempty({
-    message: "Description is required",
-  }),
+  description: z.string().min(1, { message: "Description is required" }),
   initialMessage: z.string(),
   llms: z.string(),
   isActive: z.boolean().default(true),
-  llmModel: z.string().nonempty({
-    message: "Model is required",
-  }),
+  llmModel: z.string().nullable(),
   prompt: z.string(),
   tools: z.array(z.string()),
   datasources: z.array(z.string()),
@@ -87,7 +83,6 @@ export default function Settings({
   const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: agent.name,
       description: agent.description,
       initialMessage: agent.initialMessage || "",
       llms: agent.llms?.[0]?.llm.provider,
@@ -176,24 +171,16 @@ export default function Settings({
   )
 
   return (
-    <ScrollArea className="relative flex max-w-lg flex-1 grow p-4">
+    <ScrollArea className="relative flex max-w-lg flex-1 grow px-4 py-2">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-4"
+          className="w-full space-y-4 pb-20"
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ej. Mi agente" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <Avatar
+            accept=".jpg, .jpeg, .png"
+            onSelect={handleUpload}
+            imageUrl={avatar || agent.avatar || "/logo.png"}
           />
           <FormField
             control={form.control}
@@ -202,8 +189,8 @@ export default function Settings({
               <FormItem>
                 <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Ej. este agente es un experto en..."
+                  <Input
+                    placeholder="E.g this agent is an expert at..."
                     {...field}
                   />
                 </FormControl>
@@ -219,8 +206,8 @@ export default function Settings({
                 <FormLabel>Indicación</FormLabel>
                 <FormControl>
                   <Textarea
-                    className="h-[200px]"
-                    placeholder="Ej. tú eres un asistente de IA que..."
+                    className="h-[100px]"
+                    placeholder="E.g you are an ai assistant that..."
                     {...field}
                   />
                 </FormControl>
@@ -282,7 +269,7 @@ export default function Settings({
                     <FormItem className="flex-1">
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -310,21 +297,38 @@ export default function Settings({
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
                 <p className="text-sm">¡Atención!</p>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Necesitas agregar un LLM a este agente para que funcione. Esto se puede hacer a través del SDK o la API.
                 </p>
               </div>
             )}
           </div>
+
+          <Separator className="!my-8 flex items-center justify-center">
+            <span className="text-sm text-muted-foreground">
+              Tools & Datasources
+            </span>
+          </Separator>
+
           <FormField
             control={form.control}
             name="tools"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>APIs</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Tools</FormLabel>
+                  <AddTool
+                    profile={profile}
+                    agent={agent}
+                    onSuccess={() => {
+                      window.location.reload()
+                    }}
+                  />
+                </div>
+
                 <FormControl>
                   <MultiSelect
-                    placeholder="Selecciona una API..."
+                    placeholder="Select tool..."
                     data={tools.map((tool: any) => ({
                       value: tool.id,
                       label: tool.name,
@@ -347,7 +351,16 @@ export default function Settings({
             name="datasources"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fuentes de datos</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Datasources</FormLabel>
+                  <AddDatasource
+                    profile={profile}
+                    agent={agent}
+                    onSuccess={() => {
+                      window.location.reload()
+                    }}
+                  />
+                </div>
                 <FormControl>
                   <MultiSelect
                     placeholder="Selecciona una fuente de datos..."
@@ -370,7 +383,7 @@ export default function Settings({
               </FormItem>
             )}
           />
-          <div className="inset-x-0 bottom-0 flex py-4">
+          <div className="absolute inset-x-0 inset-x-5 bottom-2 flex py-4">
             <Button
               type="submit"
               size="sm"

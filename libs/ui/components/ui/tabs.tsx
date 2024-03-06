@@ -1,70 +1,53 @@
-import React from 'react';
-import * as TabsPrimitive from '@radix-ui/react-tabs';
-import "./tabs"
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
 
-const TabsRoot = TabsPrimitive.Root;
-const TabsList = TabsPrimitive.List;
-const TabsTrigger = TabsPrimitive.Trigger;
-const TabsContent = TabsPrimitive.Content;
+import { cn } from "@/lib/utils"
 
-interface TabsProps {
-  children: React.ReactNode;
-}
+const Tabs = TabsPrimitive.Root
 
-const Tabs: React.FC<TabsProps> = ({ children }) => (
-  <TabsRoot className="w-300px flex flex-col shadow-[0_2px_10px_var(--black-a4)]" defaultValue="tab1">
-    {children}
-  </TabsRoot>
-);
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "flex h-10 w-full items-start justify-start space-x-6 border-b p-0 py-1.5 text-muted-foreground",
+      className
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
 
-interface TabListProps extends React.ComponentPropsWithoutRef<typeof TabsList> {
-  className?: string;
-}
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "flex items-center justify-center whitespace-nowrap py-1.5 font-mono text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-b-2 data-[state=active]:border-b-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground",
+      className
+    )}
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabList: React.FC<TabListProps> = ({ className, ...props }) => (
-  <TabsList className={cn("border-mauve-6 flex border-b", className)} {...props} />
-);
+const TabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      className
+    )}
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
 
-interface TabTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsTrigger> {
-  className?: string;
-  value: string;
-}
-
-const TabTrigger = React.forwardRef<HTMLButtonElement, TabTriggerProps>(
-  ({ className, value, ...props }, ref) => (
-    <TabsTrigger
-      ref={ref}
-      className={cn("font-inherit flex h-10 flex-1 select-none items-center justify-center px-4 text-sm leading-none data-[state=active]:border-b-2 data-[state=active]:border-black data-[state=active]:text-gray-900 dark:bg-black dark:text-white data-[state=active]:dark:border-b-2 data-[state=active]:dark:border-white data-[state=active]:dark:text-gray-500", className)}
-      value={value}
-      {...props}
-    />
-  )
-);
-TabTrigger.displayName = 'TabTrigger';
-
-interface TabContentProps extends React.ComponentPropsWithoutRef<typeof TabsContent> {
-  className?: string;
-  value: string;
-}
-
-const TabContent = React.forwardRef<HTMLDivElement, TabContentProps>(
-  ({ className, value, ...props }, ref) => (
-    <TabsContent
-      ref={ref}
-      className={cn("TabsContent", "grow rounded-b-lg bg-white p-5 outline-none dark:bg-black", className, {
-        "focus:shadow-outline": true,
-      })}
-      value={value}
-      {...props}
-    />
-  )
-);
-TabContent.displayName = 'TabContent';
-
-export {
-  Tabs,
-  TabList,
-  TabTrigger,
-  TabContent,
-};
+export { Tabs, TabsList, TabsTrigger, TabsContent }

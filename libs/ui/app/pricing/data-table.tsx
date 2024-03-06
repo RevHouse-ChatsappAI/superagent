@@ -23,9 +23,7 @@ async function loadPrices() {
   // {
   //   product: 'prod_PQlBLHxNozr0nS'
   // }
-  const prices = await stripe.prices.list(  {
-    product: 'prod_PQlBLHxNozr0nS'
-  });
+  const prices = await stripe.prices.list();
   const filteredPrices = prices.data.filter(
     (price) => price.active === true
   )

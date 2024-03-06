@@ -23,6 +23,7 @@ export const ButtonPrice: React.FC<ButtonPriceProps> = ({ uiMode, title, priceId
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   const formAction = async () => {
+    console.log(uiMode, title, priceId, profile, nickname)
     setLoading(true);
     try {
       const formData = new FormData();

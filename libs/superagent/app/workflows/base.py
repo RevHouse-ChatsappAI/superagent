@@ -1,8 +1,13 @@
-import asyncio
 from typing import Any, List
 
+from agentops.langchain_callback_handler import (
+    AsyncCallbackHandler,
+    LangchainCallbackHandler,
+)
+
 from app.agents.base import AgentBase
-from app.utils.streaming import CustomAsyncIteratorCallbackHandler
+from app.utils.callbacks import CustomAsyncIteratorCallbackHandler
+from app.utils.prisma import prisma
 from prisma.models import Workflow
 
 
@@ -12,37 +17,54 @@ class WorkflowBase:
         workflow: Workflow,
         callbacks: List[CustomAsyncIteratorCallbackHandler],
         session_id: str,
+        constructor_callbacks: List[
+            AsyncCallbackHandler | LangchainCallbackHandler
+        ] = None,
         enable_streaming: bool = False,
     ):
         self.workflow = workflow
         self.enable_streaming = enable_streaming
         self.session_id = session_id
+        self.constructor_callbacks = constructor_callbacks
         self.callbacks = callbacks
 
     async def arun(self, input: Any):
-        self.workflow.steps.sort(key=lambda x: x.order)
         previous_output = input
-        steps_output = {}
-        stepIndex = 0
+        steps_output = []
 
-        for step in self.workflow.steps:
-            agent = await AgentBase(
+        for stepIndex, step in enumerate(self.workflow.steps):
+            agent_config = await prisma.agent.find_unique_or_raise(
+                where={"id": step.agentId},
+                include={
+                    "llms": {"include": {"llm": True}},
+                    "datasources": {
+                        "include": {"datasource": {"include": {"vectorDb": True}}}
+                    },
+                    "tools": {"include": {"tool": True}},
+                },
+            )
+            agent_base = AgentBase(
                 agent_id=step.agentId,
-                enable_streaming=True,
-                callback=self.callbacks[stepIndex],
+                enable_streaming=self.enable_streaming,
+                callbacks=self.constructor_callbacks,
                 session_id=self.session_id,
-            ).get_agent()
-
-            task = asyncio.ensure_future(
-                agent.acall(
-                    inputs={"input": previous_output},
-                )
+                agent_config=agent_config,
             )
 
-            await task
-            agent_response = task.result()
-            previous_output = agent_response.get("output")
-            steps_output[step.order] = agent_response
+            agent = await agent_base.get_agent()
+            agent_input = agent_base.get_input(
+                previous_output,
+                agent_type=agent_config.type,
+            )
 
-            stepIndex += 1
+            agent_response = await agent.ainvoke(
+                input=agent_input,
+                config={
+                    "callbacks": self.callbacks[stepIndex],
+                },
+            )
+
+            previous_output = agent_response.get("output")
+            steps_output.append(agent_response)
+
         return {"steps": steps_output, "output": previous_output}

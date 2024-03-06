@@ -23,32 +23,24 @@ import { ButtonSidebar } from "./ui/buttonSidebar"
 import { Api } from "@/lib/api"
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [credit, setCredit] = useState<any | null>(null)
-  const [count, setCount] = useState<any | null>(null)
-  const { value: session, loading, error } = useAsync(async () => {
+  const supabase = createClientComponentClient()
+  const { value: showSidebar } = useAsync(async () => {
     const {
-      data: { session },
-    } = await createClientComponentClient().auth.getSession()
-    let profile = null;
-    if (session) {
-      const { data: profileData } = await createClientComponentClient()
-        .from("profiles")
-        .select("*")
-        .eq("user_id", session?.user?.id)
-        .single()
-      profile = profileData;
-      const api = new Api(profile?.api_key)
-      const creditResponse = await api?.getCredit();
-      if (creditResponse.success) {
-        setCredit(creditResponse.data);
-      }
-      const countResponse = await api?.getCount();
-      if (countResponse.success) {
-        setCount(countResponse.data);
-      }
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      return false
     }
-    return { session, profile }
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user?.id)
+      .single()
+    if (!profile.is_onboarded) {
+      return false
+    }
+
+    return true
   }, [])
 
   useEffect(() => {
@@ -69,10 +61,8 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`dark:bg-white-100 flex h-full ${
-        isCollapsed ? "w-[50px]" : "w-[180px]"
-      } flex-col justify-between space-y-3 rounded-r-2xl border-r bg-slate-100 pb-4 align-top ${
-        !session && "hidden"
+      className={`flex h-full w-16 flex-col items-center justify-between space-y-6 border-r bg-muted py-4 align-top ${
+        !showSidebar && "hidden"
       }`}
     >
       <div
