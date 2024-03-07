@@ -97,9 +97,9 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
 }
 
 function getPriceDescription(price: any): string {
-  if (price.unit_amount < 69000) {
+  if (price.metadata.status < "BASE") {
     return "Explora nuestros servicios con el Plan Gratis, ¡perfecto para empezar!"
-  } else if (price.unit_amount < 78900) {
+  } else if (price.metadata.status < "STANDARD") {
     return "Desbloquea más características con el Plan Estándar, ideal para negocios en crecimiento!"
   } else {
     return "¡Experimenta la suite completa con nuestro Plan Premium, diseñado para escalar!"
@@ -107,9 +107,9 @@ function getPriceDescription(price: any): string {
 }
 
 function getFeatures(price: any): string[] {
-  if (price.unit_amount < 69000) {
+  if (price.metadata.status < "BASE") {
     return pricingFeatures.free
-  } else if (price.unit_amount < 78900) {
+  } else if (price.metadata.status < "STANDARD") {
     return pricingFeatures.standard
   } else {
     return pricingFeatures.premiun
