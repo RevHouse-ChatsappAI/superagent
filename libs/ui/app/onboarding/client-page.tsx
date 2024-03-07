@@ -31,8 +31,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
-  first_name: z.string().nonempty("Invalid first name."),
-  last_name: z.string().nonempty("Invalid last name."),
+  first_name: z.string().nonempty("Nombre inválido."),
+  last_name: z.string().nonempty("Apellido inválido."),
   company: z.string(),
 })
 

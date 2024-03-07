@@ -87,7 +87,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <div className="flex flex-col text-white">
               <p className="text-sm">{session?.profile?.first_name}</p>
-              <p className="text-xs text-gray-300 dark:text-gray-500">{count?.queryCount} /<strong> {credit?.credits}</strong> creditos</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">{count?.queryCount || 0} /<strong> {credit?.credits}</strong> creditos</p>
             </div>
           )}
           {isCollapsed && (
