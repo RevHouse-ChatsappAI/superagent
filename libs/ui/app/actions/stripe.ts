@@ -24,7 +24,7 @@ export async function createCheckoutSession(
       payment_method_types: ["card"],
       discounts: [
         {
-          coupon: 'SALE',
+          coupon: 'TEST',
         },
       ],
       metadata: {
