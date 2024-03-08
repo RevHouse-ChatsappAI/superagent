@@ -29,14 +29,23 @@ export const Modal = ({
   handleModalClose: () => void
   isTokenActive: boolean
 }) => {
-  const [currentStep, setCurrentStep] = useState(1)
-  const { userProfileChatwoot } = useChatwoot()
+  const [currentStep, setCurrentStep] = useState(
+    parseInt(localStorage.getItem('currentStep') || '1', 10)
+  );
+
   const nextStep = () => {
-    setCurrentStep(currentStep + 1)
+    const newStep = currentStep + 1;
+    setCurrentStep(newStep);
+    localStorage.setItem('currentStep', newStep.toString());
   }
-  const prevStep = () => setCurrentStep(currentStep - 1)
+
+  const prevStep = () => {
+    const newStep = currentStep - 1;
+    setCurrentStep(newStep);
+    localStorage.setItem('currentStep', newStep.toString());
+  }
   return (
-    <div className="absolute inset-y-0 end-0 left-0 flex items-center justify-center bg-white/60">
+    <div className="absolute inset-y-0 end-0 left-0 flex items-center justify-center bg-white/60 dark:bg-black/60">
       <div className="animate__animated animate__fadeIn flex w-[520px] flex-col gap-3 rounded-lg border-2 bg-white p-4 dark:bg-black">
         <div className="flex justify-between border-b py-3 ">
           <h2 className="text-lg text-black dark:text-gray-300">
