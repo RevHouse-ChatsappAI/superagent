@@ -7,7 +7,7 @@ from app.models.request import ApiPayment as ApiPaymentRequest
 from app.models.response import GetPyment as GetPaymentResponse
 from app.models.response import GetCredit as GetCreditResponse
 from app.models.response import GetCount as GetCountResponse
-
+from app.models.response import FreeResponse as PostFreeResponse
 
 
 router = APIRouter()
@@ -19,7 +19,7 @@ router = APIRouter()
     response_model=GetPaymentResponse,
 )
 async def create(body: ApiPaymentRequest, api_user=Depends(get_current_api_user)):
-    valid_tiers = ["BASE", "STANDARD", "PREMIUM"]
+    valid_tiers = ["FREE","BASE", "STANDARD", "PREMIUM"]
     tier_name = body.nickname.upper()
     if tier_name not in valid_tiers:
         raise HTTPException(
@@ -138,3 +138,66 @@ async def get_count(api_user=Depends(get_current_api_user)):
             'data': count
         }
     return GetCountResponse(**response_data)
+
+@router.post(
+    "/free",
+    name="post_free_account",
+    description="Post a free account if no subscription exists",
+    response_model=PostFreeResponse
+)
+async def post_free_account(body: ApiPaymentRequest, api_user=Depends(get_current_api_user)):
+    subscription = await prisma.subscription.find_first(
+        where={'apiUserId': api_user.id}
+    )
+    if subscription:
+        response_data = {
+            'success': False,
+            'message': "Ya existe una subscripción",
+            'data': None
+        }
+    else:
+        tier_name = body.nickname.upper()
+        if tier_name != "FREE":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Tier name must be FREE for this endpoint."
+            )
+
+        tier_record = await prisma.tiercredit.find_unique(
+            where={'tier': tier_name}
+        )
+        if not tier_record:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid tier name provided."
+            )
+
+        credits = tier_record.credits
+
+        payment_data = {
+            'apiUserId': api_user.id,
+            'stripeCustomerId': body.user_customer_id,
+            'tier': tier_name
+        }
+
+        credit_data = {
+            'apiUserId': api_user.id,
+            'credits': credits,
+            'subscriptionId': None
+        }
+
+        try:
+            subscription = await prisma.subscription.create(data=payment_data)
+            credit_data['subscriptionId'] = subscription.id
+            await prisma.credit.create(data=credit_data)
+            response_data = {
+                'success': True,
+                'message': "La cuenta gratuita ha sido creada exitosamente",
+            }
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
+
+    return PostFreeResponse(**response_data)

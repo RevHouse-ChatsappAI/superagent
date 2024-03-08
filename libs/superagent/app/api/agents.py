@@ -80,12 +80,17 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
         if tier_credits is None:
             raise HTTPException(status_code=404, detail="Tier credits not found.")
         agent_limit = tier_credits.agentLimit
-        agent_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        if agent_count.agentCount >= agent_limit:
+        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count_record is None:
+            await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
+            agent_count = 0
+        else:
+            agent_count = agent_count_record.agentCount
+        if agent_count >= agent_limit:
             raise HTTPException(status_code=400, detail="Agent limit reached.")
         await prisma.count.update(
             where={"apiUserId": api_user.id},
-            data={"agentCount": agent_count.agentCount + 1}
+            data={"agentCount": agent_count + 1}
         )
 
         agent = await prisma.agent.create(
