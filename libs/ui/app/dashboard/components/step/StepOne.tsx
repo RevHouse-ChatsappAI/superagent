@@ -9,6 +9,12 @@ import { MdNavigateNext } from "react-icons/md";
 interface StepOneProps {
   nextStep: () => void
 }
+interface User {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const StepOne = ({ nextStep }: StepOneProps) => {
 
@@ -16,17 +22,24 @@ const StepOne = ({ nextStep }: StepOneProps) => {
   const [loading, setLoading] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  })
+  const [user, setUser] = useState<User>(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : { name: "", email: "", password: "", confirmPassword: "" };
+  });
 
   //Context
   const { handleProfileChatwoot } = useChatwoot()
 
   //Function
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUser(prevState => {
+      const newUserState = { ...prevState, [name]: value };
+      localStorage.setItem('user', JSON.stringify(newUserState));
+      return newUserState;
+    });
+  };
+
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
@@ -86,12 +99,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
               type="text"
               name="name"
               value={user.name}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  name: e.target.value,
-                })
-              }
+              onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
               placeholder="Ej: Julian"
               required
@@ -103,12 +111,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
               type="email"
               name="email"
               value={user.email}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  email: e.target.value,
-                })
-              }
+              onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
               placeholder="Ej: usuario@ejemplo.com"
               required
@@ -120,12 +123,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
               type="password"
               name="password"
               value={user.password}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  password: e.target.value,
-                })
-              }
+              onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
               placeholder="Ej: Abc#123"
               required
@@ -144,12 +142,7 @@ const StepOne = ({ nextStep }: StepOneProps) => {
               type="password"
               name="confirmPassword"
               value={user.confirmPassword}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  confirmPassword: e.target.value,
-                })
-              }
+              onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
               placeholder="Reingrese su contraseña"
               required

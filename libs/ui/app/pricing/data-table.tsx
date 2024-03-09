@@ -1,15 +1,18 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import Link from "next/link"
+import { IoIosCloseCircleOutline } from "react-icons/io"
 import Stripe from "stripe"
 
 import { Profile } from "@/types/profile"
 import { pricingFeatures } from "@/config/pricing"
+import { Api } from "@/lib/api"
+import { Spinner } from "@/components/ui/spinner"
+import { useToast } from "@/components/ui/use-toast"
+import { CalendarIcon } from "@/components/svg/CalendarIcon"
 
 import { CardPrice } from "./components/CardPrice"
-import { CardScheduleLink } from "./components/CardScheduleLink"
-import { CalendarIcon } from "@/components/svg/CalendarIcon"
-import Link from "next/link"
 
 async function loadPrices() {
   const stripeSecretKey = process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY
@@ -23,12 +26,11 @@ async function loadPrices() {
   // {
   //   product: 'prod_PQlBLHxNozr0nS'
   // }
-  const prices = await stripe.prices.list(  {
+  const prices = await stripe.prices.list({
     product: 'prod_PQlBLHxNozr0nS'
-  });
-  const filteredPrices = prices.data.filter(
-    (price) => price.active === true
-  )
+  })
+
+  const filteredPrices = prices?.data?.filter((price) => price.active === true)
   const sortedPrices = filteredPrices.sort((a, b) => {
     const unitAmountA = a.unit_amount || 0
     const unitAmountB = b.unit_amount || 0
@@ -40,6 +42,9 @@ async function loadPrices() {
 
 export const DataTable = ({ profile }: { profile: Profile }) => {
   const [prices, setPrices] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -54,8 +59,54 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
     fetchPrices()
   }, [])
 
+  const handleFreeSubscriptionClose = async () => {
+    try {
+      setLoading(true)
+      const api = new Api(profile.api_key)
+      const response = await api.createAccountFreeSubscription({
+        user_customer_id: profile.stripe_customer_id,
+        nickname: "FREE",
+      })
+      if (!response.success) {
+        toast({
+          description: response?.message,
+        })
+        window.location.href = "/home"
+        return
+      }
+
+      if(response.success){
+        toast({
+          description: response?.message,
+        })
+        window.location.href = "/home"
+        return
+      }
+    } catch (error) {
+      console.error("Error creating free subscription:", error)
+    } finally {
+      setLoading(() => false)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5">
+      <div className="flex justify-end">
+        <button
+          disabled={loading}
+          onClick={handleFreeSubscriptionClose}
+          className="flex items-center gap-1 rounded-lg bg-gray-500 px-5 py-2 transition duration-300 ease-in-out hover:bg-gray-600"
+        >
+          {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              <span>Continuar free</span>
+              <IoIosCloseCircleOutline />
+            </>
+          )}
+        </button>
+      </div>
       <div className="flex w-full flex-1 flex-row justify-between rounded-lg border border-gray-100 bg-slate-200 p-6 text-start text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
         <div className="flex flex-col justify-center">
           <h3 className="text-2xl font-semibold">Agenda una Reunión</h3>
@@ -97,9 +148,9 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
 }
 
 function getPriceDescription(price: any): string {
-  if (price.unit_amount < 69000) {
+  if (price.metadata.status === "BASE") {
     return "Explora nuestros servicios con el Plan Gratis, ¡perfecto para empezar!"
-  } else if (price.unit_amount < 78900) {
+  } else if (price.metadata.status === "STANDARD") {
     return "Desbloquea más características con el Plan Estándar, ideal para negocios en crecimiento!"
   } else {
     return "¡Experimenta la suite completa con nuestro Plan Premium, diseñado para escalar!"
@@ -107,9 +158,9 @@ function getPriceDescription(price: any): string {
 }
 
 function getFeatures(price: any): string[] {
-  if (price.unit_amount < 69000) {
+  if (price.metadata.status === "BASE") {
     return pricingFeatures.free
-  } else if (price.unit_amount < 78900) {
+  } else if (price.metadata.status === "STANDARD") {
     return pricingFeatures.standard
   } else {
     return pricingFeatures.premiun

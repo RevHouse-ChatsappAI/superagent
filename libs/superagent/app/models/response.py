@@ -77,6 +77,10 @@ class GetCount(BaseModel):
     message: str
     data: Optional[ApiCountModel]
 
+class FreeResponse(BaseModel):
+    success:bool
+    message: str
+
 class Agent(BaseModel):
     success: bool
     data: Optional[AgentModel]

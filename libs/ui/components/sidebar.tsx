@@ -51,18 +51,18 @@ export default function Sidebar() {
     return { session, profile }
   }, [])
 
-  useEffect(() => {
-    if (session) {
-      const api = new Api(session?.profile?.api_key)
-      const interval = setInterval(async () => {
-        const countResponse = await api?.getCount();
-        if (countResponse.success) {
-          setCount(countResponse.data);
-        }
-      }, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     const api = new Api(session?.profile?.api_key)
+  //     const interval = setInterval(async () => {
+  //       const countResponse = await api?.getCount();
+  //       if (countResponse.success) {
+  //         setCount(countResponse.data);
+  //       }
+  //     }, 5000); // Poll every 5 seconds
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [session]);
 
   const pathname = usePathname()
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
