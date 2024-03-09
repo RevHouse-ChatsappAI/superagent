@@ -45,7 +45,7 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </p>
         <div className="my-8 flex items-baseline justify-center">
           <span className="mr-2 text-5xl font-extrabold">{price}</span>
-          <span className="text-gray-500 dark:text-gray-400">/month</span>
+          <span className="text-gray-500 dark:text-gray-400">/mes</span>
         </div>
         <ul role="list" className="mb-8 space-y-2 text-left">
           {features.map((feature, index) => (
