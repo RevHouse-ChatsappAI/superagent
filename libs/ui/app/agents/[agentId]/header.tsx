@@ -39,7 +39,7 @@ import DeleteAgentButton from "./delete-agent-button"
 
 const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://development.chatsappai.com"
+    ? "https://beta.chatsappai.com/"
     : "http://localhost:3000"
 
 export default function Header({
