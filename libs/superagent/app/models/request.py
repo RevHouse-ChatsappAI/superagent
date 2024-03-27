@@ -18,6 +18,10 @@ class ApiPayment(BaseModel):
     user_customer_id: str
     nickname: str
 
+class ApiPlaformKey(BaseModel):
+    key: str
+    url: str
+
 class ApiTokenUpdate(BaseModel):
     userToken: str
 

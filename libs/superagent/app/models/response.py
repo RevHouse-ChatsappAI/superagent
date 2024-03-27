@@ -44,6 +44,10 @@ from prisma.models import (
 from prisma.models import (
     Count as ApiCountModel,
 )
+from prisma.models import (
+    PlatformKey as ApiPlatformKeyModel,
+)
+
 
 class ApiUser(BaseModel):
     success: bool
@@ -72,6 +76,11 @@ class GetCredit(BaseModel):
     message: str
     data: Optional[ApiCreditModel]
 
+class GetKeyPlatform(BaseModel):
+    success: bool
+    message: str
+    data: Optional[ApiPlatformKeyModel]
+
 class GetCount(BaseModel):
     success: bool
     message: str
@@ -83,6 +92,7 @@ class FreeResponse(BaseModel):
 
 class Agent(BaseModel):
     success: bool
+    message: Optional[str] = None
     data: Optional[AgentModel]
 
 
@@ -118,6 +128,7 @@ class AgentInvoke(BaseModel):
 
 class Datasource(BaseModel):
     success: bool
+    message: Optional[str]
     data: Optional[DatasourceModel]
 
 

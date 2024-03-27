@@ -46,7 +46,7 @@ async def create(
         datasource_limit = tier_credits.datasourceLimit
         datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
         if datasource_count.datasourceCount >= datasource_limit:
-            raise HTTPException(status_code=400, detail="Datasource limit reached for your tier.")
+            return {"success": False, "data": None, "message": "Se alcanzo el limite de tu plan"}
         await prisma.count.update(
             where={"apiUserId": api_user.id},
             data={"datasourceCount": datasource_count.datasourceCount + 1}
@@ -62,7 +62,7 @@ async def create(
             if not vector_db:
                 raise HTTPException(
                     status_code=404,
-                    detail="Couldn't find vector database with given ID!",
+                    detail="¡No se pudo encontrar la base de datos vectorial con el ID proporcionado!",
                 )
         if body.metadata:
             body.metadata = json.dumps(body.metadata)
@@ -191,6 +191,13 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
         datasource = await prisma.datasource.find_first(
             where={"id": datasource_id}, include={"vectorDb": True}
         )
+
+        datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if datasource_count and datasource_count.datasourceCount > 0:
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"datasourceCount": datasource_count.datasourceCount - 1}
+            )
 
         async def run_delete_datasource_flow(
             datasource_id: str,

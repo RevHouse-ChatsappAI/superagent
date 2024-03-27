@@ -87,7 +87,7 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
         else:
             agent_count = agent_count_record.agentCount
         if agent_count >= agent_limit:
-            raise HTTPException(status_code=400, detail="Agent limit reached.")
+            return {"success": False, "message": "Los agentes llegaron a su limite."}
         await prisma.count.update(
             where={"apiUserId": api_user.id},
             data={"agentCount": agent_count + 1}
@@ -185,7 +185,19 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Deleted Agent")
+
+        # Delete the agent
         await prisma.agent.delete(where={"id": agent_id})
+
+        # Find the agent count record for the user and decrement the count
+        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count_record:
+            new_agent_count = max(agent_count_record.agentCount - 1, 0)  # Ensure the count doesn't go below 0
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"agentCount": new_agent_count}
+            )
+
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
@@ -227,8 +239,6 @@ async def invoke(
 ):
     """Endpoint for invoking an agent"""
     # TODO: Fixing
-    print("Hola como estas asdfsadfsdaf")
-    
     try:
         credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
         if not credit_entry:
@@ -593,6 +603,11 @@ async def list_runs(agent_id: str, api_user=Depends(get_current_api_user)):
 @router.post("/webhook/{agent_id}/chatwoot")
 async def chatwoot_webhook(agent_id: str, request: Request):
     body = await request.json()
+
+    message_status = body.get("conversation", {}).get("status")
+    if message_status != "pending":
+        return {"message": "Message is pending, action not required", "agent_id": agent_id, "ignored": True}
+
     user_id = body.get("sender", {}).get("account", {}).get("id")
     account_id = body.get("account", {}).get("id")
     content = body.get("content")
