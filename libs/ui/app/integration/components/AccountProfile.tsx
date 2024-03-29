@@ -67,21 +67,30 @@ export const AccountProfile = ({ profile, profileSAgent }: Props) => {
         </div>
         <div className="grid grid-cols-2 gap-2">
           {profile?.accounts ? (
-            profile.accounts
-              .filter(
-                (account) =>
-                  !selectedAccount?.some(
-                    (selected) => selected.id === account.id
-                  )
-              )
-              .map((account) => (
-                <div
-                  key={account.id}
-                  className="flex h-[50px] items-center justify-center rounded-sm bg-slate-200 p-1 text-black"
-                >
-                  <span className="text-base md:text-lg">{account.name}</span>
-                </div>
-              ))
+            profile.accounts.filter(
+              (account) =>
+                !selectedAccount?.some((selected) => selected.id === account.id)
+            ).length > 0 ? (
+              profile.accounts
+                .filter(
+                  (account) =>
+                    !selectedAccount?.some(
+                      (selected) => selected.id === account.id
+                    )
+                )
+                .map((account) => (
+                  <div
+                    key={account.id}
+                    className="flex h-[50px] items-center justify-center rounded-sm bg-slate-200 p-1 text-black"
+                  >
+                    <span className="text-base md:text-lg">{account.name}</span>
+                  </div>
+                ))
+            ) : (
+              <div className="col-span-12 flex w-full items-center justify-start p-2 text-xs">
+                <span>No hay agentes encontrados</span>
+              </div>
+            )
           ) : (
             <div className="flex items-center justify-center">
               <Spinner />

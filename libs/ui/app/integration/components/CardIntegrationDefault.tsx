@@ -1,22 +1,8 @@
 import React from "react"
 import { CiCircleCheck } from "react-icons/ci"
-import { RxCommit, RxCursorArrow } from "react-icons/rx"
+import { RxCursorArrow } from "react-icons/rx"
 
 import { Profile } from "@/types/profile"
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { PlusIcon } from "@/components/svg/PlusIcon"
-
-import { BtnConecctionChatsAppAI } from "./BtnConecctionChatsAppAI"
 
 interface Props {
   children?: React.ReactNode
@@ -31,7 +17,7 @@ interface Props {
   profile?: Profile
 }
 
-export const CardIntegration = ({
+export const CardIntegrationDefault = ({
   children,
   title,
   description,
@@ -40,8 +26,6 @@ export const CardIntegration = ({
   titleBtn,
   disabled,
   commingSoon,
-  isTokenActive,
-  profile,
 }: Props) => {
   return (
     <div
@@ -58,17 +42,16 @@ export const CardIntegration = ({
       </div>
       <div className="flex flex-col justify-center gap-2">
         <button
-          disabled
-          className={`flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-md bg-slate-300 px-4 py-2 dark:bg-gray-400`}
+          disabled={disabled}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 ${
+            disabled
+              ? "cursor-not-allowed bg-slate-300 dark:bg-gray-400"
+              : "bg-slate-300 dark:bg-black"
+          }`}
         >
           {disabled && !commingSoon ? <CiCircleCheck /> : <RxCursorArrow />}
           <span>{titleBtn ? titleBtn : "Conectar"}</span>
         </button>
-        <BtnConecctionChatsAppAI
-          isTokenActive={isTokenActive ?? false}
-          profile={profile!}
-          isAvailableExtendChatwoot={true}
-        />
       </div>
     </div>
   )

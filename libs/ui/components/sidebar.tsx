@@ -51,19 +51,6 @@ export default function Sidebar() {
     return { session, profile }
   }, [])
 
-  // useEffect(() => {
-  //   if (session) {
-  //     const api = new Api(session?.profile?.api_key)
-  //     const interval = setInterval(async () => {
-  //       const countResponse = await api?.getCount();
-  //       if (countResponse.success) {
-  //         setCount(countResponse.data);
-  //       }
-  //     }, 5000); // Poll every 5 seconds
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [session]);
-
   const pathname = usePathname()
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
 
@@ -219,24 +206,6 @@ export default function Sidebar() {
           ))}
         </div>
       </div>
-      {/* {!isCollapsed && (
-        <div>
-          <div className="mb-3 flex flex-col gap-1 px-4 2xl:mb-10 2xl:gap-3">
-            <h2 className="text-xs 2xl:text-base dark:text-gray-300">Uso</h2>
-            <div>
-              <p className="text-xs dark:text-gray-300">Caracteres usados</p>
-              <span className="text-xs 2xl:text-base">0 / 1.00M</span>
-            </div>
-            <div>
-              <p className="text-xs dark:text-gray-300">Mensajes sobrantes</p>
-              <span className="text-xs 2xl:text-base">1000</span>
-            </div>
-            <button className="text-start text-xs text-green-600 2xl:text-base dark:text-green-500">
-              Manejar plan
-            </button>
-          </div>
-        </div>
-      )} */}
       <div
         className={`flex flex-col ${
           isCollapsed ? "items-center" : "items-start"

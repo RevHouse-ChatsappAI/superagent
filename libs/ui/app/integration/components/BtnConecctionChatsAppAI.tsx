@@ -1,24 +1,19 @@
 import React, { useState } from "react"
-import { RxCross2 } from "react-icons/rx"
+import { FaUser } from "react-icons/fa"
+import { MdSwitchAccount } from "react-icons/md"
 
 import { Profile } from "@/types/profile"
 import { cn } from "@/lib/utils"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+
 import { TabContent, TabList, Tabs, TabTrigger } from "@/components/ui/tabs"
 import { PlusIcon } from "@/components/svg/PlusIcon"
 import { useChatwoot } from "@/app/context/ChatwootContext"
@@ -31,17 +26,19 @@ import StepTwo from "@/app/dashboard/components/step/StepTwo"
 
 import { AccountProfile } from "./AccountProfile"
 
-const props = {}
-
 export const BtnConecctionChatsAppAI = ({
   profile,
   isTokenActive,
 }: {
   profile: Profile
   isTokenActive: boolean
+  isAvailableExtendChatwoot?: boolean
+  setIsAvailableKey?: (value: boolean) => void
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
+
   const { userProfileChatwoot } = useChatwoot()
+
   const nextStep = () => {
     setCurrentStep(currentStep + 1)
   }
@@ -57,7 +54,7 @@ export const BtnConecctionChatsAppAI = ({
         }
       >
         <PlusIcon />
-        <p>Agregar otra conexión</p>
+        <p>{isTokenActive ? "Agregar otra conexión" : "Agregar conexión"}</p>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Conexión con ChatsAppAI CRM</DialogTitle>
@@ -69,8 +66,12 @@ export const BtnConecctionChatsAppAI = ({
           <Tabs>
             <TabList>
               <TabTrigger value="tab1">CRM</TabTrigger>
-              <TabTrigger value="tab2">Usuario CRM</TabTrigger>
-              <TabTrigger value="tab3">Cuentas ChatsAppAI</TabTrigger>
+              <TabTrigger value="tab2">
+                <FaUser className="text-lg" />
+              </TabTrigger>
+              <TabTrigger value="tab3">
+                <MdSwitchAccount className="text-xl" />
+              </TabTrigger>
             </TabList>
             <TabContent value="tab1">
               <div className="flex h-full flex-col gap-3">

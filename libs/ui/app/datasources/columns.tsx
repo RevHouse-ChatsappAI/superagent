@@ -134,10 +134,18 @@ export function EditTool({
       })
       router.refresh()
     } catch (error: any) {
-      toast({
-        description: error?.message,
-        variant: "destructive",
-      })
+      console.log(error.data)
+      if (error.response && error.response.data && !error.response.data.success && error.response.data.message === 'Límite de consultas excedido') {
+        toast({
+          description: "Se excedió del límite de consultas a la base de datos.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          description: "Error al actualizar la fuente de datos.",
+          variant: "destructive",
+        });
+      }
     }
   }
 

@@ -3,21 +3,25 @@ import React, { useState } from "react"
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
-import { ButtonPrev } from "../btn/ButtonPrev"
 import { Spinner } from "@/components/ui/spinner"
 
 import { MdNavigateNext } from "react-icons/md";
+import { ButtonPrev } from "@/app/dashboard/components/btn/ButtonPrev";
+import { Profile } from "@/types/profile";
+import { Api } from "@/lib/api";
 
 interface StepOneProps {
   nextStep: () => void
   prevStep: () => void
   btnPrevActive?: boolean
+  profile: Profile
 }
 
-const StepTwo = ({
+const CreateAccount = ({
   nextStep,
   prevStep,
   btnPrevActive = true,
+  profile
 }: StepOneProps) => {
   //Context
   const { userProfileChatwoot, handleAccountId } = useChatwoot()
@@ -27,7 +31,7 @@ const StepTwo = ({
   const [account, setAccount] = useState(() => {
     return localStorage.getItem('account') || "";
   });
-  const apiChatwoot = new ApiChatwootPlatform()
+  const apiChatwoot = new Api(profile.api_key)
 
   //Function
   const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +47,15 @@ const StepTwo = ({
       const accountDetails = {
         name: account,
       }
-      const accountResponse = await apiChatwoot.createAccount(accountDetails)
+      const accountResponse = await apiChatwoot.postCreateAccount(accountDetails)
 
       if (accountResponse && accountResponse.id) {
         const adminUserDetails = {
           user_id: userProfileChatwoot?.id?.toString() || "",
           role: "administrator",
         }
-        console.log(adminUserDetails)
-        await apiChatwoot.createAccountUser(
+
+        await apiChatwoot.postCreateAccountUser(
           accountResponse.id,
           adminUserDetails
         )
@@ -71,7 +75,7 @@ const StepTwo = ({
   return (
     <div className="flex flex-1 flex-col">
       <h2 className="mb-4 text-sm text-gray-700 dark:text-gray-500">
-        Creación de Cuenta en ChatsAppAI CRM
+        Creación de Cuenta en Chatwoot
       </h2>
       <form
         onSubmit={handleAddUserChatwoot}
@@ -108,4 +112,4 @@ const StepTwo = ({
   )
 }
 
-export default StepTwo
+export default CreateAccount
