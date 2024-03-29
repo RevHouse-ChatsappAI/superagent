@@ -156,6 +156,55 @@ export class Api {
     return this.fetchFromApi("/count")
   }
 
+  async platformKey(){
+    return this.fetchFromApi("/platform_key")
+  }
+
+  async postPlatformKey(payload: any) {
+    return this.fetchFromApi(`/platform_key`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  }
+
+  async putPlatformKey(payload: any) {
+    return this.fetchFromApi(`/platform_key`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    })
+  }
+
+  // CHATWOOT
+  async postCreateUser(payload: any) {
+    return this.fetchFromApi(`/integration/users`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  }
+
+  async postCreateAgentBot(agentBotDetails: any) {
+    return this.fetchFromApi(`integration/agent_bots`, {
+      method: "POST",
+      body: JSON.stringify(agentBotDetails),
+    });
+  }
+
+
+  async postCreateAccountUser(accountId: number, userDetails: { user_id: string; role: string; }) {
+    return this.fetchFromApi(`integration/accounts/${accountId}/account_users`, {
+      method: "POST",
+      body: JSON.stringify(userDetails),
+    });
+  }
+
+  async postCreateAccount(accountDetails: { name: string; }) {
+    return this.fetchFromApi(`integration/accounts`, {
+      method: "POST",
+      body: JSON.stringify(accountDetails),
+    });
+  }
+
+
   // async updateSelectUserAccountChatwoot() {
   //   return this.fetchFromApi(`/token/userchatwoot`, {
   //     method: "PATCH",

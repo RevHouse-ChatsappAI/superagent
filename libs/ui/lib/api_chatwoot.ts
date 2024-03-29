@@ -123,6 +123,73 @@ export class ApiChatwootPlatform {
           //TODO: Save enviroment Develop/Cloud
           // Localhost: AceQA5vCC5Cn9PVrTYkwyuyA
           //Cloud: eh2iJ7QoiBRxZSRAp59f19c1
+          'api_access_token': 'AceQA5vCC5Cn9PVrTYkwyuyA',
+          'Ocp-Apim-Subscription-Key': `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`
+        },
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  }
+
+  //GET
+
+  //POST
+
+  async createUser(mock: Props) {
+    return this.fetchFromApi(`users`, {
+      method: "POST",
+      body: JSON.stringify(mock),
+    });
+  }
+
+
+  async createAgentBot(agentBotDetails: any) {
+    return this.fetchFromApi(`agent_bots`, {
+      method: "POST",
+      body: JSON.stringify(agentBotDetails),
+    });
+  }
+
+
+  async createAccountUser(accountId: number, userDetails: { user_id: string; role: string; }) {
+    return this.fetchFromApi(`accounts/${accountId}/account_users`, {
+      method: "POST",
+      body: JSON.stringify(userDetails),
+    });
+  }
+
+  async createAccount(accountDetails: { name: string; }) {
+    return this.fetchFromApi(`accounts`, {
+      method: "POST",
+      body: JSON.stringify(accountDetails),
+    });
+  }
+
+}
+
+export class ApiChatwootPlatformExtend {
+  private apiKey?: string
+
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey
+  }
+
+  async fetchFromApi(endpoint: string, options: RequestInit = {}) {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_CHATWOOT_PLATFORM_API_URL}/${endpoint}`,
+      {
+        ...options,
+        headers: {
+          ...options.headers,
+          "Content-Type": "application/json",
+          //TODO: Save enviroment Develop/Cloud
+          // Localhost: AceQA5vCC5Cn9PVrTYkwyuyA
+          //Cloud: eh2iJ7QoiBRxZSRAp59f19c1
           'api_access_token': 'eh2iJ7QoiBRxZSRAp59f19c1',
           'Ocp-Apim-Subscription-Key': `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`
         },
