@@ -17,6 +17,11 @@ interface ChatwootProviderProps {
   children: ReactNode
 }
 
+interface PlatformKey {
+  key: string;
+  url: string;
+}
+
 export const ChatwootContext = createContext<{
   token: string
   tokenActive: boolean
@@ -24,6 +29,7 @@ export const ChatwootContext = createContext<{
   agentToken: string,
   apiAgent: string,
   accountId: string,
+  platformKey: PlatformKey | null,
   handleChangeToken: (value: string) => void
   handleChangeActiveToken: (value: boolean) => void
   handleProfileChatwoot: (profile: ProfileChatwoot) => void
@@ -31,6 +37,7 @@ export const ChatwootContext = createContext<{
   handleAgentApi: (id: string) => void
   handleAccountId: (id: string) => void
 }>({
+  platformKey: null,
   token: "",
   agentToken: "",
   userProfileChatwoot: null,
@@ -49,6 +56,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
   children,
 }) => {
   const [token, setToken] = useState<string>("")
+  const [platformKey, setPlatformKey] = useState<PlatformKey | null>(null);
   const [tokenActive, setTokenActive] = useState<boolean>(false)
 
   const [agentToken, setAgentToken] = useState("")
@@ -77,10 +85,13 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
         if (profile) {
           const api = new Api(profile.api_key)
           const response = await api.getToken()
+          // CORREGIR ROMPE EL FLUJO CUANDO ESTAN CARGANDO
+          const responsePlatformKey = await api.platformKey()
 
           if (response.success && response.data) {
             setTokenActive(true)
             setToken(response?.data?.userToken)
+            setPlatformKey(responsePlatformKey?.data)
             // setAccountId(response.data.userProfileChatwoot)
             const apiChatwoot = new ApiChatwoot(response.data.userToken)
 
@@ -128,6 +139,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
   return (
     <ChatwootContext.Provider
       value={{
+        platformKey,
         userProfileChatwoot,
         token,
         handleChangeToken,
