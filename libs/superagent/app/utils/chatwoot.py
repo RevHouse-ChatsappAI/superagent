@@ -1,3 +1,4 @@
+import json
 import aiohttp
 from aiohttp import ClientSession
 
@@ -27,3 +28,29 @@ async def enviar_respuesta_chatwoot(conversation_id, respuesta, token, account_i
                 error_message = f"Failed to send message, status: {response.status}, response: {response_body}"
                 return {"error": error_message}
             return {"status": response.status, "data": "Message sent successfully"}
+
+async def chatwoot_human_handoff(conversation_id, token, account_id):
+    str_account_id = str(account_id)
+    str_conversation_id = str(conversation_id)
+    url = f"{CHATWOOT_API_URL}{str_account_id}/conversations/{str_conversation_id}/labels"
+    headers = {
+        "Content-Type": "application/json",
+        "api_access_token": token,
+        'Ocp-Apim-Subscription-Key': SUBSCRIPTION
+    }
+
+    data = {"labels": ["handoff"]}
+
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, headers=headers, json=data) as response:
+                if response.status != 200:
+                    response_body = await response.text()
+                    print(f"Failed to add labels, status: {response.status}, response: {response_body}")
+                    raise aiohttp.web.HTTPException(reason=f"Network response was not ok. Status: {response.status}")
+                
+                response_data = await response.json()
+                print('Label added successfully:', response_data)
+        except Exception as error:
+            print('Error adding label:', error)
+            raise

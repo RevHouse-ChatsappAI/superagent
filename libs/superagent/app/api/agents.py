@@ -4,7 +4,7 @@ import logging
 from typing import AsyncIterable
 
 from app.utils.token import obtener_token_supabase, modificar_estado_agente
-from app.utils.chatwoot import enviar_respuesta_chatwoot
+from app.utils.chatwoot import enviar_respuesta_chatwoot, chatwoot_human_handoff
 
 
 import segment.analytics as analytics
@@ -605,6 +605,11 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     body = await request.json()
 
     message_status = body.get("conversation", {}).get("status")
+    label_handoff = body.get("conversation", {}).get("labels")
+
+    if "handoff" in label_handoff:
+        return {"message": "Handoff label detected, action will not be executed", "ignored": True}
+
     if message_status != "pending":
         return {"message": "Message is pending, action not required", "agent_id": agent_id, "ignored": True}
 
@@ -613,12 +618,36 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     content = body.get("content")
     conversation_id = body.get("conversation", {}).get("id")
     message_type = body.get("message_type")
-    print(conversation_id)
-    # Process only incoming messages (messages from clients)
+
+    try:
+        token = await prisma.token.find_unique(where={"apiUserChatwoot": str(user_id)})
+        if not token:
+            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+        credit_entry = await prisma.credit.find_first(where={"apiUserId": token.apiUserId})
+        if not credit_entry:
+            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+        available_credits = credit_entry.credits
+        count_entry = await prisma.count.find_unique(where={"apiUserId": token.apiUserId})
+        if count_entry:
+            new_count = count_entry.queryCount + 1
+            if new_count > available_credits:
+                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
+            await prisma.count.update(
+                where={"apiUserId": token.apiUserId},
+                data={"queryCount": new_count}
+            )
+        else:
+            if available_credits <= 0:
+                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
+            await prisma.count.create(
+                data={"apiUserId": token.apiUserId, "queryCount": 1}
+            )
+    except Exception as e:
+        handle_exception(e)
+
     if message_type != "incoming":
         logging.info("Ignoring non-client message")
         return {"message": "Non-client message ignored", "agent_id": agent_id, "ignored": True}
-    # Check if the client wants to speak with a human
     try:
         token = await obtener_token_supabase(user_id=user_id)
         if not token:
@@ -626,37 +655,52 @@ async def chatwoot_webhook(agent_id: str, request: Request):
 
         valor_token = token['data'].agentToken
         ia_assistant_active = token['data'].isAgentActive
+        userTokenChatwoot= token['data'].userToken
 
         agent = await prisma.agent.find_unique(where={"id": agent_id})
         if not agent:
             raise HTTPException(status_code=404, detail="Agent not found")
 
         agent_base = await AgentBase(agent_id=agent_id).get_agent()
-        if ia_assistant_active:
-            if content.lower() == "quiero hablar con una persona":
-                await modificar_estado_agente(user_id=user_id, es_respuesta_de_bot=False)
-                await enviar_respuesta_chatwoot(conversation_id, "Ya te derivamos con un agente...", valor_token, account_id, es_respuesta_de_bot=True)
-                return {"message": "Request to speak with a human agent received", "agent_id": agent_id}
-            # Function to send message to superagent for processing
-            async def send_message(agent: AgentBase, content: str) -> str:
-                try:
-                    result = await agent.acall(
-                        inputs={"input": content},
-                        tags=[agent_id],
-                        callbacks=None,
-                    )
+        if ia_assistant_active == False:
+            return {"message": "Request to speak with a human agent received", "agent_id": agent_id}
+
+        async def send_message(
+            agent: LLMChain | AgentExecutor,
+            content: str,
+        ) -> str:
+            try:
+                result = await agent.acall(
+                    inputs={"input": content},
+                    tags=[agent_id],
+                    callbacks=None,
+                )
+
+                if "intermediate_steps" in result:
+                    for step in result["intermediate_steps"]:
+                        (agent_action_message_log, tool_response) = step
+                        tool_response_dict = json.loads(tool_response)
+                        action = tool_response_dict.get("action")
+
+                        function = str(action)
+                        if function == "hand-off":
+                            await chatwoot_human_handoff(conversation_id, userTokenChatwoot, account_id)
                     return result.get("output", "")
-                except Exception as e:
-                    logging.error(f"Error in send_message: {e}")
-                    raise
+            except Exception as e:
+                logging.error(f"Error in send_message: {e}")
+                raise
 
-            response = await send_message(agent_base, content)
+        logging.info("Collecting response from the agent...")
+        response_message = await send_message(agent_base, content=content)
 
-            if not response:
-                raise HTTPException(status_code=500, detail="Failed to generate a response")
+        try:
+            await enviar_respuesta_chatwoot(conversation_id, response_message, valor_token, account_id, es_respuesta_de_bot=True)
+        except Exception as e:
+            logging.error(f"Error sending response to Chatwoot: {e}")
+            raise HTTPException(status_code=500, detail="Error sending the response to Chatwoot")
 
-            await enviar_respuesta_chatwoot(conversation_id, response, valor_token, account_id, es_respuesta_de_bot=True)
-            return {"message": "Data received and processed by the Superagent bot", "agent_id": agent_id, "response": response}
+
+        return {"success": True, "message": "Response sent to Chatwoot"}
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         return {"message": "An error occurred while processing the data", "agent_id": agent_id}

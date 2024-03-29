@@ -14,4 +14,7 @@ class HandOff(BaseTool):
 
     async def _arun(self, reason: str) -> str:
         payload = {"reasons": reason, "action": "hand-off"}
+        print(reason)
+        print("--------------------------------------")
+        print(self)
         return json.dumps(payload)
