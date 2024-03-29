@@ -322,6 +322,13 @@ export class Api {
     })
   }
 
+  async createAccountFreeSubscription(payload: any) {
+    return this.fetchFromApi("/free", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  }
+
   async patchVectorDb(id: string, payload: any) {
     return this.fetchFromApi(`/vector-dbs/${id}`, {
       method: "PATCH",

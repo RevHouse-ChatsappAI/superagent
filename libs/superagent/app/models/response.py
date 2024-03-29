@@ -98,6 +98,9 @@ class ApiKeyList(BaseModel):
     success: bool
     data: Optional[list[ApiKeyModel]]
 
+class FreeResponse(BaseModel):
+    success:bool
+    message: str
 
 class Agent(BaseModel):
     success: bool

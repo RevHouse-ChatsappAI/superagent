@@ -18,10 +18,20 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
 
   //State
   const [loading, setLoading] = useState(false)
-  const [account, setAccount] = useState("")
+  const [account, setAccount] = useState(() => {
+    const savedAccount = localStorage.getItem('agent_bot');
+    return savedAccount || "";
+  });
   const apiChatwoot = new ApiChatwootPlatform()
 
   //Function
+
+  const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAccount = e.target.value;
+    setAccount(newAccount);
+    localStorage.setItem('agent_bot', newAccount);
+  };
+
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
@@ -67,7 +77,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
             type="text"
             name="name"
             value={account}
-            onChange={(e) => setAccount(e.target.value)}
+            onChange={handleAccountChange}
             className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
             placeholder="Eg: Account Company"
             required

@@ -25,10 +25,18 @@ const StepTwo = ({
 
   //State
   const [loading, setLoading] = useState(false)
-  const [account, setAccount] = useState("")
+  const [account, setAccount] = useState(() => {
+    return localStorage.getItem('account') || "";
+  });
   const apiChatwoot = new ApiChatwootPlatform()
 
   //Function
+  const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAccount = e.target.value;
+    setAccount(newAccount);
+    localStorage.setItem('account', newAccount);
+  };
+
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
@@ -76,7 +84,7 @@ const StepTwo = ({
             type="text"
             name="name"
             value={account}
-            onChange={(e) => setAccount(e.target.value)}
+            onChange={handleAccountChange}
             className="w-full rounded-lg border border-gray-300 bg-transparent p-2 text-sm text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
             placeholder="Ej: Empresa Cuenta"
             required

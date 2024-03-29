@@ -28,7 +28,7 @@ import { MicrosoftIcon } from "@/components/svg/MicrosoftIcon"
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Invalid email address.",
+    message: "Dirección de correo electrónico no válida.",
   }),
 })
 

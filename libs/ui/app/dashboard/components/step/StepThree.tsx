@@ -175,7 +175,7 @@ const StepThree = ({
               (agent: { id: string; name: string; description: string }) => (
                 <div
                   key={agent.id}
-                  className={`flex h-20 cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-300 p-4 shadow transition-opacity duration-300 ease-in-out dark:bg-gray-700 ${
+                  className={`flex h-20 cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-300 p-4 shadow transition-all duration-300 ease-in-out dark:bg-gray-700 hover:dark:bg-gray-800 ${
                     apiAgent && apiAgent !== agent.id
                       ? "opacity-50"
                       : "opacity-100"
@@ -194,6 +194,11 @@ const StepThree = ({
                   </p>
                 </div>
               )
+            )}
+          </div>
+          <div>
+            {agents && agents.length === 0 && (
+              <p className="text-xs dark:text-gray-500">No se han encontrado agentes.</p>
             )}
           </div>
           {apiAgent && (

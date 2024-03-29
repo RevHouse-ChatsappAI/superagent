@@ -43,18 +43,18 @@ export default function Sidebar() {
     return true
   }, [])
 
-  useEffect(() => {
-    if (session) {
-      const api = new Api(session?.profile?.api_key)
-      const interval = setInterval(async () => {
-        const countResponse = await api?.getCount();
-        if (countResponse.success) {
-          setCount(countResponse.data);
-        }
-      }, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     const api = new Api(session?.profile?.api_key)
+  //     const interval = setInterval(async () => {
+  //       const countResponse = await api?.getCount();
+  //       if (countResponse.success) {
+  //         setCount(countResponse.data);
+  //       }
+  //     }, 5000); // Poll every 5 seconds
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [session]);
 
   const pathname = usePathname()
   const toggleSidebar = () => setIsCollapsed(!isCollapsed)
@@ -77,7 +77,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <div className="flex flex-col text-white">
               <p className="text-sm">{session?.profile?.first_name}</p>
-              <p className="text-xs text-gray-300 dark:text-gray-500">{count?.queryCount} /<strong> {credit?.credits}</strong> creditos</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">{count?.queryCount || 0} /<strong> {credit?.credits}</strong> creditos</p>
             </div>
           )}
           {isCollapsed && (

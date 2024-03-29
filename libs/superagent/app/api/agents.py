@@ -196,6 +196,29 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     llm_provider = body.llmProvider
     llm_model = body.llmModel
     metadata = json.dumps(body.metadata) or "{}"
+    try:
+        # TODO: Fixing
+        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        if subscription is None:
+            raise HTTPException(status_code=404, detail="Subscription not found.")
+        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        if tier_credits is None:
+            raise HTTPException(status_code=404, detail="Tier credits not found.")
+        agent_limit = tier_credits.agentLimit
+        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        if agent_count_record is None:
+            await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
+            agent_count = 0
+        else:
+            agent_count = agent_count_record.agentCount
+        if agent_count >= agent_limit:
+            raise HTTPException(status_code=400, detail="Agent limit reached.")
+        await prisma.count.update(
+            where={"apiUserId": api_user.id},
+            data={"agentCount": agent_count + 1}
+        )
+    except Exception as e:
+        handle_exception(e)
 
     if SEGMENT_WRITE_KEY:
         analytics.track(user_id, "Created Agent", {**body.dict()})
