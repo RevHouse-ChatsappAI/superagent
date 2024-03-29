@@ -103,6 +103,7 @@ export function DataTable<TData, TValue>({
   const router = useRouter()
   const { toast } = useToast()
   const api = new Api(profile.api_key)
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
@@ -153,24 +154,34 @@ export function DataTable<TData, TValue>({
     try {
       const { tools, datasources } = values
 
-      const { data: agent } = await api.createAgent({
+      const response = await api.createAgent({
         ...values,
         llmModel: siteConfig.defaultLLM,
       })
 
-      for (const toolId of tools) {
-        await api.createAgentTool(agent.id, toolId)
-      }
+      if (response.success) {
+        const { data: agent } = response
 
-      for (const datasourceId of datasources) {
-        await api.createAgentDatasource(agent.id, datasourceId)
-      }
+        for (const toolId of tools) {
+          await api.createAgentTool(agent.id, toolId)
+        }
 
-      toast({
-        description: "¡Nuevo agente creado!",
-      })
-      router.refresh()
-      router.push(`/agents/${agent.id}`)
+        for (const datasourceId of datasources) {
+          await api.createAgentDatasource(agent.id, datasourceId)
+        }
+
+        toast({
+          description: "¡Nuevo agente creado!",
+        })
+        router.refresh()
+        router.push(`/agents/${agent.id}`)
+      } else {
+        // Handle the case where success is false
+        toast({
+          description: response.message || "Error al crear el agente.",
+          variant: "destructive",
+        })
+      }
     } catch (error: any) {
       toast({
         description: error?.message,
@@ -187,9 +198,12 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center space-x-4 py-4">
         <Dialog defaultOpen={isAddNewAgentModalOpen}>
           <DialogTrigger
-            className={cn(buttonVariants({ variant: "default", size: "sm" })) + "flex gap-3 p-3 rounded-sm items-center mb-5"}
+            className={
+              cn(buttonVariants({ variant: "default", size: "sm" })) +
+              "mb-5 flex items-center gap-3 rounded-sm p-3"
+            }
           >
-            <PlusIcon/>
+            <PlusIcon />
             <p>Crear un nuevo agente</p>
           </DialogTrigger>
           <DialogContent>
@@ -226,7 +240,10 @@ export function DataTable<TData, TValue>({
                       <FormItem>
                         <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input placeholder="Por ejemplo, Mi agente" {...field} />
+                          <Input
+                            placeholder="Por ejemplo, Mi agente"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -322,10 +339,16 @@ export function DataTable<TData, TValue>({
       <div>
         <div className="flex w-full">
           {table.getHeaderGroups().map((headerGroup) => (
-            <div className="grid flex-1 grid-cols-12 gap-4" key={headerGroup.id}>
+            <div
+              className="grid flex-1 grid-cols-12 gap-4"
+              key={headerGroup.id}
+            >
               {headerGroup.headers.map((header) => {
                 return (
-                  <div className="col-span-3 text-xs text-gray-400" key={header.id}>
+                  <div
+                    className="col-span-3 text-xs text-gray-400"
+                    key={header.id}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -358,9 +381,7 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <div className="flex w-full justify-center">
-              <div className="h-24 w-full text-center">
-                Sin resultados.
-              </div>
+              <div className="h-24 w-full text-center">Sin resultados.</div>
             </div>
           )}
         </div>
