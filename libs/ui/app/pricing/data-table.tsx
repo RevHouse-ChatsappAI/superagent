@@ -22,10 +22,6 @@ async function loadPrices() {
   const stripe = new Stripe(stripeSecretKey, {
     apiVersion: "2023-08-16",
   })
-  // TODO: Pricing Production add to list()
-  // {
-  //   product: 'prod_PQlBLHxNozr0nS'
-  // }
   const prices = await stripe.prices.list({
     product: 'prod_PQlBLHxNozr0nS'
   })
