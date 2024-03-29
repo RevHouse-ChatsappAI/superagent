@@ -22,13 +22,12 @@ async function loadPrices() {
   const stripe = new Stripe(stripeSecretKey, {
     apiVersion: "2023-08-16",
   })
-  // TODO: Pricing Production add to list()
-  // {
-  //   product: 'prod_PQlBLHxNozr0nS'
-  // }
-  const prices = await stripe.prices.list({
-    product: 'prod_PQlBLHxNozr0nS'
-  })
+
+  const productId = process.env.STRIPE_PRODUCT_ID;
+
+  const prices = productId
+  ? await stripe.prices.list({ product: productId })
+  : await stripe.prices.list();
 
   const filteredPrices = prices?.data?.filter((price) => price.active === true)
   const sortedPrices = filteredPrices.sort((a, b) => {
