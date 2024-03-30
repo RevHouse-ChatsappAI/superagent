@@ -100,13 +100,17 @@ model ApiUser {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   agents          Agent[]
-  llms            LLM[]
   datasources     Datasource[]
   tools           Tool[]
   workflows       Workflow[]
   vectorDb        VectorDb[]
   workflowConfigs WorkflowConfig[]
   apiKeys         ApiKey[]
+  tokens Token[]
+  subscriptions Subscription[]
+  credits Credit[]
+  counts Count[]
+  platformKey  PlatformKey[]
 }
 
 model ApiKey {
@@ -139,7 +143,6 @@ model Agent {
   datasources    AgentDatasource[]
   tools          AgentTool[]
   workflowSteps  WorkflowStep[]
-  metadata       Json?
 }
 
 model Datasource {
@@ -323,4 +326,16 @@ model TierCredit {
   datasourceLimit Int    @default(1)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model PlatformKey {
+  id        String   @id @default(uuid())
+  key       String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  apiUser   ApiUser  @relation(fields: [apiUserId], references: [id])
+  apiUserId String
+
+  @@unique([apiUserId])
 }
