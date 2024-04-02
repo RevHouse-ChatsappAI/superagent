@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
+
 import { Api } from "./lib/api"
 
 export async function middleware(req: NextRequest) {

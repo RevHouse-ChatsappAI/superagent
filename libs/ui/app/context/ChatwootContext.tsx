@@ -18,18 +18,18 @@ interface ChatwootProviderProps {
 }
 
 interface PlatformKey {
-  key: string;
-  url: string;
+  key: string
+  url: string
 }
 
 export const ChatwootContext = createContext<{
   token: string
   tokenActive: boolean
   userProfileChatwoot: ProfileChatwoot | null
-  agentToken: string,
-  apiAgent: string,
-  accountId: string,
-  platformKey: PlatformKey | null,
+  agentToken: string
+  apiAgent: string
+  accountId: string
+  platformKey: PlatformKey | null
   handleChangeToken: (value: string) => void
   handleChangeActiveToken: (value: boolean) => void
   handleProfileChatwoot: (profile: ProfileChatwoot) => void
@@ -49,21 +49,19 @@ export const ChatwootContext = createContext<{
   handleProfileChatwoot: () => {},
   handleTokenChange: () => {},
   handleAgentApi: () => {},
-  handleAccountId: () => {}
+  handleAccountId: () => {},
 })
 
 export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
   children,
 }) => {
   const [token, setToken] = useState<string>("")
-  const [platformKey, setPlatformKey] = useState<PlatformKey | null>(null);
+  const [platformKey, setPlatformKey] = useState<PlatformKey | null>(null)
   const [tokenActive, setTokenActive] = useState<boolean>(false)
 
   const [agentToken, setAgentToken] = useState("")
   const [apiAgent, setApiAgent] = useState("")
   const [accountId, setAccountId] = useState("")
-
-
 
   const [userProfileChatwoot, setUserProfileChatwoot] =
     useState<ProfileChatwoot | null>(null)
@@ -151,7 +149,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
         apiAgent,
         handleAgentApi,
         accountId,
-        handleAccountId
+        handleAccountId,
       }}
     >
       {children}

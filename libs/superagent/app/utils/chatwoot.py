@@ -1,4 +1,3 @@
-import json
 from os import getenv
 
 import aiohttp
@@ -13,7 +12,10 @@ async def enviar_respuesta_chatwoot(
 ):
     str_account_id = str(account_id)
     str_conversation_id = str(conversation_id)
-    url = f"{CHATWOOT_API_URL}{str_account_id}/conversations/{str_conversation_id}/messages"
+    url = (
+        f"{CHATWOOT_API_URL}{str_account_id}/conversations/"
+        f"{str_conversation_id}/messages"
+    )
 
     headers = {
         "Content-Type": "application/json",
@@ -22,7 +24,6 @@ async def enviar_respuesta_chatwoot(
     }
 
     data = {"content": respuesta, "message_type": "outgoing", "private": False}
-    # No incluir el sender si la respuesta es del bot
     if not es_respuesta_de_bot:
         data["sender"] = {"name": "John", "available_name": "John"}
 
@@ -30,8 +31,10 @@ async def enviar_respuesta_chatwoot(
         async with session.post(url, headers=headers, json=data) as response:
             if response.status != 200:
                 response_body = await response.text()
-                print(f"Response body: {response_body}")
-                error_message = f"Failed to send message, status: {response.status}, response: {response_body}"
+                error_message = (
+                    f"Failed to send message, status: {response.status}, "
+                    f"response: {response_body}"
+                )
                 return {"error": error_message}
             return {"status": response.status, "data": "Message sent successfully"}
 
@@ -39,7 +42,12 @@ async def enviar_respuesta_chatwoot(
 async def chatwoot_human_handoff(conversation_id, token, account_id):
     str_account_id = str(account_id)
     str_conversation_id = str(conversation_id)
-    url = f"{CHATWOOT_API_URL}{str_account_id}/conversations/{str_conversation_id}/toggle_status"
+
+    url = (
+        f"{CHATWOOT_API_URL}{str_account_id}/conversations/"
+        f"{str_conversation_id}/toggle_status"
+    )
+
     headers = {
         "Content-Type": "application/json",
         "api_access_token": token,
@@ -52,10 +60,7 @@ async def chatwoot_human_handoff(conversation_id, token, account_id):
         try:
             async with session.post(url, headers=headers, json=data) as response:
                 if response.status != 200:
-                    response_body = await response.text()
-                    print(
-                        f"Failed to add labels, status: {response.status}, response: {response_body}"
-                    )
+                    print(f"Failed to add labels, status: {response.status}")
                     raise aiohttp.web.HTTPException(
                         reason=f"Network response was not ok. Status: {response.status}"
                     )

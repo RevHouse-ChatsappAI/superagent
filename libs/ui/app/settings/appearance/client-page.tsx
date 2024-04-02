@@ -7,7 +7,7 @@ export default function AppearanceClientPage() {
     <div className="flex flex-col space-y-8">
       <div className="flex flex-col space-y-2">
         <p className="text-sm font-bold">Apariencia</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Actualiza la apariencia del tablero de Superagent
         </p>
       </div>

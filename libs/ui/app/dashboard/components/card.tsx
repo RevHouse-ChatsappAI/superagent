@@ -7,37 +7,41 @@ import { IoEyeSharp } from "react-icons/io5"
 import { useAsync, useSetState } from "react-use"
 
 import { Profile } from "@/types/profile"
+import { siteConfig } from "@/config/site"
 import { Api } from "@/lib/api"
-
+import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
 import { FormUserChatwoot } from "./FormUserChatwoot"
 import { ProfileChatwoot } from "./ProfileChatwoot"
-import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
-import { siteConfig } from "@/config/site"
-import StepOne from "./step/StepOne"
-import StepTwo from "./step/StepTwo"
-import StepThree from "./step/StepThree"
-import StepFour from "./step/StepFour"
 import StepFive from "./step/StepFive"
+import StepFour from "./step/StepFour"
+import StepOne from "./step/StepOne"
+import StepThree from "./step/StepThree"
+import StepTwo from "./step/StepTwo"
 
 export const CardTable = ({ profile }: { profile: Profile }) => {
-  const { token, handleChangeToken, userProfileChatwoot, tokenActive, handleChangeActiveToken } = useChatwoot()
+  const {
+    token,
+    handleChangeToken,
+    userProfileChatwoot,
+    tokenActive,
+    handleChangeActiveToken,
+  } = useChatwoot()
   const [modal, setModal] = useState(() => {
     return tokenActive ? true : false
   })
   const [visibilty, setVisibilty] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1)
 
   const nextStep = () => {
     setCurrentStep(currentStep + 1)
-  };
-  const prevStep = () => setCurrentStep(currentStep - 1);
-
+  }
+  const prevStep = () => setCurrentStep(currentStep - 1)
 
   const api = useMemo(() => new Api(profile.api_key), [profile.api_key])
 
@@ -58,7 +62,6 @@ export const CardTable = ({ profile }: { profile: Profile }) => {
       setLoading(false)
     }
   }
-
 
   return (
     <div className="flex flex-col space-y-4 px-4 py-6">
@@ -97,14 +100,24 @@ export const CardTable = ({ profile }: { profile: Profile }) => {
         {!tokenActive && modal && (
           <div className="pt-8">
             <h2 className="mb-2 text-2xl">Create User in Chatwoot</h2>
-            <div
-              className="border-1 flex flex-col gap-5 rounded-lg border border-white p-10"
-            >
+            <div className="border-1 flex flex-col gap-5 rounded-lg border border-white p-10">
               {currentStep === 1 && <StepOne nextStep={nextStep} />}
-              {currentStep === 2 && <StepTwo nextStep={nextStep} prevStep={prevStep} />}
-              {currentStep === 3 && <StepThree nextStep={nextStep} prevStep={prevStep} profile={profile}/>}
-              {currentStep === 4 && <StepFour nextStep={nextStep} prevStep={prevStep} />}
-              {currentStep === 5 && <StepFive nextStep={prevStep} profile={profile} />}
+              {currentStep === 2 && (
+                <StepTwo nextStep={nextStep} prevStep={prevStep} />
+              )}
+              {currentStep === 3 && (
+                <StepThree
+                  nextStep={nextStep}
+                  prevStep={prevStep}
+                  profile={profile}
+                />
+              )}
+              {currentStep === 4 && (
+                <StepFour nextStep={nextStep} prevStep={prevStep} />
+              )}
+              {currentStep === 5 && (
+                <StepFive nextStep={prevStep} profile={profile} />
+              )}
             </div>
           </div>
         )}
@@ -121,15 +134,21 @@ export const CardTable = ({ profile }: { profile: Profile }) => {
             <button
               disabled={tokenActive}
               onClick={() => setModal(() => !modal)}
-              className={`w-[170px] rounded-md p-2 transition-all${tokenActive ? 'opacity-50' : 'bg-green-600 hover:bg-green-700'}`}
+              className={`w-[170px] rounded-md p-2 transition-all${
+                tokenActive ? "opacity-50" : "bg-green-600 hover:bg-green-700"
+              }`}
             >
-              {tokenActive ? "Ya estas conectado a un operador de Chatwoot" : "Conecta"}
+              {tokenActive
+                ? "Ya estas conectado a un operador de Chatwoot"
+                : "Conecta"}
             </button>
           </div>
         )}
       </div>
       <div className="flex justify-center">
-        {userProfileChatwoot && <ProfileChatwoot profile={userProfileChatwoot} />}
+        {userProfileChatwoot && (
+          <ProfileChatwoot profile={userProfileChatwoot} />
+        )}
       </div>
       <Toaster />
     </div>

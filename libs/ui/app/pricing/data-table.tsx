@@ -23,11 +23,11 @@ async function loadPrices() {
     apiVersion: "2023-08-16",
   })
 
-  const productId = process.env.STRIPE_PRODUCT_ID;
+  const productId = process.env.STRIPE_PRODUCT_ID
 
   const prices = productId
-  ? await stripe.prices.list({ product: productId })
-  : await stripe.prices.list();
+    ? await stripe.prices.list({ product: productId })
+    : await stripe.prices.list()
 
   const filteredPrices = prices?.data?.filter((price) => price.active === true)
   const sortedPrices = filteredPrices.sort((a, b) => {
@@ -74,7 +74,7 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
         return
       }
 
-      if(response.success){
+      if (response.success) {
         toast({
           description: response?.message,
         })

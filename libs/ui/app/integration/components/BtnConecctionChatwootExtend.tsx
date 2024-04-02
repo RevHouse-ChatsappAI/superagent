@@ -19,6 +19,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
 import { TabContent, TabList, Tabs, TabTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/components/ui/use-toast"
+import CreateAccount from "@/components/steps/CreateAccount"
+import CreateAgentBot from "@/components/steps/CreateAgentBot"
+import CreateUser from "@/components/steps/CreateUser"
 import { PlusIcon } from "@/components/svg/PlusIcon"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 import { ProfileChatwoot } from "@/app/dashboard/components/ProfileChatwoot"
@@ -30,10 +34,6 @@ import StepTwo from "@/app/dashboard/components/step/StepTwo"
 
 import { AccountProfile } from "./AccountProfile"
 import { SettingCRM } from "./SettingCRM"
-import { useToast } from "@/components/ui/use-toast"
-import CreateUser from "@/components/steps/CreateUser"
-import CreateAccount from "@/components/steps/CreateAccount"
-import CreateAgentBot from "@/components/steps/CreateAgentBot"
 
 export const BtnConecctionChatsAppAIExtend = ({
   profile,
@@ -46,7 +46,7 @@ export const BtnConecctionChatsAppAIExtend = ({
   isAvailableExtendChatwoot?: boolean
   setIsAvailableKey?: (value: boolean) => void
 }) => {
-  const {toast} = useToast()
+  const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(1)
   const [key, setKey] = useState("")
   const [url, setUrl] = useState("")
@@ -62,13 +62,13 @@ export const BtnConecctionChatsAppAIExtend = ({
       const platformKeyData = await api.postPlatformKey({ key: key, url: url })
 
       if (setIsAvailableKey) {
-        if(platformKeyData.success){
+        if (platformKeyData.success) {
           toast({
-            description: platformKeyData.message
+            description: platformKeyData.message,
           })
-        }else{
+        } else {
           toast({
-            description: platformKeyData.message
+            description: platformKeyData.message,
           })
         }
         setIsAvailableKey(platformKeyData.success)
@@ -138,7 +138,10 @@ export const BtnConecctionChatsAppAIExtend = ({
                           />
                         )}
                         {currentStep === 3 && (
-                          <CreateAgentBot nextStep={nextStep} prevStep={prevStep} />
+                          <CreateAgentBot
+                            nextStep={nextStep}
+                            prevStep={prevStep}
+                          />
                         )}
                         {currentStep === 4 && (
                           <StepFive nextStep={prevStep} profile={profile} />
@@ -148,9 +151,15 @@ export const BtnConecctionChatsAppAIExtend = ({
                   ) : (
                     <div className="flex flex-1 flex-col pt-8">
                       <div className="flex flex-1 flex-col gap-5">
-                        {currentStep === 1 && <CreateUser profile={profile} nextStep={nextStep} />}
+                        {currentStep === 1 && (
+                          <CreateUser profile={profile} nextStep={nextStep} />
+                        )}
                         {currentStep === 2 && (
-                          <CreateAccount profile={profile} nextStep={nextStep} prevStep={prevStep} />
+                          <CreateAccount
+                            profile={profile}
+                            nextStep={nextStep}
+                            prevStep={prevStep}
+                          />
                         )}
                         {currentStep === 3 && (
                           <StepThree
@@ -160,7 +169,10 @@ export const BtnConecctionChatsAppAIExtend = ({
                           />
                         )}
                         {currentStep === 4 && (
-                          <CreateAgentBot nextStep={nextStep} prevStep={prevStep} />
+                          <CreateAgentBot
+                            nextStep={nextStep}
+                            prevStep={prevStep}
+                          />
                         )}
                         {currentStep === 5 && (
                           <StepFive nextStep={prevStep} profile={profile} />

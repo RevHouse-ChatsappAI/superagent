@@ -1,7 +1,7 @@
 import aiohttp
 from langchain.tools import BaseTool
 
-from app.utils.facturas_script import ERPClient
+# from app.utils.facturas_script import ERPClient
 
 
 async def fetch_productos(title, description):
@@ -49,7 +49,7 @@ async def fetch_stocks(idproducto, referencia, codalmacen):
 
 async def fetch_todo(id):
     print(id)
-    url = f"https://erp.radiadoresvovchuk.com/api/3/productos"
+    url = "https://erp.radiadoresvovchuk.com/api/3/productos"
 
     try:
         async with aiohttp.ClientSession() as session:

@@ -50,7 +50,7 @@ from app.utils.chatwoot import chatwoot_human_handoff, enviar_respuesta_chatwoot
 from app.utils.llm import LLM_PROVIDER_MAPPING
 from app.utils.prisma import prisma
 from app.utils.streaming import CustomAsyncIteratorCallbackHandler
-from app.utils.token import modificar_estado_agente, obtener_token_supabase
+from app.utils.token import obtener_token_supabase
 
 SEGMENT_WRITE_KEY = config("SEGMENT_WRITE_KEY", None)
 
@@ -118,7 +118,7 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
             handle_exception(e)
             return {
                 "success": False,
-                "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists.",
+                "message": "Hubo un error en la creación del agente",
             }
 
 
@@ -693,7 +693,7 @@ async def chatwoot_webhook(agent_id: str, request: Request):
             raise HTTPException(status_code=404, detail="Agent not found")
 
         agent_base = await AgentBase(agent_id=agent_id).get_agent()
-        if ia_assistant_active == False:
+        if not ia_assistant_active:
             return {
                 "message": "Request to speak with a human agent received",
                 "agent_id": agent_id,

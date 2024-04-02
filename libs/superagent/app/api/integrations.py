@@ -1,17 +1,12 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.models.request import ApiPlaformKey as ApiPlaformKeyRequest
-from app.models.response import GetCredit as GetCreditResponse
-from app.models.response import GetKeyPlatform as GetKeyPlatformResponse
 from app.service.api_chatwoot_platform_extend import ApiChatwootPlatformExtend
 from app.utils.api import get_current_api_user
 from app.utils.prisma import prisma
-from prisma.errors import TransactionError
 
 router = APIRouter()
-
-
-from typing import Any
 
 
 async def get_api_chatwoot_platform_extend(

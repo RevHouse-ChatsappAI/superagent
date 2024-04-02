@@ -3,6 +3,7 @@
 import React from "react"
 
 import { Profile } from "@/types/profile"
+
 import { Column } from "./column"
 
 interface Props {
@@ -10,10 +11,9 @@ interface Props {
 }
 
 export function DataTable({ profile }: Props) {
-
   return (
     <>
-      <Column profile={profile}/>
+      <Column profile={profile} />
     </>
   )
 }

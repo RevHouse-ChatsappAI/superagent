@@ -1,51 +1,59 @@
-'use client'
-import React, { useState } from 'react'
-import * as config from "@/config/";
-import { createCheckoutSession } from "@/app/actions/stripe";
+"use client"
+
+import React, { useState } from "react"
+import getStripe from "@/utils/get-stripe"
+import { formatAmountForDisplay } from "@/utils/stripe-helper"
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
-} from "@stripe/react-stripe-js";
-import getStripe from "@/utils/get-stripe";
-import { formatAmountForDisplay } from "@/utils/stripe-helper";
-import Stripe from 'stripe';
+} from "@stripe/react-stripe-js"
+import Stripe from "stripe"
+
+import * as config from "@/config/"
+import { createCheckoutSession } from "@/app/actions/stripe"
 
 interface ButtonPriceProps {
-  title: string;
-  priceId: string;
-  profile: any;
-  nickname: string;
-  uiMode: Stripe.Checkout.SessionCreateParams.UiMode;
+  title: string
+  priceId: string
+  profile: any
+  nickname: string
+  uiMode: Stripe.Checkout.SessionCreateParams.UiMode
 }
 
-export const ButtonPrice: React.FC<ButtonPriceProps> = ({ uiMode, title, priceId, profile, nickname }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+export const ButtonPrice: React.FC<ButtonPriceProps> = ({
+  uiMode,
+  title,
+  priceId,
+  profile,
+  nickname,
+}) => {
+  const [loading, setLoading] = useState<boolean>(false)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
 
   const formAction = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const formData = new FormData();
-      formData.append('priceId', priceId);
-      formData.append('customer_id', profile.stripe_customer_id);
-      formData.append('user_id', profile.user_id);
-      formData.append('api_key', profile.api_key);
-      formData.append('nickname', nickname);
-      formData.append('uiMode', uiMode);
+      const formData = new FormData()
+      formData.append("priceId", priceId)
+      formData.append("customer_id", profile.stripe_customer_id)
+      formData.append("user_id", profile.user_id)
+      formData.append("api_key", profile.api_key)
+      formData.append("nickname", nickname)
+      formData.append("uiMode", uiMode)
 
-      const { client_secret, url } = await createCheckoutSession(formData);
+      const { client_secret, url } = await createCheckoutSession(formData)
 
-      if (uiMode === 'embedded') {
-        setClientSecret(client_secret);
+      if (uiMode === "embedded") {
+        setClientSecret(client_secret)
       } else {
-        window.open(url as string, '_blank');
+        window.open(url as string, "_blank")
       }
     } catch (error) {
-      console.error("Checkout session creation error:", error);
+      console.error("Checkout session creation error:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <button
@@ -53,8 +61,7 @@ export const ButtonPrice: React.FC<ButtonPriceProps> = ({ uiMode, title, priceId
       onClick={formAction}
       disabled={loading}
     >
-      {loading ? 'Procesando...' : title}
+      {loading ? "Procesando..." : title}
     </button>
-  );
-};
-
+  )
+}

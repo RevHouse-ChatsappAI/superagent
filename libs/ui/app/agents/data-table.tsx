@@ -365,7 +365,7 @@ export function DataTable<TData, TValue>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <div
-                className="dark:hover:bg-white-100 grid w-full cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 transition-all hover:bg-slate-300"
+                className="grid w-full cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 transition-all hover:bg-slate-300 dark:hover:bg-white-100"
                 key={row.id}
                 data-state={row.getIsSelected() ? "selected" : undefined}
                 onClick={() =>

@@ -1,6 +1,5 @@
 import React from "react"
 
-
 import { Profile } from "@/types/profile"
 import { ButtonPrice } from "@/components/ButtonPrice"
 
@@ -27,17 +26,17 @@ export const CardPrice: React.FC<CardPriceProps> = ({
   priceId,
   nickname,
   profile,
-  status
+  status,
 }) => {
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col justify-between rounded-lg border border-gray-100 bg-slate-200 p-6 text-start text-gray-900 shadow xl:p-8 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
       <div>
         <div className="flex items-start gap-3">
-          <h3 className="mb-4 text-2xl font-semibold">
-            {nickname}
-          </h3>
-          {nickname.toLocaleLowerCase() === 'plan pymes' && (
-            <span className="rounded-lg bg-blue-400 px-2 py-1 text-xs font-semibold text-white">Popular</span>
+          <h3 className="mb-4 text-2xl font-semibold">{nickname}</h3>
+          {nickname.toLocaleLowerCase() === "plan pymes" && (
+            <span className="rounded-lg bg-blue-400 px-2 py-1 text-xs font-semibold text-white">
+              Popular
+            </span>
           )}
         </div>
         <p className="text-base font-light text-gray-500 dark:text-gray-400">
@@ -68,7 +67,13 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </ul>
       </div>
       <div className="flex flex-col gap-2">
-        <ButtonPrice uiMode="hosted" nickname={status} profile={profile} priceId={priceId} title="Asignar Pago" />
+        <ButtonPrice
+          uiMode="hosted"
+          nickname={status}
+          profile={profile}
+          priceId={priceId}
+          title="Asignar Pago"
+        />
       </div>
     </div>
   )

@@ -1,6 +1,5 @@
 "use client"
 
-
 import React, { useState } from "react"
 import { BsWhatsapp } from "react-icons/bs"
 import { GiPentarrowsTornado } from "react-icons/gi"
@@ -9,15 +8,15 @@ import { SiMicrosoftazure } from "react-icons/si"
 
 //Components
 import { Profile } from "@/types/profile"
+import { Toaster } from "@/components/ui/toaster"
+import { ChatsAppLogoAI } from "@/components/svg/ChatsAppLogoAI"
 import { ChatwootIcon } from "@/components/svg/integrations/ChatwootIcon"
 
 import { useChatwoot } from "../context/ChatwootContext"
 import { CardIntegration } from "./components/CardIntegration"
-import { Modal } from "./components/Modal"
 import { CardIntegrationDefault } from "./components/CardIntegrationDefault"
 import { CardIntegrationExtendChatwoot } from "./components/CardIntegrationExtendChatwoot"
-import { ChatsAppLogoAI } from "@/components/svg/ChatsAppLogoAI"
-import { Toaster } from "@/components/ui/toaster"
+import { Modal } from "./components/Modal"
 
 export const Column = ({ profile }: { profile: Profile }) => {
   const { tokenActive } = useChatwoot()
@@ -34,7 +33,6 @@ export const Column = ({ profile }: { profile: Profile }) => {
 
   return (
     <div className="flex flex-wrap gap-4">
-
       <CardIntegration
         eventClick={handleClick}
         title="ChatsappAI Connect"
@@ -88,7 +86,7 @@ export const Column = ({ profile }: { profile: Profile }) => {
       >
         <BsWhatsapp className="text-4xl text-black" />
       </CardIntegrationDefault>
-      <Toaster/>
+      <Toaster />
     </div>
   )
 }

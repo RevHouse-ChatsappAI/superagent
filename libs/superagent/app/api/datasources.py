@@ -72,7 +72,7 @@ async def create(
             if not vector_db:
                 raise HTTPException(
                     status_code=404,
-                    detail="¡No se pudo encontrar la base de datos vectorial con el ID proporcionado!",
+                    detail="¡No se pudo encontrar la base de datos!",
                 )
         if body.metadata:
             body.metadata = json.dumps(body.metadata)

@@ -1,12 +1,11 @@
 import React, { useState } from "react"
+import { MdNavigateNext } from "react-icons/md"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
+import { Spinner } from "@/components/ui/spinner"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
 import { ButtonPrev } from "../btn/ButtonPrev"
-import { Spinner } from "@/components/ui/spinner"
-
-import { MdNavigateNext } from "react-icons/md";
 
 interface StepOneProps {
   nextStep: () => void
@@ -25,16 +24,16 @@ const StepTwo = ({
   //State
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState(() => {
-    return localStorage.getItem('account') || "";
-  });
+    return localStorage.getItem("account") || ""
+  })
   const apiChatwoot = new ApiChatwootPlatform()
 
   //Function
   const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newAccount = e.target.value;
-    setAccount(newAccount);
-    localStorage.setItem('account', newAccount);
-  };
+    const newAccount = e.target.value
+    setAccount(newAccount)
+    localStorage.setItem("account", newAccount)
+  }
 
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -100,7 +99,7 @@ const StepTwo = ({
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? <Spinner/> : <MdNavigateNext/>}
+            {loading ? <Spinner /> : <MdNavigateNext />}
           </button>
         </div>
       </form>

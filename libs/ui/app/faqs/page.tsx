@@ -1,11 +1,9 @@
 import { cookies } from "next/headers"
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { DataTable } from "./data-table";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+
+import { DataTable } from "./data-table"
 
 export default async function Faqs() {
-
-
-
   const supabase = createRouteHandlerClient({ cookies })
   const {
     data: { user },
@@ -19,9 +17,7 @@ export default async function Faqs() {
   return (
     <div className="flex flex-col space-y-4 p-6">
       <h2 className="text-lg">Preguntas Frecuentes Q&A 📞</h2>
-      <DataTable
-        profile={profile}
-      />
+      <DataTable profile={profile} />
     </div>
   )
 }

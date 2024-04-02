@@ -1,5 +1,6 @@
 // Componente StepOne.jsx
 import React, { useMemo, useState } from "react"
+import { MdNavigateNext } from "react-icons/md"
 import { useAsync } from "react-use"
 
 import { Profile } from "@/types/profile"
@@ -7,7 +8,6 @@ import { Api } from "@/lib/api"
 import { Spinner } from "@/components/ui/spinner"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
-import { MdNavigateNext } from "react-icons/md";
 import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
@@ -106,11 +106,15 @@ const StepThree = ({
           </h2>
           <form
             onSubmit={handleAddUserChatwoot}
-            className={`flex flex-1 flex-col justify-between ${apiAgent ? 'pointer-events-none opacity-50' : ''}`}
+            className={`flex flex-1 flex-col justify-between ${
+              apiAgent ? "pointer-events-none opacity-50" : ""
+            }`}
           >
             <div className="flex flex-col gap-4">
               <label className="flex w-full flex-col gap-1">
-                <p className="text-sm text-gray-900 dark:text-gray-300">Nombre del agente</p>
+                <p className="text-sm text-gray-900 dark:text-gray-300">
+                  Nombre del agente
+                </p>
                 <input
                   type="text"
                   name="name"
@@ -128,7 +132,9 @@ const StepThree = ({
                 />
               </label>
               <label className="flex w-full flex-col gap-1">
-                <p className="text-sm text-gray-900 dark:text-gray-300">Description</p>
+                <p className="text-sm text-gray-900 dark:text-gray-300">
+                  Description
+                </p>
                 <input
                   type="text"
                   name="description"
@@ -156,7 +162,9 @@ const StepThree = ({
               )}
               <button
                 type="submit"
-                className={`rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400 ${loading || !!apiAgent ? 'cursor-not-allowed' : ''} dark:hover:bg-blue-600`}
+                className={`rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400 ${
+                  loading || !!apiAgent ? "cursor-not-allowed" : ""
+                } dark:hover:bg-blue-600`}
                 disabled={loading || !!apiAgent}
               >
                 {loading ? <Spinner /> : <MdNavigateNext />}
@@ -181,8 +189,8 @@ const StepThree = ({
                       : "opacity-100"
                   }`}
                   onClick={() => {
-                    const newApiAgent = apiAgent === agent.id ? "" : agent.id;
-                    handleAgentApi(newApiAgent);
+                    const newApiAgent = apiAgent === agent.id ? "" : agent.id
+                    handleAgentApi(newApiAgent)
                   }}
                 >
                   <p
@@ -198,7 +206,9 @@ const StepThree = ({
           </div>
           <div>
             {agents && agents.length === 0 && (
-              <p className="text-xs dark:text-gray-500">No se han encontrado agentes.</p>
+              <p className="text-xs dark:text-gray-500">
+                No se han encontrado agentes.
+              </p>
             )}
           </div>
           {apiAgent && (

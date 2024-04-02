@@ -1,11 +1,12 @@
 // Componente StepOne.jsx
 import React, { useState } from "react"
+import { MdNavigateNext } from "react-icons/md"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
-import { useChatwoot } from "@/app/context/ChatwootContext"
-import { ButtonPrev } from "../btn/ButtonPrev"
 import { Spinner } from "@/components/ui/spinner"
-import { MdNavigateNext } from "react-icons/md";
+import { useChatwoot } from "@/app/context/ChatwootContext"
+
+import { ButtonPrev } from "../btn/ButtonPrev"
 
 interface StepOneProps {
   nextStep: () => void
@@ -14,23 +15,24 @@ interface StepOneProps {
 
 const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
   //Context
-  const { userProfileChatwoot, apiAgent, accountId, handleTokenChange } = useChatwoot()
+  const { userProfileChatwoot, apiAgent, accountId, handleTokenChange } =
+    useChatwoot()
 
   //State
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState(() => {
-    const savedAccount = localStorage.getItem('agent_bot');
-    return savedAccount || "";
-  });
+    const savedAccount = localStorage.getItem("agent_bot")
+    return savedAccount || ""
+  })
   const apiChatwoot = new ApiChatwootPlatform()
 
   //Function
 
   const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newAccount = e.target.value;
-    setAccount(newAccount);
-    localStorage.setItem('agent_bot', newAccount);
-  };
+    const newAccount = e.target.value
+    setAccount(newAccount)
+    localStorage.setItem("agent_bot", newAccount)
+  }
 
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -49,8 +51,7 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
         outgoing_url: agent_bot_url,
         account_id: accountId,
       }
-      const agentBotResponse =
-        await apiChatwoot.createAgentBot(agentBotDetails)
+      const agentBotResponse = await apiChatwoot.createAgentBot(agentBotDetails)
 
       if (agentBotResponse) {
         handleTokenChange(agentBotResponse.access_token)
@@ -68,9 +69,18 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <h2 className="mb-2 text-sm dark:text-gray-500">Configuración del Agente Bot de Chatwoot</h2>
-      <p className="text-xs text-gray-600 dark:text-gray-400">Este Agente Bot actuará como intermediario para conectar a los usuarios con nuestro agente de inteligencia artificial, facilitando una comunicación fluida y eficiente a través del CRM de ChatsappAI.</p>
-      <form className="mt-5 flex flex-1 flex-col justify-between" onSubmit={handleAddUserChatwoot}>
+      <h2 className="mb-2 text-sm dark:text-gray-500">
+        Configuración del Agente Bot de Chatwoot
+      </h2>
+      <p className="text-xs text-gray-600 dark:text-gray-400">
+        Este Agente Bot actuará como intermediario para conectar a los usuarios
+        con nuestro agente de inteligencia artificial, facilitando una
+        comunicación fluida y eficiente a través del CRM de ChatsappAI.
+      </p>
+      <form
+        className="mt-5 flex flex-1 flex-col justify-between"
+        onSubmit={handleAddUserChatwoot}
+      >
         <label className="flex w-full flex-col gap-1">
           <p className="text-sm">Nombre del Agente Bot: </p>
           <input
@@ -84,13 +94,13 @@ const StepFour = ({ nextStep, prevStep }: StepOneProps) => {
           />
         </label>
         <div className="mt-3 flex items-center justify-between">
-          <ButtonPrev title="Previo" prevStep={prevStep}/>
+          <ButtonPrev title="Previo" prevStep={prevStep} />
           <button
             type="submit"
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? <Spinner/> : <MdNavigateNext />}
+            {loading ? <Spinner /> : <MdNavigateNext />}
           </button>
         </div>
       </form>

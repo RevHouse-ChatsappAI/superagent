@@ -124,10 +124,7 @@ export default function OnboardingClientPage() {
                         <FormItem className="flex-1">
                           <FormLabel>Nombre</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Ingresa tu nombre"
-                              {...field}
-                            />
+                            <Input placeholder="Ingresa tu nombre" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -170,7 +167,11 @@ export default function OnboardingClientPage() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" size="sm" className="w-full">
-                  {form.control._formState.isSubmitting ? <Spinner /> : "Guardar"}
+                  {form.control._formState.isSubmitting ? (
+                    <Spinner />
+                  ) : (
+                    "Guardar"
+                  )}
                 </Button>
               </CardFooter>
             </Card>

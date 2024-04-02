@@ -144,19 +144,19 @@ export class Api {
     return this.fetchFromApi("/tokens")
   }
 
-  async getSubscription(){
+  async getSubscription() {
     return this.fetchFromApi("/payment")
   }
 
-  async getCredit(){
+  async getCredit() {
     return this.fetchFromApi("/credit")
   }
 
-  async getCount(){
+  async getCount() {
     return this.fetchFromApi("/count")
   }
 
-  async platformKey(){
+  async platformKey() {
     return this.fetchFromApi("/platform_key")
   }
 
@@ -186,24 +186,28 @@ export class Api {
     return this.fetchFromApi(`integration/agent_bots`, {
       method: "POST",
       body: JSON.stringify(agentBotDetails),
-    });
+    })
   }
 
-
-  async postCreateAccountUser(accountId: number, userDetails: { user_id: string; role: string; }) {
-    return this.fetchFromApi(`integration/accounts/${accountId}/account_users`, {
-      method: "POST",
-      body: JSON.stringify(userDetails),
-    });
+  async postCreateAccountUser(
+    accountId: number,
+    userDetails: { user_id: string; role: string }
+  ) {
+    return this.fetchFromApi(
+      `integration/accounts/${accountId}/account_users`,
+      {
+        method: "POST",
+        body: JSON.stringify(userDetails),
+      }
+    )
   }
 
-  async postCreateAccount(accountDetails: { name: string; }) {
+  async postCreateAccount(accountDetails: { name: string }) {
     return this.fetchFromApi(`integration/accounts`, {
       method: "POST",
       body: JSON.stringify(accountDetails),
-    });
+    })
   }
-
 
   // async updateSelectUserAccountChatwoot() {
   //   return this.fetchFromApi(`/token/userchatwoot`, {
@@ -335,26 +339,26 @@ export class Api {
     })
   }
 
-    //Token
-    async createToken(payload: ApiToken) {
-      const response = await this.fetchFromApi("/token", {
-        method: "POST",
-        body: JSON.stringify({
-          apiUserChatwoot: payload.apiUserChatwoot,
-          agentToken: payload.agentToken,
-          userToken: payload.userToken,
-          isAgentActive: true
-        }),
-      })
-      return response;
-    }
+  //Token
+  async createToken(payload: ApiToken) {
+    const response = await this.fetchFromApi("/token", {
+      method: "POST",
+      body: JSON.stringify({
+        apiUserChatwoot: payload.apiUserChatwoot,
+        agentToken: payload.agentToken,
+        userToken: payload.userToken,
+        isAgentActive: true,
+      }),
+    })
+    return response
+  }
 
-    async patchToken(payload: ApiToken) {
-      return this.fetchFromApi(`/token`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          userToken: payload.userToken,
-        }),
-      })
-    }
+  async patchToken(payload: ApiToken) {
+    return this.fetchFromApi(`/token`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        userToken: payload.userToken,
+      }),
+    })
+  }
 }

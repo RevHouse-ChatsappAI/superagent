@@ -7,7 +7,6 @@ from app.models.response import GetCredit as GetCreditResponse
 from app.models.response import GetPyment as GetPaymentResponse
 from app.utils.api import get_current_api_user
 from app.utils.prisma import prisma
-from prisma.errors import TransactionError
 
 router = APIRouter()
 

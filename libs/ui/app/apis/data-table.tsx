@@ -329,7 +329,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <div
-                  className="hover:bg-white-100 grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4"
+                  className="grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 hover:bg-white-100"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

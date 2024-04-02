@@ -3,8 +3,8 @@ import { CiCircleCheck } from "react-icons/ci"
 import { RxCursorArrow } from "react-icons/rx"
 
 import { Profile } from "@/types/profile"
-
 import { Api } from "@/lib/api"
+
 import { BtnConecctionChatsAppAIExtend } from "./BtnConecctionChatwootExtend"
 
 interface Props {
@@ -26,22 +26,21 @@ export const CardIntegrationExtendChatwoot = ({
 }: Props) => {
   const [isAvailableKey, setIsAvailableKey] = useState<boolean>()
 
-
   useEffect(() => {
     const api = new Api(profile?.api_key)
     const fetchData = async () => {
       try {
-        const platformKeyData = await api.platformKey();
+        const platformKeyData = await api.platformKey()
         setIsAvailableKey(platformKeyData.success)
       } catch (error) {
-        console.error("Error al buscar la plataforma key", error);
+        console.error("Error al buscar la plataforma key", error)
       }
-    };
+    }
 
     if (id) {
-      fetchData();
+      fetchData()
     }
-  }, [id, profile?.api_key]);
+  }, [id, profile?.api_key])
 
   return (
     <div

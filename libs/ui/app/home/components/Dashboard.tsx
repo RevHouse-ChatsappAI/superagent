@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 
-import { Title } from "./Title"
 import { Resolutions } from "./Resolutions"
+import { Title } from "./Title"
 
 interface DataTableProps<TData> {
   data: TData[]
@@ -40,11 +40,22 @@ export const Dashboard = <TData extends {}>({
             </p>
           </div>
           <div className="mt-5 flex flex-col gap-4">
-            <Resolutions title="Resoluciones Confirmadas" value={0} color="bg-green-500"/>
-            <Resolutions title="Resoluciones Supuestas" value={0} color="bg-yellow-500"/>
-            <Resolutions title="Sin Resoluciones" value={0} color="bg-red-500"/>
-            <Resolutions title="No Claro" value={0} color="bg-gray-500"/>
-
+            <Resolutions
+              title="Resoluciones Confirmadas"
+              value={0}
+              color="bg-green-500"
+            />
+            <Resolutions
+              title="Resoluciones Supuestas"
+              value={0}
+              color="bg-yellow-500"
+            />
+            <Resolutions
+              title="Sin Resoluciones"
+              value={0}
+              color="bg-red-500"
+            />
+            <Resolutions title="No Claro" value={0} color="bg-gray-500" />
           </div>
         </div>
         <div className="rounded-lg border-2 p-7">

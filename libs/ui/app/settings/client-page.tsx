@@ -77,7 +77,7 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
     <div className="flex max-w-xl flex-col items-start justify-start space-y-8">
       <div className="flex flex-col space-y-2">
         <p className="text-sm font-bold">Personal</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Actualiza tus configuraciones personales
         </p>
       </div>
@@ -120,7 +120,10 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
                 <FormItem>
                   <FormLabel>Nombre de la empresa</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingresa el nombre de tu empresa" {...field} />
+                    <Input
+                      placeholder="Ingresa el nombre de tu empresa"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

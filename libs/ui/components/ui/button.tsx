@@ -12,7 +12,8 @@ const buttonVariants = cva(
         active: "bg-gray-200 text-black opacity-75",
         default: "bg-gray-200 text-black",
         destructive: "bg-gray-200 text-black",
-        outline: "bg-gray-200 text-black border border-input hover:bg-gray-200 hover:text-black",
+        outline:
+          "bg-gray-200 text-black border border-input hover:bg-gray-200 hover:text-black",
         secondary: "bg-gray-200 text-black",
         ghost: "bg-gray-200 text-black hover:bg-gray-200 hover:text-black",
         link: "bg-gray-200 text-black underline-offset-4 hover:underline",

@@ -104,7 +104,8 @@ Superagent({
               <DialogHeader>
                 <DialogTitle>Compartir o incrustar tu agente</DialogTitle>
                 <DialogDescription>
-                  Comparte este agente con cualquier persona o incústralo en tu aplicación.
+                  Comparte este agente con cualquier persona o incústralo en tu
+                  aplicación.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col space-y-2">
@@ -139,8 +140,10 @@ Superagent({
               <Separator />
               <div className="flex flex-col space-y-2">
                 <p className="font-bold">Incrustar</p>
-                <p className="text-muted-foreground text-sm">
-                  Copia el siguiente código y colócalo antes de la etiqueta de cierre del cuerpo. Puedes elegir entre las opciones de incrustación en línea o emergente.
+                <p className="text-sm text-muted-foreground">
+                  Copia el siguiente código y colócalo antes de la etiqueta de
+                  cierre del cuerpo. Puedes elegir entre las opciones de
+                  incrustación en línea o emergente.
                 </p>
                 <div className="relative max-w-full font-mono text-sm">
                   <CodeBlock

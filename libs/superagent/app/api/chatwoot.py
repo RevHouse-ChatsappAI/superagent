@@ -6,7 +6,6 @@ from app.models.response import GetKeyPlatform as GetKeyPlatformResponse
 from app.utils.api import get_current_api_user
 from app.utils.prisma import prisma
 from app.utils.validateURL import validate_url
-from prisma.errors import TransactionError
 
 router = APIRouter()
 

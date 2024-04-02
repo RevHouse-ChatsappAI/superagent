@@ -1,10 +1,21 @@
-import { RxClock, RxColorWheel, RxCountdownTimer, RxFileText, RxGear, RxHome, RxPaperPlane, RxReader, RxRocket, RxShare2, RxStack } from "react-icons/rx";
-import { FiSend } from "react-icons/fi";
-import { LiaRobotSolid } from "react-icons/lia";
-import { IoCodeSlashOutline } from "react-icons/io5";
-import { CiCloudOn } from "react-icons/ci";
-import { CiHeadphones } from "react-icons/ci";
-import { TbPlugConnected } from "react-icons/tb";
+import { CiCloudOn, CiHeadphones } from "react-icons/ci"
+import { FiSend } from "react-icons/fi"
+import { IoCodeSlashOutline } from "react-icons/io5"
+import { LiaRobotSolid } from "react-icons/lia"
+import {
+  RxClock,
+  RxColorWheel,
+  RxCountdownTimer,
+  RxFileText,
+  RxGear,
+  RxHome,
+  RxPaperPlane,
+  RxReader,
+  RxRocket,
+  RxShare2,
+  RxStack,
+} from "react-icons/rx"
+import { TbPlugConnected } from "react-icons/tb"
 
 export const workspaceNav = {
   title: "Espacio de trabajo",
@@ -24,9 +35,9 @@ export const workspaceNav = {
       title: "CRM",
       href: "https://app.chatsappai.com/",
       icon: FiSend,
-    }
+    },
   ],
-};
+}
 
 export const knowledgeBaseNav = {
   title: "Base del conocimiento",
@@ -43,8 +54,7 @@ export const knowledgeBaseNav = {
       icon: RxStack,
     },
   ],
-};
-
+}
 
 export const apiBaseNav = {
   title: "Conexiones",
@@ -61,7 +71,7 @@ export const apiBaseNav = {
       icon: TbPlugConnected,
     },
   ],
-};
+}
 
 export const helpBaseNav = {
   title: "Obtener Ayuda",
@@ -78,5 +88,4 @@ export const helpBaseNav = {
       icon: RxGear,
     },
   ],
-};
-
+}

@@ -46,10 +46,10 @@ const StepFive = ({ nextStep, profile }: StepOneProps) => {
           description: respToken.message,
         })
         // Clearing localStorage as per instructions.
-        localStorage.removeItem('user');
-        localStorage.removeItem('account');
-        localStorage.removeItem('agent_bot');
-        localStorage.removeItem('currentStep');
+        localStorage.removeItem("user")
+        localStorage.removeItem("account")
+        localStorage.removeItem("agent_bot")
+        localStorage.removeItem("currentStep")
       }
     } catch (error) {
       console.log(error)

@@ -1,17 +1,24 @@
-import { DialogHeader } from '@/components/ui/dialog'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
-import { Api } from '@/lib/api'
-import { Profile } from '@/types/profile'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Dialog, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
+import React from "react"
 import { useRouter } from "next/navigation"
-import React from 'react'
-import { Form, useForm } from 'react-hook-form'
-import { useAsync } from 'react-use'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Dialog, DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
+import { Form, useForm } from "react-hook-form"
+import { useAsync } from "react-use"
+import { z } from "zod"
+
+import { Profile } from "@/types/profile"
+import { Api } from "@/lib/api"
+import { DialogHeader } from "@/components/ui/dialog"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   name: z.string().nonempty({
@@ -29,7 +36,7 @@ const formSchema = z.object({
   prompt: z.string(),
 })
 
-export const AgentContain = ({profile}: {profile: Profile}) => {
+export const AgentContain = ({ profile }: { profile: Profile }) => {
   const router = useRouter()
   const api = new Api(profile.api_key)
 
@@ -49,7 +56,6 @@ export const AgentContain = ({profile}: {profile: Profile}) => {
     const { data } = await api.getLLMs()
     return data
   }, [])
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -71,53 +77,53 @@ export const AgentContain = ({profile}: {profile: Profile}) => {
 
   return (
     <>
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-4"
-      >
-        <Dialog>
-          <DialogHeader>
-            <DialogTitle>Create new agent</DialogTitle>
-            <DialogDescription>
-              Attach datasources and APIs to you agent to make it more
-              powerful.
-            </DialogDescription>
-          </DialogHeader>
-        </Dialog>
-        <div className="flex flex-col space-y-2">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="E.g My agent" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="E.g this agent is an expert at..."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </form>
-    </Form>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-4"
+        >
+          <Dialog>
+            <DialogHeader>
+              <DialogTitle>Create new agent</DialogTitle>
+              <DialogDescription>
+                Attach datasources and APIs to you agent to make it more
+                powerful.
+              </DialogDescription>
+            </DialogHeader>
+          </Dialog>
+          <div className="flex flex-col space-y-2">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="E.g My agent" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="E.g this agent is an expert at..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </>
   )
 }

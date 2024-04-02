@@ -1,14 +1,12 @@
 import React, { useState } from "react"
+import { MdNavigateNext } from "react-icons/md"
 
+import { Profile } from "@/types/profile"
+import { Api } from "@/lib/api"
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
-import { useChatwoot } from "@/app/context/ChatwootContext"
-
 import { Spinner } from "@/components/ui/spinner"
-
-import { MdNavigateNext } from "react-icons/md";
-import { ButtonPrev } from "@/app/dashboard/components/btn/ButtonPrev";
-import { Profile } from "@/types/profile";
-import { Api } from "@/lib/api";
+import { useChatwoot } from "@/app/context/ChatwootContext"
+import { ButtonPrev } from "@/app/dashboard/components/btn/ButtonPrev"
 
 interface StepOneProps {
   nextStep: () => void
@@ -21,7 +19,7 @@ const CreateAccount = ({
   nextStep,
   prevStep,
   btnPrevActive = true,
-  profile
+  profile,
 }: StepOneProps) => {
   //Context
   const { userProfileChatwoot, handleAccountId } = useChatwoot()
@@ -29,16 +27,16 @@ const CreateAccount = ({
   //State
   const [loading, setLoading] = useState(false)
   const [account, setAccount] = useState(() => {
-    return localStorage.getItem('account') || "";
-  });
+    return localStorage.getItem("account") || ""
+  })
   const apiChatwoot = new Api(profile.api_key)
 
   //Function
   const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newAccount = e.target.value;
-    setAccount(newAccount);
-    localStorage.setItem('account', newAccount);
-  };
+    const newAccount = e.target.value
+    setAccount(newAccount)
+    localStorage.setItem("account", newAccount)
+  }
 
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -47,7 +45,8 @@ const CreateAccount = ({
       const accountDetails = {
         name: account,
       }
-      const accountResponse = await apiChatwoot.postCreateAccount(accountDetails)
+      const accountResponse =
+        await apiChatwoot.postCreateAccount(accountDetails)
 
       if (accountResponse && accountResponse.id) {
         const adminUserDetails = {
@@ -104,7 +103,7 @@ const CreateAccount = ({
             className="rounded bg-blue-500 px-4 py-2 text-sm text-white transition-all hover:bg-blue-400"
             disabled={loading}
           >
-            {loading ? <Spinner/> : <MdNavigateNext/>}
+            {loading ? <Spinner /> : <MdNavigateNext />}
           </button>
         </div>
       </form>

@@ -235,7 +235,10 @@ export default function Settings({
               <FormItem>
                 <FormLabel>Mensaje de introducción</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej. Hola, ¿cómo puedo ayudarte?" {...field} />
+                  <Input
+                    placeholder="Ej. Hola, ¿cómo puedo ayudarte?"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -310,8 +313,9 @@ export default function Settings({
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
                 <p className="text-sm">¡Atención!</p>
-                <p className="text-muted-foreground text-sm">
-                  Necesitas agregar un LLM a este agente para que funcione. Esto se puede hacer a través del SDK o la API.
+                <p className="text-sm text-muted-foreground">
+                  Necesitas agregar un LLM a este agente para que funcione. Esto
+                  se puede hacer a través del SDK o la API.
                 </p>
               </div>
             )}

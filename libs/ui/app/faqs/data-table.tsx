@@ -5,6 +5,7 @@ import { PlusIcon } from "lucide-react"
 
 import { Profile } from "@/types/profile"
 import { Button } from "@/components/ui/button"
+
 import { Column } from "./Column"
 
 interface Props {
@@ -19,8 +20,12 @@ export function DataTable({ profile }: Props) {
     return (
       <div className="flex h-screen items-center justify-center ">
         <div className="rounded-lg bg-gray-100 p-10 text-center shadow-sm">
-          <h2 className="text-2xl font-light text-gray-700">Estamos trabajando en ello...</h2>
-          <p className="mt-2 text-sm text-gray-500">La vista de FAQs estará disponible próximamente.</p>
+          <h2 className="text-2xl font-light text-gray-700">
+            Estamos trabajando en ello...
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            La vista de FAQs estará disponible próximamente.
+          </p>
         </div>
       </div>
     )
@@ -44,7 +49,7 @@ export function DataTable({ profile }: Props) {
       </div>
       <div>
         <h2 className="mb-5 text-gray-500">Q&A</h2>
-        <Column/>
+        <Column />
       </div>
     </>
   )

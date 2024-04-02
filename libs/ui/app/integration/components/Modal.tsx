@@ -30,19 +30,19 @@ export const Modal = ({
   isTokenActive: boolean
 }) => {
   const [currentStep, setCurrentStep] = useState(
-    parseInt(localStorage.getItem('currentStep') || '1', 10)
-  );
+    parseInt(localStorage.getItem("currentStep") || "1", 10)
+  )
 
   const nextStep = () => {
-    const newStep = currentStep + 1;
-    setCurrentStep(newStep);
-    localStorage.setItem('currentStep', newStep.toString());
+    const newStep = currentStep + 1
+    setCurrentStep(newStep)
+    localStorage.setItem("currentStep", newStep.toString())
   }
 
   const prevStep = () => {
-    const newStep = currentStep - 1;
-    setCurrentStep(newStep);
-    localStorage.setItem('currentStep', newStep.toString());
+    const newStep = currentStep - 1
+    setCurrentStep(newStep)
+    localStorage.setItem("currentStep", newStep.toString())
   }
   return (
     <div className="absolute inset-y-0 end-0 left-0 flex items-center justify-center bg-white/60 dark:bg-black/60">

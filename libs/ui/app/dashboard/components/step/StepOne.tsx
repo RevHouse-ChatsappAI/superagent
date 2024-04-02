@@ -1,44 +1,44 @@
 import React, { useState } from "react"
+import { MdNavigateNext } from "react-icons/md"
 
 import { ApiChatwootPlatform } from "@/lib/api_chatwoot"
-import { useChatwoot } from "@/app/context/ChatwootContext"
-
 import { Spinner } from "@/components/ui/spinner"
-import { MdNavigateNext } from "react-icons/md";
+import { useChatwoot } from "@/app/context/ChatwootContext"
 
 interface StepOneProps {
   nextStep: () => void
 }
 interface User {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
 }
 
 const StepOne = ({ nextStep }: StepOneProps) => {
-
   //State
   const [loading, setLoading] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
   const [user, setUser] = useState<User>(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : { name: "", email: "", password: "", confirmPassword: "" };
-  });
+    const savedUser = localStorage.getItem("user")
+    return savedUser
+      ? JSON.parse(savedUser)
+      : { name: "", email: "", password: "", confirmPassword: "" }
+  })
 
   //Context
   const { handleProfileChatwoot } = useChatwoot()
 
   //Function
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUser(prevState => {
-      const newUserState = { ...prevState, [name]: value };
-      localStorage.setItem('user', JSON.stringify(newUserState));
-      return newUserState;
-    });
-  };
+    const { name, value } = e.target
+    setUser((prevState) => {
+      const newUserState = { ...prevState, [name]: value }
+      localStorage.setItem("user", JSON.stringify(newUserState))
+      return newUserState
+    })
+  }
 
   const handleAddUserChatwoot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -48,15 +48,17 @@ const StepOne = ({ nextStep }: StepOneProps) => {
     // Password validation
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
     if (!passwordRegex.test(user.password)) {
-      setPasswordError("La contraseña debe tener al menos una letra mayúscula, un número y un mínimo de 8 caracteres.")
+      setPasswordError(
+        "La contraseña debe tener al menos una letra mayúscula, un número y un mínimo de 8 caracteres."
+      )
       setLoading(false)
-      return;
+      return
     }
 
     if (user.password !== user.confirmPassword) {
       setPasswordError("Las contraseñas no coinciden.")
       setLoading(false)
-      return;
+      return
     }
 
     try {
@@ -133,8 +135,8 @@ const StepOne = ({ nextStep }: StepOneProps) => {
             )}
           </label>
           <p className="text-xs text-gray-600 dark:text-gray-400">
-            La contraseña debe contener al menos una mayúscula, un símbolo (.
-            o #) y un número.
+            La contraseña debe contener al menos una mayúscula, un símbolo (. o
+            #) y un número.
           </p>
           <label className="flex w-full flex-col">
             <p className="text-sm">Confirmar Contraseña</p>

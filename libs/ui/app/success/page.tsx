@@ -1,9 +1,8 @@
 import { cookies } from "next/headers"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
 export default async function Success() {
-
   return (
     <div className="flex flex-col space-y-4 px-4 py-6">
       <section>

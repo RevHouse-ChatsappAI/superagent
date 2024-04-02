@@ -1,5 +1,3 @@
-import json
-
 import segment.analytics as analytics
 from decouple import config
 from fastapi import APIRouter, Depends, HTTPException
@@ -27,12 +25,10 @@ analytics.write_key = SEGMENT_WRITE_KEY
 )
 async def create(body: ApiTokenRequest, api_user=Depends(get_current_api_user)):
     try:
-        # Check if a token with the same 'apiUserChatwoot' already exists
         existing_token = await prisma.token.find_first(
             where={"apiUserChatwoot": body.apiUserChatwoot}
         )
         if existing_token:
-            # If a token with the same 'apiUserChatwoot' exists, update the existing token
             updated_token = await prisma.token.update(
                 where={"apiUserChatwoot": body.apiUserChatwoot},
                 data={
@@ -47,7 +43,6 @@ async def create(body: ApiTokenRequest, api_user=Depends(get_current_api_user)):
                 "data": updated_token,
             }
         else:
-            # If no token with the same 'apiUserChatwoot' exists, create a new token
             token_data = {
                 "agentToken": body.agentToken,
                 "userToken": body.userToken,
@@ -132,19 +127,19 @@ async def get_all_tokens(api_user=Depends(get_current_api_user)):
 
 @router.patch(
     "/token",
-    name="update_token",
+    name="update_token_userchatwoot",
     description="Update a Token",
     response_model=ApiTokenResponse,
 )
-async def update_token(
+async def update_token_userchatwoot(
     body: ApiTokenUpdateRequest, api_user=Depends(get_current_api_user)
 ):
     try:
         allowed_fields = {"agentToken", "userToken"}
         update_data = {
-            field: value
-            for field, value in update_data.items()
-            if field in allowed_fields
+            field: getattr(body, field)
+            for field in allowed_fields
+            if getattr(body, field, None) is not None
         }
         if not update_data:
             raise HTTPException(status_code=400, detail="No fields to update")
@@ -209,9 +204,9 @@ async def update_token(
         print(body)
         allowed_fields = {"agentToken", "userToken"}
         update_data = {
-            field: value
-            for field, value in update_data.items()
-            if field in allowed_fields
+            field: getattr(body, field)
+            for field in allowed_fields
+            if getattr(body, field, None) is not None
         }
         if not update_data:
             raise HTTPException(status_code=400, detail="No fields to update")

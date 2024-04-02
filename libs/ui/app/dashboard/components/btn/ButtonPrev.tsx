@@ -1,8 +1,8 @@
-import React from 'react'
+import React from "react"
 
 interface Props {
-  title: string;
-  prevStep: () => void;
+  title: string
+  prevStep: () => void
 }
 
 export const ButtonPrev: React.FC<Props> = ({ title, prevStep }) => {

@@ -55,7 +55,8 @@ export default function IndexPage() {
     }
 
     toast({
-      description: "🎉 ¡Hurra! Revisa tu correo electrónico para el enlace de inicio de sesión.",
+      description:
+        "🎉 ¡Hurra! Revisa tu correo electrónico para el enlace de inicio de sesión.",
     })
   }
 
@@ -91,7 +92,7 @@ export default function IndexPage() {
     <section className="container flex h-screen max-w-md flex-col justify-center space-y-8">
       <div className="flex flex-col space-y-4 text-center">
         <p className="text-3xl font-bold">Crea una cuenta</p>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Coloca tu email debajo para crear tu cuenta
         </p>
       </div>
@@ -116,11 +117,7 @@ export default function IndexPage() {
             )}
           />
           <Button type="submit" size="sm" className="w-full">
-            {form.control._formState.isSubmitting ? (
-              <Spinner />
-            ) : (
-              "Ingresar"
-            )}
+            {form.control._formState.isSubmitting ? <Spinner /> : "Ingresar"}
           </Button>
         </form>
       </Form>
@@ -128,7 +125,10 @@ export default function IndexPage() {
       <div className="flex flex-col items-center justify-center">
         <div className="mb-4 text-xl font-semibold">Próximamente</div>
         <div className="flex flex-wrap justify-center gap-4">
-          <button onClick={handleGithubLogin} className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
+          <button
+            onClick={handleGithubLogin}
+            className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300"
+          >
             <GoogleIcon />
           </button>
           <button className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">

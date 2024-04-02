@@ -93,169 +93,173 @@ export default function LLMClientPage({
 
   return (
     <div className="grid grid-cols-5 gap-4 lg:grid-cols-4 2xl:grid-cols-5">
-      {siteConfig.llms.filter((llm) => llm.id !== "OPENAI").map((llm) => (
-        <div key={llm.id}>
-          <Card>
-            <CardHeader className="flex flex-col">
-              <div className="space-y-4">
-                <CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src={llm.logo}
-                      width={40}
-                      height={40}
-                      alt={llm.name}
-                    />
-                    <p>{llm.name}</p>
-                  </div>
-                </CardTitle>
-                <CardDescription className="h-[80px]">
-                  {llm.description}
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-muted-foreground flex justify-between text-sm">
-                {llms.find((obj: LLM) => obj.provider === llm.id) ? (
-                  <div className="flex items-center">
-                    <RxCheckCircled className="mr-1 h-3 w-3 text-amber-400" />
-                    Enabled
-                  </div>
-                ) : (
-                  <div className="flex items-center">
-                    <RxCircle className="mr-1 h-3 w-3" />
-                    Disabled
-                  </div>
-                )}
-                {llm.disabled ? (
-                  <Button size="sm" variant="outline" disabled={true}>
-                    Coming soon
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      size="sm"
-                      variant="default"
-                      onClick={() => setOpen(llm.id)}
-                    >
-                      Configure
+      {siteConfig.llms
+        .filter((llm) => llm.id !== "OPENAI")
+        .map((llm) => (
+          <div key={llm.id}>
+            <Card>
+              <CardHeader className="flex flex-col">
+                <div className="space-y-4">
+                  <CardTitle>
+                    <div className="flex items-center space-x-2">
+                      <Image
+                        src={llm.logo}
+                        width={40}
+                        height={40}
+                        alt={llm.name}
+                      />
+                      <p>{llm.name}</p>
+                    </div>
+                  </CardTitle>
+                  <CardDescription className="h-[80px]">
+                    {llm.description}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  {llms.find((obj: LLM) => obj.provider === llm.id) ? (
+                    <div className="flex items-center">
+                      <RxCheckCircled className="mr-1 h-3 w-3 text-amber-400" />
+                      Enabled
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <RxCircle className="mr-1 h-3 w-3" />
+                      Disabled
+                    </div>
+                  )}
+                  {llm.disabled ? (
+                    <Button size="sm" variant="outline" disabled={true}>
+                      Coming soon
                     </Button>
-                    <Dialog
-                      open={open === llm.id}
-                      onOpenChange={(value) => {
-                        setOpen(value ? llm.id : null)
-                        if (!value) {
-                          form.reset()
-                        }
-                      }}
-                    >
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Configure {llm.name}</DialogTitle>
-                          <DialogDescription>
-                            Enter your API key below. You can find your key by
-                            logging into your account.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <Form {...form}>
-                          <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="w-full space-y-4"
-                          >
-                            {llm.id === "AZURE_OPENAI" && (
-                              <div className="flex flex-col space-y-2">
-                                <FormField
-                                  control={form.control}
-                                  name="apiKey"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>API key</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          placeholder="Enter your api key"
-                                          {...field}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => setOpen(llm.id)}
+                      >
+                        Configure
+                      </Button>
+                      <Dialog
+                        open={open === llm.id}
+                        onOpenChange={(value) => {
+                          setOpen(value ? llm.id : null)
+                          if (!value) {
+                            form.reset()
+                          }
+                        }}
+                      >
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Configure {llm.name}</DialogTitle>
+                            <DialogDescription>
+                              Enter your API key below. You can find your key by
+                              logging into your account.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <Form {...form}>
+                            <form
+                              onSubmit={form.handleSubmit(onSubmit)}
+                              className="w-full space-y-4"
+                            >
+                              {llm.id === "AZURE_OPENAI" && (
+                                <div className="flex flex-col space-y-2">
+                                  <FormField
+                                    control={form.control}
+                                    name="apiKey"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>API key</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Enter your api key"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name="options.azure_endpoint"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>
+                                          Azure endpoint URL
+                                        </FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Enter your Azure endpoint URL."
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name="options.openai_api_version"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>API version</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Enter your openai api version"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name="options.azure_deployment"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>
+                                          Azure deployment name
+                                        </FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Enter your Azure deployment name"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              )}
+                              <DialogFooter>
+                                <Button
+                                  type="submit"
+                                  size="sm"
+                                  className="w-full"
+                                >
+                                  {form.control._formState.isSubmitting ? (
+                                    <Spinner />
+                                  ) : (
+                                    "Guardar configuración"
                                   )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="options.azure_endpoint"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Azure endpoint URL</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          placeholder="Enter your Azure endpoint URL."
-                                          {...field}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="options.openai_api_version"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>API version</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          placeholder="Enter your openai api version"
-                                          {...field}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="options.azure_deployment"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>
-                                        Azure deployment name
-                                      </FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          placeholder="Enter your Azure deployment name"
-                                          {...field}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-                            <DialogFooter>
-                              <Button
-                                type="submit"
-                                size="sm"
-                                className="w-full"
-                              >
-                                {form.control._formState.isSubmitting ? (
-                                  <Spinner />
-                                ) : (
-                                  "Guardar configuración"
-                                )}
-                              </Button>
-                            </DialogFooter>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ))}
+                                </Button>
+                              </DialogFooter>
+                            </form>
+                          </Form>
+                        </DialogContent>
+                      </Dialog>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
       <Toaster />
     </div>
   )

@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <head />
         <body
           className={cn(
-            "bg-background min-h-screen font-sans antialiased",
+            "min-h-screen bg-background font-sans antialiased",
             fontSans.variable
           )}
         >
@@ -69,14 +69,14 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <head />
           <body
             className={cn(
-              "bg-background min-h-screen font-sans antialiased",
+              "min-h-screen bg-background font-sans antialiased",
               fontSans.variable
             )}
           >
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <div className="relative flex min-h-screen flex-col overflow-hidden">
                 <div className="flex flex-1">
-                  <div className="dark:bg-white-100 flex w-1/2 flex-col justify-between border-r-2 border-white bg-slate-400 p-2 md:p-10">
+                  <div className="flex w-1/2 flex-col justify-between border-r-2 border-white bg-slate-400 p-2 md:p-10 dark:bg-white-100">
                     <ChatsAppAI />
                     <p className="w-[80%]">
                       “Los Agentes de IA nos ahorraron mas de 1000 horas de
