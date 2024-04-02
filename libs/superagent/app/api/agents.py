@@ -87,15 +87,13 @@ async def get_llm_or_raise(data: LLMPayload) -> LLM:
             detail="LLM provider not found",
         )
 
-    llm = await prisma.llm.find_first(
-        where={"provider": provider, "apiUserId": data.user_id}
-    )
+    llm = await prisma.llm.find_first(where={"provider": provider})
 
-    # if not llm:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_400_BAD_REQUEST,
-    #        detail="Please set an LLM first",
-    #    )
+    if not llm:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please set an LLM first",
+        )
 
     return llm
 
@@ -196,29 +194,6 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     llm_provider = body.llmProvider
     llm_model = body.llmModel
     metadata = json.dumps(body.metadata) or "{}"
-    try:
-        # TODO: Fixing
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
-        if subscription is None:
-            raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
-        if tier_credits is None:
-            raise HTTPException(status_code=404, detail="Tier credits not found.")
-        agent_limit = tier_credits.agentLimit
-        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        if agent_count_record is None:
-            await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
-            agent_count = 0
-        else:
-            agent_count = agent_count_record.agentCount
-        if agent_count >= agent_limit:
-            raise HTTPException(status_code=400, detail="Agent limit reached.")
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"agentCount": agent_count + 1}
-        )
-    except Exception as e:
-        handle_exception(e)
 
     if SEGMENT_WRITE_KEY:
         analytics.track(user_id, "Created Agent", {**body.dict()})
@@ -435,13 +410,17 @@ async def invoke(
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
     langfuse_host = config("LANGFUSE_HOST", "https://cloud.langfuse.com")
     langfuse_handler = None
+
+    session_id = body.sessionId or ""
+    session_id = f"agt_{agent_id}_{session_id}"
+
     if langfuse_public_key and langfuse_secret_key:
         langfuse = Langfuse(
             public_key=langfuse_public_key,
             secret_key=langfuse_secret_key,
             host=langfuse_host,
+            sdk_integration="Superagent",
         )
-        session_id = f"{agent_id}-{body.sessionId}" if body.sessionId else f"{agent_id}"
         trace = langfuse.trace(
             id=session_id,
             name="Assistant",
@@ -459,7 +438,7 @@ async def invoke(
         agentops_handler = AsyncLangchainCallbackHandler(
             api_key=agentops_api_key,
             org_key=agentops_org_key,
-            tags=[agent_id, str(body.sessionId)],
+            tags=[agent_id, session_id],
         )
 
     agent_config = await prisma.agent.find_unique_or_raise(
@@ -470,6 +449,7 @@ async def invoke(
             "tools": {"include": {"tool": True}},
         },
     )
+
     model = LLM_MAPPING.get(agent_config.llmModel)
     metadata = agent_config.metadata or {}
     if not model and metadata.get("model"):
@@ -535,8 +515,17 @@ async def invoke(
                 )
             )
 
+            # we are not streaming token by token if output schema is set
+            schema_tokens = ""
             async for token in streaming_callback.aiter():
-                yield ("event: message\n" f"data: {token}\n\n")
+                if not output_schema:
+                    yield ("event: message\n" f"data: {token}\n\n")
+                else:
+                    schema_tokens += token
+
+            # stream line by line to prevent streaming large data in one go
+            for line in schema_tokens.split("\n"):
+                yield ("event: message\n" f"data: {line}\n\n")
 
             await task
 
@@ -548,7 +537,7 @@ async def invoke(
                         {
                             "user_id": api_user.id,
                             "agent": agent_config,
-                            "session_id": body.sessionId,
+                            "session_id": session_id,
                             **result,
                             **vars(cost_callback),
                         }
@@ -580,12 +569,12 @@ async def invoke(
             streaming_callback.done.set()
 
     logger.info("Invoking agent...")
-    session_id = body.sessionId
     input = body.input
     enable_streaming = body.enableStreaming
-    output_schema = body.outputSchema
+    output_schema = body.outputSchema or agent_config.outputSchema
     cost_callback = CostCalcAsyncHandler(model=model)
     streaming_callback = CustomAsyncIteratorCallbackHandler()
+
     agent_base = AgentBase(
         agent_id=agent_id,
         session_id=session_id,
@@ -623,25 +612,25 @@ async def invoke(
         },
     )
 
-    if output_schema:
-        try:
-            output = json.loads(output.get("output"))
-        except Exception as e:
-            logger.error(f"Error parsing output: {e}")
-
     if not enable_streaming and SEGMENT_WRITE_KEY:
         try:
             track_agent_invocation(
                 {
                     "user_id": api_user.id,
                     "agent": agent_config,
-                    "session_id": body.sessionId,
+                    "session_id": session_id,
                     **output,
                     **vars(cost_callback),
                 }
             )
         except Exception as e:
             logger.error(f"Error tracking agent invocation: {e}")
+
+    if output_schema:
+        from langchain.output_parsers.json import SimpleJsonOutputParser
+
+        json_parser = SimpleJsonOutputParser()
+        output["output"] = json_parser.parse(text=output["output"])
 
     return {"success": True, "data": output}
 
@@ -656,20 +645,12 @@ async def invoke(
 async def add_llm(
     agent_id: str, body: AgentLLMRequest, api_user=Depends(get_current_api_user)
 ):
-  # Verificar si ya existe la combinación agentId y llmId
-    existing_record = await prisma.agentllm.find_first(
-        where={"agentId": agent_id, "llmId": body.llmId}
-    )
-    if existing_record:
-        return {"success": False, "message": "Este agente ya tiene asignado este LLM."}
-
+    """Endpoint for adding an LLM to an agent"""
     try:
         await prisma.agentllm.create({**body.dict(), "agentId": agent_id})
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
-    finally:
-        await prisma.disconnect()
 
 
 @router.delete(
@@ -781,6 +762,7 @@ async def add_datasource(
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Added Agent Datasource")
+
         agent_datasource = await prisma.agentdatasource.find_unique(
             where={
                 "agentId_datasourceId": {

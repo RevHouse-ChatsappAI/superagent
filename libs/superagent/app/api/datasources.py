@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.datasource.flow import delete_datasource, vectorize_datasource
 from app.models.request import Datasource as DatasourceRequest
+from app.models.request import EmbeddingsModelProvider
 from app.models.response import (
     Datasource as DatasourceResponse,
 )
@@ -37,21 +38,6 @@ async def create(
 ):
     """Endpoint for creating an datasource"""
     try:
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
-        if subscription is None:
-            raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
-        if tier_credits is None:
-            raise HTTPException(status_code=404, detail="Tier credits not found.")
-        datasource_limit = tier_credits.datasourceLimit
-        datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        if datasource_count.datasourceCount >= datasource_limit:
-            raise HTTPException(status_code=400, detail="Datasource limit reached for your tier.")
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"datasourceCount": datasource_count.datasourceCount + 1}
-        )
-
         vector_db = None
 
         if body.vectorDbId is not None:
@@ -73,7 +59,7 @@ async def create(
         data = await prisma.datasource.create(
             {
                 "apiUserId": api_user.id,
-                **body.dict(),
+                **body.dict(exclude={"embeddingsModelProvider"}),
             }
         )
 
@@ -81,6 +67,7 @@ async def create(
             datasource: Datasource,
             options: Optional[dict],
             vector_db_provider: Optional[str],
+            embeddings_model_provider: EmbeddingsModelProvider,
         ):
             try:
                 await vectorize_datasource(
@@ -88,6 +75,7 @@ async def create(
                     # vector db configurations (api key, index name etc.)
                     options=options,
                     vector_db_provider=vector_db_provider,
+                    embeddings_model_provider=embeddings_model_provider,
                 )
             except Exception as flow_exception:
                 await prisma.datasource.update(
@@ -103,6 +91,7 @@ async def create(
                 vector_db_provider=(
                     vector_db.provider if vector_db is not None else None
                 ),
+                embeddings_model_provider=body.embeddingsModelProvider,
             )
         )
         return {"success": True, "data": data}

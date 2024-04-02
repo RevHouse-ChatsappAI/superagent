@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field, validator
+from app.models.request import LLMParams
 
 from prisma.enums import LLMProvider
 
@@ -12,8 +13,12 @@ class SuperragEncoderType(str, Enum):
 
 
 class SuperragEncoder(BaseModel):
-    type: SuperragEncoderType
-    name: str
+    type: SuperragEncoderType = Field(
+        description="The provider of encoder to use for the index. e.g. `openai`"
+    )
+    name: str = Field(
+        description="The model name to use for the encoder. e.g. `text-embedding-3-small` for OpenAI's model"
+    )
     dimensions: int
 
 
@@ -21,6 +26,7 @@ class SuperragDatabaseProvider(str, Enum):
     pinecone = "pinecone"
     weaviate = "weaviate"
     qdrant = "qdrant"
+    pgvector = "pgvector"
 
 
 class SuperragIndex(BaseModel):
@@ -33,6 +39,7 @@ class SuperragIndex(BaseModel):
     database_provider: Optional[SuperragDatabaseProvider] = Field(
         description="The vector database provider to use for the index"
     )
+    interpreter_mode: Optional[bool] = False
 
     @validator("name")
     def name_too_long(v):
@@ -74,10 +81,13 @@ class ToolModel(BaseModel):
     algolia: Optional[Tool]
     metaphor: Optional[Tool]
     function: Optional[Tool]
+    research: Optional[Tool]
     # ~~~~~~Assistants as tools~~~~~~
     superagent: Optional["SuperagentAgentTool"]
     openai_assistant: Optional["OpenAIAgentTool"]
     llm: Optional["LLMAgentTool"]
+    scraper: Optional[Tool]
+    google_search: Optional[Tool]
 
     # OpenAI Assistant tools
     code_interpreter: Optional[Tool]
@@ -93,6 +103,8 @@ class Assistant(BaseModel):
     llm: str
     prompt: str
     intro: Optional[str]
+    params: Optional[LLMParams]
+    output_schema: Optional[Any]
 
 
 # ~~~Agents~~~
@@ -134,6 +146,7 @@ ToolModel.update_forward_refs()
 SAML_OSS_LLM_PROVIDERS = [
     LLMProvider.PERPLEXITY.value,
     LLMProvider.TOGETHER_AI.value,
+    LLMProvider.ANTHROPIC.value,
 ]
 
 
@@ -143,6 +156,7 @@ class Workflow(BaseModel):
     # ~~OSS LLM providers~~
     perplexity: Optional[LLMAgent]
     together_ai: Optional[LLMAgent]
+    anthropic: Optional[LLMAgent]
     llm: Optional[LLMAgent] = Field(
         description="Deprecated! Use LLM providers instead. e.g. `perplexity` or `together_ai`"
     )

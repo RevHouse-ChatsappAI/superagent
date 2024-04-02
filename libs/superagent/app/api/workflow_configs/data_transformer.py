@@ -1,3 +1,4 @@
+import json
 import logging
 
 from app.api.workflow_configs.api.api_manager import ApiManager
@@ -86,7 +87,12 @@ class DataTransformer:
 
     def transform_assistant(self):
         rename_and_remove_keys(
-            self.assistant, {"llm": "llmModel", "intro": "initialMessage"}
+            self.assistant,
+            {
+                "llm": "llmModel",
+                "intro": "initialMessage",
+                "output_schema": "outputSchema",
+            },
         )
 
         if self.assistant_type:
@@ -111,6 +117,18 @@ class DataTransformer:
             remove_key_if_present(self.assistant, "llmModel")
         else:
             self.assistant["llmModel"] = LLM_REVERSE_MAPPING.get(llm_model, llm_model)
+
+        self.assistant["metadata"] = {
+            **(self.assistant.get("params") or {}),
+            **(self.assistant.get("metadata") or {}),
+        }
+
+        output_schema = self.assistant.get("outputSchema")
+        if output_schema:
+            if isinstance(output_schema, dict):
+                self.assistant["outputSchema"] = json.dumps(output_schema)
+            else:
+                self.assistant["outputSchema"] = str(output_schema)
 
     def transform_tools(self):
         for tool_obj in self.tools:
@@ -137,9 +155,12 @@ class DataTransformer:
 
             await self._set_superrag_files(datasource)
             await self._set_database_provider(datasource)
+            encoder = datasource.get("encoder") or DEFAULT_ENCODER_OPTIONS
+            rename_and_remove_keys(encoder, {"type": "provider"})
+            rename_and_remove_keys(encoder, {"name": "model_name"})
 
             datasource["document_processor"] = {
-                "encoder": datasource.get("encoder") or DEFAULT_ENCODER_OPTIONS,
+                "encoder": encoder,
                 "unstructured": {
                     "hi_res_model_name": "detectron2_onnx",
                     "partition_strategy": "auto",
@@ -148,7 +169,7 @@ class DataTransformer:
                 "splitter": {
                     "max_tokens": 400,
                     "min_tokens": 30,
-                    "name": "semantic",
+                    "name": "by_title",
                     "prefix_summary": True,
                     "prefix_title": True,
                     "rolling_window_size": 1,
@@ -177,8 +198,8 @@ class DataTransformer:
             }
         else:
             raise MissingVectorDatabaseProvider(
-                f"Vector database provider not found ({database_provider})."
-                f"Please configure it by going to the integrations page"
+                "Vector database provider not found."
+                "Please configure it by going to the integrations page"
             )
         remove_key_if_present(datasource, "database_provider")
 
