@@ -35,9 +35,9 @@ logging.basicConfig(
 app = FastAPI(
     title="Superagent",
     docs_url="/",
-    description="The Open Source AI Assistant Framework & API",
-    version="0.2.14",
-    servers=[{"url": "https://api.beta.superagent.sh"}],
+    description="🥷 Run AI-agents with an API",
+    version="0.2.24",
+    servers=[{"url": config("SUPERAGENT_API_URL")}],
 )
 
 app.add_middleware(

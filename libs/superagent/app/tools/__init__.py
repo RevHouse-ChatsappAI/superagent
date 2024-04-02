@@ -13,6 +13,7 @@ from app.models.tools import (
     CodeInterpreterInput,
     # E2BCodeExecutorInput,
     FunctionInput,
+    GoogleSearchInput,
     GPTVisionInput,
     HandOffInput,
     HTTPInput,
@@ -20,7 +21,9 @@ from app.models.tools import (
     OpenapiInput,
     PubMedInput,
     ReplicateInput,
+    ScraperInput,
     SuperRagInput,
+    TavilyInput,
     TTS1Input,
     WolframInput,
     ZapierInput,
@@ -34,6 +37,7 @@ from app.tools.code_interpreter import CodeInterpreter
 
 # from app.tools.e2b import E2BCodeExecutor
 from app.tools.function import Function
+from app.tools.google_search import GoogleSearch
 from app.tools.gpt_vision import GPTVision
 from app.tools.hand_off import HandOff
 from app.tools.http import LCHttpTool
@@ -41,7 +45,9 @@ from app.tools.metaphor import MetaphorSearch
 from app.tools.openapi import Openapi
 from app.tools.pubmed import PubMed
 from app.tools.replicate import Replicate
+from app.tools.scraper import Scraper
 from app.tools.superrag import SuperRagTool
+from app.tools.tavily import Tavily
 from app.tools.tts_1 import TTS1
 from app.tools.wolfram_alpha import WolframAlpha
 from app.tools.zapier import ZapierNLA
@@ -77,6 +83,9 @@ TOOL_TYPE_MAPPING = {
     "FUNCTION": {"class": Function, "schema": FunctionInput},
     "HTTP": {"class": LCHttpTool, "schema": HTTPInput},
     "SUPERRAG": {"class": SuperRagTool, "schema": SuperRagInput},
+    "RESEARCH": {"class": Tavily, "schema": TavilyInput},
+    "SCRAPER": {"class": Scraper, "schema": ScraperInput},
+    "GOOGLE_SEARCH": {"class": GoogleSearch, "schema": GoogleSearchInput},
 }
 
 OSS_TOOL_TYPE_MAPPING = {"BROWSER": Browser, "BING_SEARCH": BingSearch}
@@ -114,10 +123,7 @@ def create_tool(
     args_schema: Any,
     metadata: Optional[Dict[str, Any]],
     return_direct: Optional[bool],
-    session_id: str = None,
 ) -> Any:
-    if metadata:
-        metadata["sessionId"] = session_id
     return tool_class(
         name=name,
         description=description,

@@ -35,50 +35,12 @@ from prisma.models import (
 from prisma.models import (
     WorkflowStep as WorkflowStepModel,
 )
-from prisma.models import (
-    Token as ApiTokenModel,
-)
-from prisma.models import (
-    Subscription as ApiSubscriptionModel,
-)
-from prisma.models import (
-    Credit as ApiCreditModel,
-)
-from prisma.models import (
-    Count as ApiCountModel,
-)
+
 
 class ApiUser(BaseModel):
     success: bool
     data: Optional[ApiUserModel]
 
-class ApiToken(BaseModel):
-    success: bool
-    message: str
-
-class GetToken(BaseModel):
-    success: bool
-    data: Optional[ApiTokenModel]
-
-class GetTokens(BaseModel):
-    success: bool
-    message: str
-    data: Optional[List[ApiTokenModel]]
-
-class GetPyment(BaseModel):
-    success: bool
-    message: str
-    data: Optional[ApiSubscriptionModel]
-
-class GetCredit(BaseModel):
-    success: bool
-    message: str
-    data: Optional[ApiCreditModel]
-
-class GetCount(BaseModel):
-    success: bool
-    message: str
-    data: Optional[ApiCountModel]
 
 class _ApiKeyCreateModel(ApiKeyModel):
     apiKey: str
@@ -98,9 +60,6 @@ class ApiKeyList(BaseModel):
     success: bool
     data: Optional[list[ApiKeyModel]]
 
-class FreeResponse(BaseModel):
-    success:bool
-    message: str
 
 class Agent(BaseModel):
     success: bool

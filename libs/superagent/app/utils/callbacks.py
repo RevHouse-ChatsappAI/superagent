@@ -6,6 +6,7 @@ from typing import Any, AsyncIterator, List, Literal, Tuple, Union, cast
 
 from decouple import config
 from langchain.callbacks.base import AsyncCallbackHandler
+from langchain.schema.agent import AgentFinish
 from langchain.schema.output import LLMResult
 from langfuse import Langfuse
 from litellm import cost_per_token, token_counter
@@ -21,32 +22,43 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
     done: asyncio.Event
 
     TIMEOUT_SECONDS = 30
+    is_stream_started = False
 
     @property
     def always_verbose(self) -> bool:
         return True
 
     def __init__(self) -> None:
-        self.queue = asyncio.Queue()
+        self.queue = asyncio.Queue(maxsize=5)
         self.done = asyncio.Event()
 
-    async def on_chat_model_start(
-        self,
-        *args: Any,  # noqa
-        **kwargs: Any,  # noqa
-    ) -> None:
-        """Run when LLM starts running."""
-        pass
+    async def on_agent_finish(self, finish: AgentFinish, **_: Any) -> Any:
+        """Run on agent end."""
+        # This is for the tools whose return_direct property is set to True
+        if not self.is_stream_started:
+            output = finish.return_values["output"]
+            for token in output.split("\n"):
+                await self.on_llm_new_token(token + "\n")
 
-    async def on_llm_start(self) -> None:
+            while not self.queue.empty():
+                await asyncio.sleep(0.1)
+            self.done.set()
+
+    async def on_llm_start(self, *_: Any, **__: Any) -> None:
         # If two calls are made in a row, this resets the state
         self.done.clear()
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:  # noqa
         if token is not None and token != "":
-            self.queue.put_nowait(token)
+            has_put = False
+            while not has_put:
+                try:
+                    await self.queue.put(token)
+                    has_put = True
+                except asyncio.QueueFull:
+                    continue
 
-    async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:  # noqa
+    async def on_llm_end(self, response, **kwargs: Any) -> None:  # noqa
         # TODO:
         # This should be removed when Langchain has merged
         # https://github.com/langchain-ai/langchain/pull/9536
@@ -60,36 +72,27 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
 
     async def aiter(self) -> AsyncIterator[str]:
         while not self.queue.empty() or not self.done.is_set():
-            # Wait for the next token in the queue,
-            # but stop waiting if the done event is set
-            done, other = await asyncio.wait(
+            done, pending = await asyncio.wait(
                 [
-                    # NOTE: If you add other tasks here, update the code below,
-                    # which assumes each set has exactly one task each
                     asyncio.ensure_future(self.queue.get()),
                     asyncio.ensure_future(self.done.wait()),
                 ],
                 return_when=asyncio.FIRST_COMPLETED,
                 timeout=self.TIMEOUT_SECONDS,
             )
-            # if we the timeout has been reached
-            if not done or not other:
+            if not done:
                 logger.warning(f"{self.TIMEOUT_SECONDS} seconds of timeout reached")
                 self.done.set()
                 break
 
-            # Cancel the other task
-            if other:
-                other.pop().cancel()
+            for future in pending:
+                future.cancel()
 
-            # Extract the value of the first completed task
             token_or_done = cast(Union[str, Literal[True]], done.pop().result())
 
-            # If the extracted value is the boolean True, the done event was set
             if token_or_done is True:
-                break
-
-            # Otherwise, the extracted value is a token, which we yield
+                continue
+            self.is_stream_started = True
             yield token_or_done
 
 
@@ -139,7 +142,7 @@ class CostCalcAsyncHandler(AsyncCallbackHandler):
 def get_session_tracker_handler(
     workflow_id,
     agent_id,
-    req_session_id,
+    session_id,
     user_id,
 ):
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
@@ -151,12 +154,10 @@ def get_session_tracker_handler(
             public_key=langfuse_public_key,
             secret_key=langfuse_secret_key,
             host=langfuse_host,
-        )
-        trace_id = (
-            f"{workflow_id}-{req_session_id}" if req_session_id else f"{workflow_id}"
+            sdk_integration="Superagent",
         )
         trace = langfuse.trace(
-            id=trace_id,
+            id=session_id,
             name="Workflow",
             tags=[agent_id],
             metadata={"agentId": agent_id, "workflowId": workflow_id},
