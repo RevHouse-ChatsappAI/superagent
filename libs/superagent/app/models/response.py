@@ -18,7 +18,22 @@ from prisma.models import (
     ApiUser as ApiUserModel,
 )
 from prisma.models import (
+    Count as ApiCountModel,
+)
+from prisma.models import (
+    Credit as ApiCreditModel,
+)
+from prisma.models import (
     Datasource as DatasourceModel,
+)
+from prisma.models import (
+    PlatformKey as ApiPlatformKeyModel,
+)
+from prisma.models import (
+    Subscription as ApiSubscriptionModel,
+)
+from prisma.models import (
+    Token as ApiTokenModel,
 )
 from prisma.models import (
     Tool as ToolModel,
@@ -32,63 +47,57 @@ from prisma.models import (
 from prisma.models import (
     WorkflowStep as WorkflowStepModel,
 )
-from prisma.models import (
-    Token as ApiTokenModel,
-)
-from prisma.models import (
-    Subscription as ApiSubscriptionModel,
-)
-from prisma.models import (
-    Credit as ApiCreditModel,
-)
-from prisma.models import (
-    Count as ApiCountModel,
-)
-from prisma.models import (
-    PlatformKey as ApiPlatformKeyModel,
-)
 
 
 class ApiUser(BaseModel):
     success: bool
     data: Optional[ApiUserModel]
 
+
 class ApiToken(BaseModel):
     success: bool
     message: str
 
+
 class GetToken(BaseModel):
     success: bool
     data: Optional[ApiTokenModel]
+
 
 class GetTokens(BaseModel):
     success: bool
     message: str
     data: Optional[List[ApiTokenModel]]
 
+
 class GetPyment(BaseModel):
     success: bool
     message: str
     data: Optional[ApiSubscriptionModel]
+
 
 class GetCredit(BaseModel):
     success: bool
     message: str
     data: Optional[ApiCreditModel]
 
+
 class GetKeyPlatform(BaseModel):
     success: bool
     message: str
     data: Optional[ApiPlatformKeyModel]
+
 
 class GetCount(BaseModel):
     success: bool
     message: str
     data: Optional[ApiCountModel]
 
+
 class FreeResponse(BaseModel):
-    success:bool
+    success: bool
     message: str
+
 
 class Agent(BaseModel):
     success: bool

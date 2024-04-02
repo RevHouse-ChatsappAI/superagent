@@ -46,9 +46,7 @@ async def create(body: LLMRequest, api_user=Depends(get_current_api_user)):
 async def list(api_user=Depends(get_current_api_user)):
     """Endpoint for listing all LLMs"""
     try:
-        data = await prisma.llm.find_many(
-            order={"createdAt": "desc"}
-        )
+        data = await prisma.llm.find_many(order={"createdAt": "desc"})
         # Convert options to string
         for item in data:
             item.options = json.dumps(item.options)

@@ -1,6 +1,18 @@
 from fastapi import APIRouter
 
-from app.api import agents, api_user, token, datasources, llms, tools, vector_dbs, workflows, subscription, chatwoot, integrations
+from app.api import (
+    agents,
+    api_user,
+    chatwoot,
+    datasources,
+    integrations,
+    llms,
+    subscription,
+    token,
+    tools,
+    vector_dbs,
+    workflows,
+)
 
 router = APIRouter()
 api_prefix = "/api/v1"
@@ -16,4 +28,3 @@ router.include_router(datasources.router, tags=["Datasource"], prefix=api_prefix
 router.include_router(tools.router, tags=["Tool"], prefix=api_prefix)
 router.include_router(workflows.router, tags=["Workflow"], prefix=api_prefix)
 router.include_router(vector_dbs.router, tags=["Vector Database"], prefix=api_prefix)
-

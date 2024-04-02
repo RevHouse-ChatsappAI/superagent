@@ -37,19 +37,29 @@ async def create(
 ):
     """Endpoint for creating an datasource"""
     try:
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        subscription = await prisma.subscription.find_first(
+            where={"apiUserId": api_user.id}
+        )
         if subscription is None:
             raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        tier_credits = await prisma.tiercredit.find_unique(
+            where={"tier": subscription.tier}
+        )
         if tier_credits is None:
             raise HTTPException(status_code=404, detail="Tier credits not found.")
         datasource_limit = tier_credits.datasourceLimit
-        datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        datasource_count = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
         if datasource_count.datasourceCount >= datasource_limit:
-            return {"success": False, "data": None, "message": "Se alcanzo el limite de tu plan"}
+            return {
+                "success": False,
+                "data": None,
+                "message": "Se alcanzo el limite de tu plan",
+            }
         await prisma.count.update(
             where={"apiUserId": api_user.id},
-            data={"datasourceCount": datasource_count.datasourceCount + 1}
+            data={"datasourceCount": datasource_count.datasourceCount + 1},
         )
 
         vector_db = None
@@ -192,11 +202,13 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
             where={"id": datasource_id}, include={"vectorDb": True}
         )
 
-        datasource_count = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        datasource_count = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
         if datasource_count and datasource_count.datasourceCount > 0:
             await prisma.count.update(
                 where={"apiUserId": api_user.id},
-                data={"datasourceCount": datasource_count.datasourceCount - 1}
+                data={"datasourceCount": datasource_count.datasourceCount - 1},
             )
 
         async def run_delete_datasource_flow(

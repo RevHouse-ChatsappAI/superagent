@@ -3,14 +3,9 @@ import json
 import logging
 from typing import AsyncIterable
 
-from app.utils.token import obtener_token_supabase, modificar_estado_agente
-from app.utils.chatwoot import enviar_respuesta_chatwoot, chatwoot_human_handoff
-
-
 import segment.analytics as analytics
 from decouple import config
-from fastapi import HTTPException
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
@@ -51,9 +46,11 @@ from app.models.response import (
     AgentToolList as AgentToolListResponse,
 )
 from app.utils.api import get_current_api_user, handle_exception
+from app.utils.chatwoot import chatwoot_human_handoff, enviar_respuesta_chatwoot
 from app.utils.llm import LLM_PROVIDER_MAPPING
 from app.utils.prisma import prisma
 from app.utils.streaming import CustomAsyncIteratorCallbackHandler
+from app.utils.token import modificar_estado_agente, obtener_token_supabase
 
 SEGMENT_WRITE_KEY = config("SEGMENT_WRITE_KEY", None)
 
@@ -73,14 +70,20 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
     try:
         # TODO: Fixing
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
+        subscription = await prisma.subscription.find_first(
+            where={"apiUserId": api_user.id}
+        )
         if subscription is None:
             raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
+        tier_credits = await prisma.tiercredit.find_unique(
+            where={"tier": subscription.tier}
+        )
         if tier_credits is None:
             raise HTTPException(status_code=404, detail="Tier credits not found.")
         agent_limit = tier_credits.agentLimit
-        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        agent_count_record = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
         if agent_count_record is None:
             await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
             agent_count = 0
@@ -89,8 +92,7 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
         if agent_count >= agent_limit:
             return {"success": False, "message": "Los agentes llegaron a su limite."}
         await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"agentCount": agent_count + 1}
+            where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
         )
 
         agent = await prisma.agent.create(
@@ -106,9 +108,7 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
             if body.llmModel in models:
                 provider = key
                 break
-        llm = await prisma.llm.find_first(
-            where={"provider": provider}
-        )
+        llm = await prisma.llm.find_first(where={"provider": provider})
         await prisma.agentllm.create({"agentId": agent.id, "llmId": llm.id})
         return {"success": True, "data": agent}
     except Exception as e:
@@ -116,7 +116,11 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
             raise
         else:
             handle_exception(e)
-            return {"success": False, "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists."}
+            return {
+                "success": False,
+                "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists.",
+            }
+
 
 @router.get(
     "/agents",
@@ -190,12 +194,15 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
         await prisma.agent.delete(where={"id": agent_id})
 
         # Find the agent count record for the user and decrement the count
-        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+        agent_count_record = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
         if agent_count_record:
-            new_agent_count = max(agent_count_record.agentCount - 1, 0)  # Ensure the count doesn't go below 0
+            new_agent_count = max(
+                agent_count_record.agentCount - 1, 0
+            )  # Ensure the count doesn't go below 0
             await prisma.count.update(
-                where={"apiUserId": api_user.id},
-                data={"agentCount": new_agent_count}
+                where={"apiUserId": api_user.id}, data={"agentCount": new_agent_count}
             )
 
         return {"success": True, "data": None}
@@ -242,23 +249,28 @@ async def invoke(
     try:
         credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
         if not credit_entry:
-            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+            raise HTTPException(
+                status_code=404,
+                detail="No se encontró la entrada de créditos para el usuario.",
+            )
         available_credits = credit_entry.credits
         count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
         if count_entry:
             new_count = count_entry.queryCount + 1
             if new_count > available_credits:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
+                raise HTTPException(
+                    status_code=429,
+                    detail="Se ha alcanzado el límite de créditos disponibles.",
+                )
             await prisma.count.update(
-                where={"apiUserId": api_user.id},
-                data={"queryCount": new_count}
+                where={"apiUserId": api_user.id}, data={"queryCount": new_count}
             )
         else:
             if available_credits <= 0:
-                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
-            await prisma.count.create(
-                data={"apiUserId": api_user.id, "queryCount": 1}
-            )
+                raise HTTPException(
+                    status_code=429, detail="No hay créditos disponibles."
+                )
+            await prisma.count.create(data={"apiUserId": api_user.id, "queryCount": 1})
     except Exception as e:
         handle_exception(e)
 
@@ -309,7 +321,7 @@ async def invoke(
                     function = agent_action_message_log.tool
                     args = agent_action_message_log.tool_input
                     if function and args:
-                         yield (
+                        yield (
                             "event: function_call\n"
                             f'data: {{"function": "{function}", '
                             f'"args": {json.dumps(args)}, '
@@ -368,7 +380,7 @@ async def invoke(
 async def add_llm(
     agent_id: str, body: AgentLLMRequest, api_user=Depends(get_current_api_user)
 ):
-  # Verificar si ya existe la combinación agentId y llmId
+    # Verificar si ya existe la combinación agentId y llmId
     existing_record = await prisma.agentllm.find_first(
         where={"agentId": agent_id, "llmId": body.llmId}
     )
@@ -599,19 +611,20 @@ async def list_runs(agent_id: str, api_user=Depends(get_current_api_user)):
 
     return {"success": False, "data": []}
 
+
 # Agent Bot with Chatwoot
 @router.post("/webhook/{agent_id}/chatwoot")
 async def chatwoot_webhook(agent_id: str, request: Request):
     body = await request.json()
 
     message_status = body.get("conversation", {}).get("status")
-    label_handoff = body.get("conversation", {}).get("labels")
-
-    if "handoff" in label_handoff:
-        return {"message": "Handoff label detected, action will not be executed", "ignored": True}
 
     if message_status != "pending":
-        return {"message": "Message is pending, action not required", "agent_id": agent_id, "ignored": True}
+        return {
+            "message": "Message is pending, action not required",
+            "agent_id": agent_id,
+            "ignored": True,
+        }
 
     user_id = body.get("sender", {}).get("account", {}).get("id")
     account_id = body.get("account", {}).get("id")
@@ -622,23 +635,37 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     try:
         token = await prisma.token.find_unique(where={"apiUserChatwoot": str(user_id)})
         if not token:
-            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
-        credit_entry = await prisma.credit.find_first(where={"apiUserId": token.apiUserId})
+            raise HTTPException(
+                status_code=404,
+                detail="No se encontró la entrada de créditos para el usuario.",
+            )
+        credit_entry = await prisma.credit.find_first(
+            where={"apiUserId": token.apiUserId}
+        )
         if not credit_entry:
-            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+            raise HTTPException(
+                status_code=404,
+                detail="No se encontró la entrada de créditos para el usuario.",
+            )
         available_credits = credit_entry.credits
-        count_entry = await prisma.count.find_unique(where={"apiUserId": token.apiUserId})
+        count_entry = await prisma.count.find_unique(
+            where={"apiUserId": token.apiUserId}
+        )
         if count_entry:
             new_count = count_entry.queryCount + 1
             if new_count > available_credits:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
+                raise HTTPException(
+                    status_code=429,
+                    detail="Se ha alcanzado el límite de créditos disponibles.",
+                )
             await prisma.count.update(
-                where={"apiUserId": token.apiUserId},
-                data={"queryCount": new_count}
+                where={"apiUserId": token.apiUserId}, data={"queryCount": new_count}
             )
         else:
             if available_credits <= 0:
-                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
+                raise HTTPException(
+                    status_code=429, detail="No hay créditos disponibles."
+                )
             await prisma.count.create(
                 data={"apiUserId": token.apiUserId, "queryCount": 1}
             )
@@ -647,15 +674,19 @@ async def chatwoot_webhook(agent_id: str, request: Request):
 
     if message_type != "incoming":
         logging.info("Ignoring non-client message")
-        return {"message": "Non-client message ignored", "agent_id": agent_id, "ignored": True}
+        return {
+            "message": "Non-client message ignored",
+            "agent_id": agent_id,
+            "ignored": True,
+        }
     try:
         token = await obtener_token_supabase(user_id=user_id)
         if not token:
             raise HTTPException(status_code=404, detail="Token not found")
 
-        valor_token = token['data'].agentToken
-        ia_assistant_active = token['data'].isAgentActive
-        userTokenChatwoot= token['data'].userToken
+        valor_token = token["data"].agentToken
+        ia_assistant_active = token["data"].isAgentActive
+        userTokenChatwoot = token["data"].userToken
 
         agent = await prisma.agent.find_unique(where={"id": agent_id})
         if not agent:
@@ -663,7 +694,10 @@ async def chatwoot_webhook(agent_id: str, request: Request):
 
         agent_base = await AgentBase(agent_id=agent_id).get_agent()
         if ia_assistant_active == False:
-            return {"message": "Request to speak with a human agent received", "agent_id": agent_id}
+            return {
+                "message": "Request to speak with a human agent received",
+                "agent_id": agent_id,
+            }
 
         async def send_message(
             agent: LLMChain | AgentExecutor,
@@ -684,7 +718,9 @@ async def chatwoot_webhook(agent_id: str, request: Request):
 
                         function = str(action)
                         if function == "hand-off":
-                            await chatwoot_human_handoff(conversation_id, userTokenChatwoot, account_id)
+                            await chatwoot_human_handoff(
+                                conversation_id, userTokenChatwoot, account_id
+                            )
                     return result.get("output", "")
             except Exception as e:
                 logging.error(f"Error in send_message: {e}")
@@ -694,13 +730,23 @@ async def chatwoot_webhook(agent_id: str, request: Request):
         response_message = await send_message(agent_base, content=content)
 
         try:
-            await enviar_respuesta_chatwoot(conversation_id, response_message, valor_token, account_id, es_respuesta_de_bot=True)
+            await enviar_respuesta_chatwoot(
+                conversation_id,
+                response_message,
+                valor_token,
+                account_id,
+                es_respuesta_de_bot=True,
+            )
         except Exception as e:
             logging.error(f"Error sending response to Chatwoot: {e}")
-            raise HTTPException(status_code=500, detail="Error sending the response to Chatwoot")
-
+            raise HTTPException(
+                status_code=500, detail="Error sending the response to Chatwoot"
+            )
 
         return {"success": True, "message": "Response sent to Chatwoot"}
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-        return {"message": "An error occurred while processing the data", "agent_id": agent_id}
+        return {
+            "message": "An error occurred while processing the data",
+            "agent_id": agent_id,
+        }

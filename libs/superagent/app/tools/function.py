@@ -1,60 +1,73 @@
+import aiohttp
+from langchain.tools import BaseTool
+
 from app.utils.facturas_script import ERPClient
 
-from langchain.tools import BaseTool
-import aiohttp
 
 async def fetch_productos(title, description):
-    url = 'https://erp.radiadoresvovchuk.com/api/3/productos'
+    url = "https://erp.radiadoresvovchuk.com/api/3/productos"
     print(title, description)
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers={
-                "Content-Type": "application/json",
-                "Token": "3leuZBhpOaXw6xQcF8Lk"
-            }) as response:
+            async with session.get(
+                url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": "3leuZBhpOaXw6xQcF8Lk",
+                },
+            ) as response:
                 if response.status != 200:
                     raise Exception(f"HTTP error! status: {response.status}")
                 response_product = await response.json()
                 return response_product
     except Exception as error:
-        print(f'Fetching product data failed: {error}')
+        print(f"Fetching product data failed: {error}")
         return "No se a encontrado el producto"
+
 
 async def fetch_stocks(idproducto, referencia, codalmacen):
     print(idproducto, referencia, codalmacen)
-    url = 'https://erp.radiadoresvovchuk.com/api/3/stocks'
+    url = "https://erp.radiadoresvovchuk.com/api/3/stocks"
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers={
-                "Content-Type": "application/json",
-                "Token": "3leuZBhpOaXw6xQcF8Lk"
-            }) as response:
+            async with session.get(
+                url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": "3leuZBhpOaXw6xQcF8Lk",
+                },
+            ) as response:
                 if response.status != 200:
                     raise Exception(f"HTTP error! status: {response.status}")
                 response_product = await response.json()
                 return response_product
     except Exception as error:
-        print(f'Fetching product data failed: {error}')
+        print(f"Fetching product data failed: {error}")
         return "No se a encontrado el producto"
+
 
 async def fetch_todo(id):
     print(id)
-    url = f'https://erp.radiadoresvovchuk.com/api/3/productos'
+    url = f"https://erp.radiadoresvovchuk.com/api/3/productos"
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers={
-                "Content-Type": "application/json",
-                "Token": "3leuZBhpOaXw6xQcF8Lk"
-            }) as response:
+            async with session.get(
+                url,
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": "3leuZBhpOaXw6xQcF8Lk",
+                },
+            ) as response:
                 if response.status != 200:
                     raise Exception(f"HTTP error! status: {response.status}")
                 response_product = await response.json()
                 return response_product
     except Exception as error:
-        print(f'Fetching product data failed: {error}')
+        print(f"Fetching product data failed: {error}")
         return "No se a encontrado el producto"
+
 
 class Function(BaseTool):
     name = "cunstom function"
@@ -64,7 +77,7 @@ class Function(BaseTool):
     tool_dispatch = {
         "fetch_todo": fetch_todo,
         "fetch_radiadores": fetch_productos,
-        "fetch_stocks": fetch_stocks
+        "fetch_stocks": fetch_stocks,
     }
 
     def _run(self, *args, **kwargs) -> str:
