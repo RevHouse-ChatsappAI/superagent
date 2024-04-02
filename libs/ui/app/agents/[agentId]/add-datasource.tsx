@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { LLMProvider } from "@/models/models"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useForm } from "react-hook-form"
 import { RxCross2 } from "react-icons/rx"
 import { TbPlus } from "react-icons/tb"
@@ -11,6 +10,7 @@ import { v4 as uuidv4 } from "uuid"
 import * as z from "zod"
 
 import { Api } from "@/lib/api"
+import { getSupabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -47,17 +47,21 @@ const formSchema = z.object({
   metadata: z.any(),
 })
 
+interface AddDatasourceProps {
+  profile: any
+  agent: any
+  onSuccess: () => void
+  llmProvider: LLMProvider
+}
+
+const supabase = getSupabase()
+
 function AddDatasource({
   profile,
   agent,
   onSuccess,
-}: {
-  profile: any
-  agent: any
-  onSuccess: () => void
-}) {
-  const supabase = createClientComponentClient()
-  const router = useRouter()
+  llmProvider,
+}: AddDatasourceProps) {
   const { toast } = useToast()
   const api = new Api(profile.api_key)
 
@@ -90,6 +94,7 @@ function AddDatasource({
       const { data: datasource } = await api.createDatasource({
         ...values,
         vectorDbId: vectorDbs[0]?.id,
+        embeddingsModelProvider: getEmbeddingsModelProvider(llmProvider),
       })
       await api.createAgentDatasource(agent.id, datasource.id)
       form.reset()
@@ -104,6 +109,13 @@ function AddDatasource({
         description: error?.message,
       })
     }
+  }
+
+  function getEmbeddingsModelProvider(llmProvider: LLMProvider): LLMProvider {
+    if (llmProvider === LLMProvider.AZURE_OPENAI)
+      return LLMProvider.AZURE_OPENAI
+
+    return LLMProvider.OPENAI
   }
 
   function mapMimeTypeToFileType(mimeType: string): string {

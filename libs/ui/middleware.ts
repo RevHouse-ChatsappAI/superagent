@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
-import { Api } from "./lib/api"
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -29,12 +28,14 @@ export async function middleware(req: NextRequest) {
     }
 
     if (user && req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(new URL("/workflows", req.url))
+      return NextResponse.redirect(
+        new URL(`/workflows${req.nextUrl.search}`, req.url)
+      )
     }
   }
 
   if (!user && req.nextUrl.pathname !== "/") {
-    return NextResponse.redirect(new URL("/home", req.url))
+    return NextResponse.redirect(new URL("/", req.url))
   }
 
   return res

@@ -15,11 +15,11 @@ export type Agent = {
 export const columns: ColumnDef<Agent>[] = [
   {
     accessorKey: "name",
-    header: "Nombre",
+    header: "Name",
   },
   {
     accessorKey: "isActive",
-    header: "Estado",
+    header: "Status",
     cell: ({ row, column }) =>
       row.getValue(column.id) ? (
         <Badge variant="secondary">
@@ -39,7 +39,7 @@ export const columns: ColumnDef<Agent>[] = [
   },
   {
     accessorKey: "description",
-    header: "Descripción",
+    header: "Description",
   },
   {
     accessorKey: "id",

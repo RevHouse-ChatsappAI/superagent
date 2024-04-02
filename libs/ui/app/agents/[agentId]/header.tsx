@@ -24,10 +24,6 @@ import { toast } from "@/components/ui/use-toast"
 import { useEditableField } from "@/components/hooks"
 
 type Mode = "view" | "edit"
-const baseUrl =
-  process.env.NODE_ENV === "production"
-    ? "https://beta.chatsappai.com/"
-    : "http://localhost:3000"
 
 export default function Header({
   agent,
@@ -43,7 +39,7 @@ export default function Header({
   const onAgentDelete = async () => {
     await api.deleteAgentById(agent.id)
     toast({
-      description: `Agente con ID: ${agent.id} eliminado!`,
+      description: `Agent with ID: ${agent.id} deleted!`,
     })
     router.refresh()
     router.push("/agents")
@@ -57,14 +53,14 @@ export default function Header({
   return (
     <div className="flex items-center justify-between border-b px-6 py-4">
       <div className="flex flex-col">
-        <div className="text-muted-foreground flex space-x-2 py-2 text-sm">
+        <div className="flex space-x-2 py-2 text-sm text-muted-foreground">
           <Link passHref href="/agents">
             <span>Agents</span>
           </Link>
           <span>/</span>
           <Badge variant="secondary">
             <div className="flex items-center space-x-1">
-              <span className="text-muted-foreground font-mono font-normal">
+              <span className="font-mono font-normal text-muted-foreground">
                 {agent?.id}
               </span>
             </div>
@@ -74,7 +70,7 @@ export default function Header({
           <div className="flex flex-col space-y-2">
             {useEditableField(agent.name, onUpdateAgentName)}
 
-            <span className="text-muted-foreground font-mono text-xs font-normal">
+            <span className="font-mono text-xs font-normal text-muted-foreground">
               <span>
                 CREATED AT:{" "}
                 <span className="text-foreground">

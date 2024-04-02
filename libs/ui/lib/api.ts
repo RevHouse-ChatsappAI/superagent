@@ -1,5 +1,3 @@
-import { ApiToken } from "@/types/token"
-
 export class Api {
   private apiKey?: string
 
@@ -161,33 +159,6 @@ export class Api {
     return this.fetchFromApi(`/agents/${id}/runs`)
   }
 
-  async getToken() {
-    return this.fetchFromApi("/token")
-  }
-
-  async getTokens() {
-    return this.fetchFromApi("/tokens")
-  }
-
-  async getSubscription(){
-    return this.fetchFromApi("/payment")
-  }
-
-  async getCredit(){
-    return this.fetchFromApi("/credit")
-  }
-
-  async getCount(){
-    return this.fetchFromApi("/count")
-  }
-
-  // async updateSelectUserAccountChatwoot() {
-  //   return this.fetchFromApi(`/token/userchatwoot`, {
-  //     method: "PATCH",
-  //     body: JSON.stringify(payload),
-  //   })
-  // }
-
   async getDatasources(
     searchParams: { take?: number; skip?: number } = { skip: 0, take: 50 }
   ) {
@@ -322,40 +293,10 @@ export class Api {
     })
   }
 
-  async createAccountFreeSubscription(payload: any) {
-    return this.fetchFromApi("/free", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
-  }
-
   async patchVectorDb(id: string, payload: any) {
     return this.fetchFromApi(`/vector-dbs/${id}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
     })
   }
-
-    //Token
-    async createToken(payload: ApiToken) {
-      const response = await this.fetchFromApi("/token", {
-        method: "POST",
-        body: JSON.stringify({
-          apiUserChatwoot: payload.apiUserChatwoot,
-          agentToken: payload.agentToken,
-          userToken: payload.userToken,
-          isAgentActive: true
-        }),
-      })
-      return response;
-    }
-
-    async patchToken(payload: ApiToken) {
-      return this.fetchFromApi(`/token`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          userToken: payload.userToken,
-        }),
-      })
-    }
 }

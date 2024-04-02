@@ -311,7 +311,7 @@ export default function Chat({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="chat">Chat</SelectItem>
-              <SelectItem value="trace">Trazo</SelectItem>
+              <SelectItem value="trace">Trace</SelectItem>
             </SelectContent>
           </Select>
           </div>*/}
@@ -410,7 +410,7 @@ export default function Chat({
                 }
                 setMessages([])
                 toast({
-                  description: "Nueva sesión creada",
+                  description: "New session created",
                 })
               }}
               isLoading={isLoading}

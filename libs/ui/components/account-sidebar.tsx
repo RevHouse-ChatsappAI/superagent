@@ -3,10 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { siteConfig } from "@/config/site"
-import { stripe } from "@/lib/stripe"
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 interface SettingsSidebarProps extends React.HTMLAttributes<HTMLElement> {
   profile: any
@@ -41,7 +39,7 @@ export function SettingsSidebar({
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
             pathname === item.href && "bg-muted hover:bg-muted",
-            item.disabled && "cursor-not-allowed text-black opacity-50",
+            item.disabled && "text-muted",
             "justify-start"
           )}
         >

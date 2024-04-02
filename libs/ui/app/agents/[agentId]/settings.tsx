@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { LLMProvider } from "@/models/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -77,6 +78,7 @@ export default function Settings({
   tools,
   profile,
 }: SettingsProps) {
+  console.log("agent", agent)
   const api = new Api(profile.api_key)
   const router = useRouter()
   const { toast } = useToast()
@@ -95,7 +97,7 @@ export default function Settings({
     },
   })
   const avatar = form.watch("avatar")
-  const llms = form.watch("llms")
+  const currLlmProvider = form.watch("llms") as LLMProvider
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { tools, datasources } = values
 
@@ -140,9 +142,9 @@ export default function Settings({
         (datasourceId) => api.deleteAgentDatasource(agent.id, datasourceId)
       )
 
-      if (llms !== agent.llms?.[0]?.llm.provider) {
+      if (currLlmProvider !== agent.llms?.[0]?.llm.provider) {
         const configuredLLM = configuredLLMs.find(
-          (llm) => llm.provider === llms
+          (llm) => llm.provider === currLlmProvider
         )
 
         if (configuredLLM) {
@@ -152,7 +154,7 @@ export default function Settings({
       }
 
       toast({
-        description: "Agente actualizado",
+        description: "Agent updated",
       })
       router.refresh()
     } catch (error: any) {
@@ -187,7 +189,7 @@ export default function Settings({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descripción</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="E.g this agent is an expert at..."
@@ -203,7 +205,7 @@ export default function Settings({
             name="prompt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Indicación</FormLabel>
+                <FormLabel>Prompt</FormLabel>
                 <FormControl>
                   <Textarea
                     className="h-[100px]"
@@ -220,16 +222,16 @@ export default function Settings({
             name="initialMessage"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mensaje de introducción</FormLabel>
+                <FormLabel>Intro message</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej. Hola, ¿cómo puedo ayudarte?" {...field} />
+                  <Input placeholder="E.g Hi, how can I help you?" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex flex-col space-y-2">
-            <FormLabel>Modelo de lenguaje</FormLabel>
+            <FormLabel>Language model</FormLabel>
             {agent.llms.length > 0 ? (
               <div className="flex justify-between space-x-2">
                 <FormField
@@ -243,7 +245,7 @@ export default function Settings({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un proveedor" />
+                            <SelectValue placeholder="Select a provider" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -273,12 +275,12 @@ export default function Settings({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un modelo" />
+                            <SelectValue placeholder="Select a model" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {siteConfig.llms
-                            .find((llm) => llm.id === llms)
+                            .find((llm) => llm.id === currLlmProvider)
                             ?.options.map((option) => (
                               <SelectItem
                                 key={option.value}
@@ -296,9 +298,10 @@ export default function Settings({
               </div>
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
-                <p className="text-sm">¡Atención!</p>
+                <p className="text-sm">Heads up!</p>
                 <p className="text-sm text-muted-foreground">
-                  Necesitas agregar un LLM a este agente para que funcione. Esto se puede hacer a través del SDK o la API.
+                  You need to add an LLM to this agent for it work. This can be
+                  done through the SDK or API.
                 </p>
               </div>
             )}
@@ -356,6 +359,7 @@ export default function Settings({
                   <AddDatasource
                     profile={profile}
                     agent={agent}
+                    llmProvider={currLlmProvider}
                     onSuccess={() => {
                       window.location.reload()
                     }}
@@ -363,7 +367,7 @@ export default function Settings({
                 </div>
                 <FormControl>
                   <MultiSelect
-                    placeholder="Selecciona una fuente de datos..."
+                    placeholder="Select datasource..."
                     data={datasources.map((datasource: Datasource) => ({
                       value: datasource.id,
                       label: datasource.name,
@@ -383,7 +387,7 @@ export default function Settings({
               </FormItem>
             )}
           />
-          <div className="absolute inset-x-0 inset-x-5 bottom-2 flex py-4">
+          <div className="absolute inset-x-0 bottom-2 left-5 right-5 flex py-4">
             <Button
               type="submit"
               size="sm"
@@ -393,7 +397,7 @@ export default function Settings({
               {form.control._formState.isSubmitting ? (
                 <Spinner />
               ) : (
-                "Actualizar agente"
+                "Update agent"
               )}
             </Button>
           </div>

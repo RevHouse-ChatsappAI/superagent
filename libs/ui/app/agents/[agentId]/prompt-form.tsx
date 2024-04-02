@@ -51,7 +51,7 @@ export default function PromptFrom({
           }}
           className={cn(
             buttonVariants({ size: "sm", variant: "outline" }),
-            "absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4 dark:text-white"
+            "absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4"
           )}
         >
           <RxPlus />
@@ -64,7 +64,7 @@ export default function PromptFrom({
           rows={1}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Enviar un mensaje."
+          placeholder="Send a message."
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />

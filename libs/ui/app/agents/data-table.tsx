@@ -25,7 +25,6 @@ import {
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { DataTablePagination } from "@/components/data-table-pagination"
-import { PlusIcon } from "@/components/svg/PlusIcon"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
