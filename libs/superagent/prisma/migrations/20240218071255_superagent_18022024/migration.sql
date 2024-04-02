@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Count" ADD COLUMN     "agentCount" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "datasourceCount" INTEGER NOT NULL DEFAULT 0;
