@@ -1,15 +1,16 @@
+import datetime
 import logging
 from typing import Optional
 
-from langchain.schema.messages import AIMessage
-from langchain.schema.output import ChatGeneration, LLMResult
 from litellm import acompletion
 
 from app.agents.base import AgentBase
+from app.utils.callbacks import CustomAsyncIteratorCallbackHandler
 from app.utils.llm import LLM_REVERSE_MAPPING
 from app.utils.prisma import prisma
 from prisma.enums import AgentType, LLMProvider
 from prisma.models import Agent
+from prompts.json import JSON_FORMAT_INSTRUCTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -60,15 +61,60 @@ class FunctionCalling(AgentBase):
         return self
 
 
+DEFAULT_PROMPT = (
+    "You are a helpful AI Assistant, answer the users questions to "
+    "the best of your ability."
+)
+
+
 class LLMAgent(AgentBase):
+    def get_llm_params(self):
+        llm = self.agent_config.llms[0].llm
+        params = self.llm_params.dict() if self.llm_params else {}
+
+        options = {
+            **(self.agent_config.metadata or {}),
+            **(llm.options or {}),
+            **(params),
+        }
+        return {
+            "temperature": options.get("temperature"),
+            "max_tokens": options.get("max_tokens"),
+        }
+
+    async def _get_prompt(self):
+        base_prompt = self.agent_config.prompt or DEFAULT_PROMPT
+        print("OUTPUT SCHEMA", self.output_schema)
+
+        prompt = f"Current date: {datetime.datetime.now().strftime('%Y-%m-%d')}\n"
+
+        if self.output_schema:
+            prompt += f"""
+                {JSON_FORMAT_INSTRUCTIONS.format(
+                    base_prompt=base_prompt, output_schema=self.output_schema
+                )}
+                Always surround the output with "```json```" to ensure proper formatting.
+                """
+        else:
+            prompt = base_prompt
+
+        return prompt
+
     async def get_agent(self):
         enable_streaming = self.enable_streaming
         agent_config = self.agent_config
         session_id = self.session_id
+        model = agent_config.metadata.get("model", "gpt-3.5-turbo-0125")
+        api_key = agent_config.llms[0].llm.apiKey
+        prompt = await self._get_prompt()
 
         class CustomAgentExecutor:
+            def __init__(self, llm_agent_instance: LLMAgent, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.llm_agent_instance = llm_agent_instance
+
             async def ainvoke(self, input, *_, **kwargs):
-                function_calling_res = {"output": ""}
+                function_calling_res = {}
 
                 if len(agent_config.tools) > 0:
                     function_calling = await FunctionCalling(
@@ -84,10 +130,6 @@ class LLMAgent(AgentBase):
                     function_calling_res = await function_calling_agent.ainvoke(
                         input=input
                     )
-
-                model = agent_config.metadata.get("model", "gpt-3.5-turbo-0125")
-                prompt = agent_config.prompt
-                api_key = agent_config.llms[0].llm.apiKey
 
                 if function_calling_res.get("output"):
                     INPUT_TEMPLATE = "{input}\n Context: {context}\n"
@@ -109,32 +151,29 @@ class LLMAgent(AgentBase):
                         },
                     ],
                     stream=enable_streaming,
+                    **self.llm_agent_instance.get_llm_params(),
                 )
 
                 output = ""
                 if enable_streaming:
-                    streaming = kwargs["config"]["callbacks"][0]
-                    await streaming.on_llm_start()
+                    streaming_callback = None
+                    for callback in kwargs["config"]["callbacks"]:
+                        if isinstance(callback, CustomAsyncIteratorCallbackHandler):
+                            streaming_callback = callback
+
+                    if not streaming_callback:
+                        raise Exception("Streaming Callback not found")
+                    await streaming_callback.on_llm_start()
 
                     async for chunk in res:
                         token = chunk.choices[0].delta.content
                         if token:
                             output += token
-                            await streaming.on_llm_new_token(token)
+                            await streaming_callback.on_llm_new_token(token)
 
-                    await streaming.on_llm_end(
-                        response=LLMResult(
-                            generations=[
-                                [
-                                    ChatGeneration(
-                                        message=AIMessage(
-                                            content=output,
-                                        )
-                                    )
-                                ]
-                            ],
-                        )
-                    )
+                    streaming_callback.done.set()
+                else:
+                    output = res.choices[0].message.content
 
                 return {
                     **function_calling_res,
@@ -142,6 +181,8 @@ class LLMAgent(AgentBase):
                     "output": output,
                 }
 
-        agent_executor = CustomAgentExecutor()
+        agent_executor = CustomAgentExecutor(
+            llm_agent_instance=self,
+        )
 
         return agent_executor
