@@ -4,8 +4,13 @@ from app.api import (
     agents,
     api_keys,
     api_user,
+    # CHATSAPP
+    chatwoot,
     datasources,
+    integrations,
     llms,
+    subscription,
+    token,
     tools,
     vector_dbs,
     workflows,
@@ -26,3 +31,10 @@ router.include_router(
     workflow_configs.router, tags=["Workflow Config"], prefix=api_prefix
 )
 router.include_router(vector_dbs.router, tags=["Vector Database"], prefix=api_prefix)
+
+
+# CHATSAPP
+router.include_router(chatwoot.router, tags=["Chatwoot"], prefix=api_prefix)
+router.include_router(integrations.router, tags=["Integrations"], prefix=api_prefix)
+router.include_router(token.router, tags=["Token"], prefix=api_prefix)
+router.include_router(subscription.router, tags=["Subscription"], prefix=api_prefix)
