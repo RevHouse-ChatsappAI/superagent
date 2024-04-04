@@ -190,6 +190,32 @@ class OpenAIAssistantSdk(Assistant):
 )
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
+    # TODO: Fixing
+    # subscription = await prisma.subscription.find_first(
+    #     where={"apiUserId": api_user.id}
+    # )
+    # if subscription is None:
+    #     raise HTTPException(status_code=404, detail="Subscription not found.")
+    # tier_credits = await prisma.tiercredit.find_unique(
+    #     where={"tier": subscription.tier}
+    # )
+    # if tier_credits is None:
+    #     raise HTTPException(status_code=404, detail="Tier credits not found.")
+    # agent_limit = tier_credits.agentLimit
+    # agent_count_record = await prisma.count.find_unique(
+    #     where={"apiUserId": api_user.id}
+    # )
+    # if agent_count_record is None:
+    #     await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
+    #     agent_count = 0
+    # else:
+    #     agent_count = agent_count_record.agentCount
+    # if agent_count >= agent_limit:
+    #     return {"success": False, "message": "Los agentes llegaron a su limite."}
+    # await prisma.count.update(
+    #     where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
+    # )
+
     user_id = api_user.id
     llm_provider = body.llmProvider
     llm_model = body.llmModel
@@ -201,6 +227,8 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     llm = await get_llm_or_raise(
         LLMPayload(provider=llm_provider, model=llm_model, user_id=user_id)
     )
+
+    print(llm)
 
     if body.type:
         if body.type == AgentType.OPENAI_ASSISTANT:
@@ -308,11 +336,20 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
             analytics.track(api_user.id, "Deleted Agent")
         deleted = await prisma.agent.delete(where={"id": agent_id})
 
+        # agent_count_record = await prisma.count.find_unique(
+        #     where={"apiUserId": api_user.id}
+        # )
+        # if agent_count_record:
+        #     new_agent_count = max(
+        #         agent_count_record.agentCount - 1, 0
+        #     )  # Ensure the count doesn't go below 0
+        #     await prisma.count.update(
+        #         where={"apiUserId": api_user.id}, data={"agentCount": new_agent_count}
+        #     )
+
         metadata = deleted.metadata
         if metadata and metadata.get("id"):
-            llm = await prisma.llm.find_first_or_raise(
-                where={"provider": "OPENAI", "apiUserId": api_user.id}
-            )
+            llm = await prisma.llm.find_first_or_raise(where={"provider": "OPENAI"})
             oai = AsyncOpenAI(api_key=llm.apiKey)
             await oai.beta.assistants.delete(metadata.get("id"))
         return {"success": True, "data": deleted}
@@ -406,6 +443,35 @@ async def invoke(
     agent_id: str, body: AgentInvokeRequest, api_user=Depends(get_current_api_user)
 ):
     """Endpoint for invoking an agent"""
+    # TODO: Fixing
+    # try:
+    #     credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
+    #     if not credit_entry:
+    #         raise HTTPException(
+    #             status_code=404,
+    #             detail="No se encontró la entrada de créditos para el usuario.",
+    #         )
+    #     available_credits = credit_entry.credits
+    #     count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
+    #     if count_entry:
+    #         new_count = count_entry.queryCount + 1
+    #         if new_count > available_credits:
+    #             raise HTTPException(
+    #                 status_code=429,
+    #                 detail="Se ha alcanzado el límite de créditos disponibles.",
+    #             )
+    #         await prisma.count.update(
+    #             where={"apiUserId": api_user.id}, data={"queryCount": new_count}
+    #         )
+    #     else:
+    #         if available_credits <= 0:
+    #             raise HTTPException(
+    #                 status_code=429, detail="No hay créditos disponibles."
+    #             )
+    #         await prisma.count.create(data={"apiUserId": api_user.id, "queryCount": 1})
+    # except Exception as e:
+    #     handle_exception(e)
+
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
     langfuse_host = config("LANGFUSE_HOST", "https://cloud.langfuse.com")
@@ -451,6 +517,7 @@ async def invoke(
     )
 
     model = LLM_MAPPING.get(agent_config.llmModel)
+
     metadata = agent_config.metadata or {}
     if not model and metadata.get("model"):
         model = metadata.get("model")
