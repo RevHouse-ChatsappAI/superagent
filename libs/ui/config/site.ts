@@ -1,18 +1,19 @@
 import { VectorDbProvider } from "@/models/models"
+import { CiCloudOn } from "react-icons/ci"
+import { IoDocumentOutline } from "react-icons/io5"
 import {
   TbBrandDiscord,
   TbFileCode,
   TbPlug,
   TbRobot,
   TbStack2,
-  TbTerminal2,
   TbUserCircle,
 } from "react-icons/tb"
 
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Superagent Cloud",
+  name: "ChatsappAI",
   description: "The agent framework for large language models",
   paymentPlans: {
     hobby: process.env.NEXT_PUBLIC_STRIPE_HOBBY_PLAN!,
@@ -20,22 +21,27 @@ export const siteConfig = {
   },
   mainNav: [
     {
-      title: "Workflows",
-      href: "/workflows",
-      icon: TbStack2,
-    },
-    {
-      title: "Agents",
+      title: "Agentes de IA",
       href: "/agents",
       icon: TbRobot,
     },
     {
-      title: "Logs",
-      href: "/logs",
-      icon: TbTerminal2,
+      title: "Flujos de trabajo",
+      href: "/workflows",
+      icon: TbStack2,
     },
     {
-      title: "Integrations",
+      title: "Fuentes de datos",
+      href: "/datasource",
+      icon: IoDocumentOutline,
+    },
+    {
+      title: "Herramientas & APIs",
+      href: "/tools",
+      icon: CiCloudOn,
+    },
+    {
+      title: "Integraciones",
       href: "/integrations",
       icon: TbPlug,
     },
@@ -650,6 +656,38 @@ export const siteConfig = {
           placeholder: "my_collection",
           helpText:
             "The database table name which your vector embeddings will be stored in.",
+        },
+      ],
+    },
+  ],
+  platformProvider: [
+    {
+      provider: "CHATSAPP_CRM",
+      name: "ChatsAPP CRM",
+      logo: "/logo.png",
+      description:
+        " Bienvenido a ChatsApp.com CRM, tu puente hacia una comunicación efectiva y organizada. Simplemente ingresa tus datos para conectarte y aprovechar al máximo nuestra plataforma integrada de conexión.",
+      formDescription: "Por favor ingrese una cuenta.",
+      metadata: [
+        {
+          key: "CHATSAPP_NAME",
+          type: "input",
+          label: "Nombre",
+        },
+        {
+          key: "CHATSAPP_EMAIL",
+          type: "input",
+          label: "Correo electronico",
+        },
+        {
+          key: "CHATSAPP_PASSWORD",
+          type: "input",
+          label: "Contraseña",
+        },
+        {
+          key: "CHATSAPP_REPITPASSWORD",
+          type: "input",
+          label: "Repetir Contraseña",
         },
       ],
     },
