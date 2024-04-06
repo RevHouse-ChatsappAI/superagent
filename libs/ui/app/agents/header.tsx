@@ -17,7 +17,7 @@ export default function Header({ profile }: { profile: Profile }) {
     const { data: agent } = await api.createAgent({
       name: "My Agent",
       description: "",
-      llmModel: "GPT_3_5_TURBO_16K_0613",
+      llmProvider: "AZURE_OPENAI",
       isActive: true,
       prompt: "You are a helpful AI Assistant",
     })
