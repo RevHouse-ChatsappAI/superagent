@@ -23,7 +23,7 @@ export default async function Integration() {
 
   return (
     <div className="flex h-screen flex-col justify-between space-y-0 overflow-hidden">
-      <p className="px-6 py-5 font-medium">Integrations</p>
+      <p className="px-6 py-5 font-medium">Integraciones 🤖🤟</p>
       <div className="flex grow overflow-auto">
         <IntegrationsClientPage
           profile={profile}
