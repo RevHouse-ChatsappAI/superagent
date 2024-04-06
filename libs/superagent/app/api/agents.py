@@ -66,14 +66,16 @@ logger = logging.getLogger(__name__)
 
 
 class LLMPayload:
-    def __init__(self, provider: str, model: str, user_id: str):
+    def __init__(self, provider: str, model: str):
         self.provider = provider
         self.model = model
-        self.user_id = user_id
 
 
 async def get_llm_or_raise(data: LLMPayload) -> LLM:
     provider = data.provider
+
+    print(data)
+    print("---------------------------------data")
 
     if data.model:
         for key, models in LLM_PROVIDER_MAPPING.items():
@@ -88,6 +90,7 @@ async def get_llm_or_raise(data: LLMPayload) -> LLM:
         )
 
     llm = await prisma.llm.find_first(where={"provider": provider})
+    print(llm)
 
     if not llm:
         raise HTTPException(
@@ -216,6 +219,9 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     #     where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
     # )
 
+    print(body)
+    print("------------------------------------- body")
+
     user_id = api_user.id
     llm_provider = body.llmProvider
     llm_model = body.llmModel
@@ -224,9 +230,10 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     if SEGMENT_WRITE_KEY:
         analytics.track(user_id, "Created Agent", {**body.dict()})
 
-    llm = await get_llm_or_raise(
-        LLMPayload(provider=llm_provider, model=llm_model, user_id=user_id)
-    )
+    print(llm_provider)
+    print("-----------------------------")
+
+    llm = await get_llm_or_raise(LLMPayload(provider=llm_provider, model=llm_model))
 
     print(llm)
 

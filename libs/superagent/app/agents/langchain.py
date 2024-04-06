@@ -148,6 +148,7 @@ class LangchainAgent(AgentBase):
 
     def get_llm_params(self):
         llm = self.agent_config.llms[0].llm
+        print(llm)
         params = self.llm_params.dict() if self.llm_params else {}
 
         options = {
@@ -156,8 +157,8 @@ class LangchainAgent(AgentBase):
             **(params),
         }
         return {
+            **options,
             "temperature": options.get("temperature", 0.1),
-            "max_tokens": options.get("max_tokens"),
         }
 
     async def _get_llm(self, llm: LLM):
