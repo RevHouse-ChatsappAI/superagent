@@ -59,16 +59,7 @@ export default function OnboardingClientPage() {
       })
     }
 
-    const api = new Api(profile?.api_key)
-
-    const { data: workflow } = await api.createWorkflow({
-      name: "My Workflow",
-      description: "My new workflow",
-    })
-
-    await api.generateWorkflow(workflow.id, initialSamlValue)
-
-    window.location.href = `/workflows/${workflow.id}`
+    window.location.href = `/pricing`
   }
 
   return (
