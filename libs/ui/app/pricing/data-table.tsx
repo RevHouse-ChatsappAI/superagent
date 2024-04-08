@@ -62,6 +62,26 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
   const handleFreeSubscriptionClose = async () => {
     try {
       setLoading(true)
+
+      if (profile.stripe_customer_id) {
+        const res = await fetch("/api/onboard", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profile),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok || !data) {
+          return toast({
+            title: "Error",
+            description: "Something went wrong. Please try again.",
+          })
+        }
+      }
+
       const api = new Api(profile.api_key)
       const response = await api.createAccountFreeSubscription({
         user_customer_id: profile.stripe_customer_id,
@@ -79,7 +99,7 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
         toast({
           description: response?.message,
         })
-        window.location.href = "/agents"
+        // window.location.href = "/agents"
         return
       }
     } catch (error) {
