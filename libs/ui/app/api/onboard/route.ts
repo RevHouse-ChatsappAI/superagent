@@ -53,6 +53,7 @@ export const POST = async (req: NextRequest) => {
     .select("*")
     .eq("user_id", user?.id)
     .single()
+  console.log(profile)
 
   let api_key = profile?.api_key
   if (!api_key) {
