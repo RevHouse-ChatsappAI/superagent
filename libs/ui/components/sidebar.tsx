@@ -56,7 +56,7 @@ export default function Sidebar() {
     >
       <div className="flex flex-col justify-center space-y-4">
         <div className="border-b border-gray-500/40 px-4 pb-2">
-          <div className="flex items-center gap-2 rounded-xl bg-slate-900 p-3">
+          <div className="flex items-center gap-2 rounded-xl bg-slate-900 p-3 text-white">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
               <p>{profile?.first_name.slice(0, 1)}</p>
             </div>
@@ -73,12 +73,16 @@ export default function Sidebar() {
               key={navItem.title}
               className={`flex items-center gap-1 rounded-lg transition-all ${
                 pathname.includes(navItem.href)
-                  ? "bg-slate-900 dark:bg-slate-900"
+                  ? "bg-slate-900 text-white dark:bg-slate-900"
                   : "hover:bg-slate-600/50"
               }`}
             >
               <Button
-                className="bg-transparent text-white hover:bg-transparent"
+                className={`${
+                  pathname.includes(navItem.href)
+                    ? "text-white"
+                    : "text-black dark:text-white"
+                } bg-transparent hover:bg-transparent`}
                 size="icon"
               >
                 <navItem.icon size={20} />
@@ -102,7 +106,7 @@ export default function Sidebar() {
             <IoIosClose />
           </button>
           <Agents />
-          <h2 className="text-center text-xs font-medium">
+          <h2 className="text-center text-xs font-medium text-white">
             Te presentamos los Agentes Inteligencia Artificial
           </h2>
           <p className="text-center text-xs font-light text-gray-400">
@@ -116,7 +120,9 @@ export default function Sidebar() {
         <div className="flex items-center justify-center gap-5 p-2">
           <div className="flex items-center gap-2">
             <Logo width={20} height={20} />
-            <h2 className="text-xs font-medium">Chatsappai.com</h2>
+            <NextLink href="/settings" className="text-xs font-medium">
+              Chatsappai.com
+            </NextLink>
           </div>
           <button>
             <BsLayoutSidebarInset />

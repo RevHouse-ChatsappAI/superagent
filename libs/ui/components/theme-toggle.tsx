@@ -39,7 +39,7 @@ export default function ThemeToggle() {
     const { theme: selectedTheme } = data
     setTheme(selectedTheme)
     toast({
-      description: "Theme updated",
+      description: "Tema actualizado",
     })
   }
 
