@@ -385,7 +385,7 @@ async def update(
 
             if agent.type == AgentType.OPENAI_ASSISTANT:
                 llm = await prisma.llm.find_first_or_raise(
-                    where={"provider": "OPENAI", "apiUserId": api_user.id}
+                    where={"provider": "AZURE_OPENAI"}
                 )
                 assistant = OpenAIAssistantSdk(llm)
                 assistant_id = metadata.get("id")
@@ -416,7 +416,7 @@ async def update(
 
             new_provider = get_llm_provider(new_llm_model)
             new_llm = await prisma.llm.find_first_or_raise(
-                where={"provider": new_provider, "apiUserId": api_user.id}
+                where={"provider": new_provider}
             )
             await prisma.agentllm.update_many(
                 where={
