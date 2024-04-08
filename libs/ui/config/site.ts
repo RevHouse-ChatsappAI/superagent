@@ -32,12 +32,12 @@ export const siteConfig = {
     },
     {
       title: "Fuentes de datos",
-      href: "/datasource",
+      href: "/datasources",
       icon: IoDocumentOutline,
     },
     {
       title: "Herramientas & APIs",
-      href: "/tools",
+      href: "/apis",
       icon: CiCloudOn,
     },
     {
@@ -66,7 +66,7 @@ export const siteConfig = {
   settingsNav: [
     {
       id: "user",
-      title: "User",
+      title: "Perfil",
       href: "/settings",
     },
     {
@@ -76,12 +76,12 @@ export const siteConfig = {
     },
     {
       id: "appearance",
-      title: "Appearance",
+      title: "Apariencia",
       href: "/settings/appearance",
     },
     {
       id: "billing",
-      title: "Billing",
+      title: "Planes",
       href: "/settings/billing",
     },
   ],

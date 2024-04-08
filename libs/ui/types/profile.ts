@@ -7,4 +7,5 @@ export interface Profile {
   user_id: string
   company?: string
   id: string
+  stripe_customer_id?: string
 }

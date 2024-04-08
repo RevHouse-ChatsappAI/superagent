@@ -28,7 +28,7 @@ import Logo from "@/components/logo"
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Invalid email address.",
+    message: "Dirección de correo electrónico no válida.",
   }),
 })
 
@@ -58,7 +58,8 @@ export default function IndexPage() {
     }
 
     toast({
-      description: "🎉 Yay! Check your email for sign in link.",
+      description:
+        "🎉 ¡Hurra! Revisa tu correo para el enlace de inicio de sesión.",
     })
   }
 
@@ -112,16 +113,17 @@ export default function IndexPage() {
     <section className="container flex h-screen max-w-md flex-col justify-center space-y-8">
       <Logo width={50} height={50} />
       <Alert>
-        <AlertTitle>Heads up!</AlertTitle>
+        <AlertTitle>¡Atención!</AlertTitle>
         <AlertDescription>
-          Use the authentication method you used the first time you signed up,
-          either email or Github. Using both will result in duplicate accounts.
+          Utiliza el método de autenticación que usaste la primera vez que te
+          registraste, ya sea correo electrónico o Github. Usar ambos resultará
+          en cuentas duplicadas.
         </AlertDescription>
       </Alert>
       <div className="flex flex-col space-y-0">
-        <p className="text-lg font-bold">Login to Superagent</p>
+        <p className="text-lg font-bold">Iniciar sesión en Superagent</p>
         <p className="text-sm text-muted-foreground">
-          Enter your email to receive a one-time password
+          Ingresa tu correo electrónico para recibir una contraseña de uso único
         </p>
       </div>
       <Form {...form}>
@@ -135,32 +137,21 @@ export default function IndexPage() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="Enter your email" {...field} />
+                  <Input
+                    placeholder="Ingresa tu correo electrónico"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button type="submit" size="sm" className="w-full">
-            {form.control._formState.isSubmitting ? (
-              <Spinner />
-            ) : (
-              "Send password"
-            )}
+            {form.control._formState.isSubmitting ? <Spinner /> : "Ingresar"}
           </Button>
         </form>
       </Form>
       <Separator />
-
-      <Button
-        variant="secondary"
-        size="sm"
-        className="space-x-4"
-        onClick={handleGithubLogin}
-      >
-        <RxGithubLogo size={20} />
-        <p>Sign in with GitHub</p>
-      </Button>
       <Toaster />
     </section>
   )
