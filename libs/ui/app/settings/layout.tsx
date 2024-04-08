@@ -23,7 +23,7 @@ export default async function SettingsLayout({
 
   return (
     <div className="flex flex-col space-y-4 ">
-      <p className="border-b px-6 py-5 font-medium">Settings</p>
+      <p className="border-b px-6 py-5 font-medium">Configuración</p>
       <div className="flex flex-row space-x-20 p-5">
         <SettingsSidebar items={siteConfig.settingsNav} profile={profile} />
         <div className="flex flex-1 flex-col space-y-8">{children}</div>

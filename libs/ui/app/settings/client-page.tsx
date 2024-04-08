@@ -78,7 +78,7 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
       <div className="flex flex-col space-y-2">
         <p className="text-sm font-bold">Personal</p>
         <p className="text-sm text-muted-foreground">
-          Update your personal settings
+          Actualiza tus ajustes personales
         </p>
       </div>
       <Form {...form}>
@@ -92,9 +92,9 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
               name="first_name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>First name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your first name" {...field} />
+                    <Input placeholder="Ingresa tu nombre" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,9 +105,9 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
               name="last_name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Last name</FormLabel>
+                  <FormLabel>Apellido</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your last name" {...field} />
+                    <Input placeholder="Ingresa tu apellido" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,16 +118,19 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
               name="company"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company name</FormLabel>
+                  <FormLabel>Nombre de la empresa</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your company name" {...field} />
+                    <Input
+                      placeholder="Ingresa el nombre de tu empresa"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
                 <Input disabled value={user.email} />
               </FormControl>
@@ -138,14 +141,14 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
             {form.control._formState.isSubmitting ? (
               <Spinner />
             ) : (
-              "Save settings"
+              "Guardar configuración"
             )}
           </Button>
         </form>
       </Form>
       <Separator />
       <Button onClick={handleSignOut} size="sm" variant="secondary">
-        Sign out of your account
+        Cerrar sesión de tu cuenta
       </Button>
     </div>
   )
