@@ -1,16 +1,17 @@
 import logging
-import os
 import uuid
 from typing import List, Literal, Optional
 
 import backoff
 from decouple import config
 from langchain.docstore.document import Document
-from langchain.embeddings.openai import OpenAIEmbeddings  # type: ignore
 from pydantic.dataclasses import dataclass
 
+from app.models.request import EmbeddingsModelProvider
 from app.utils.helpers import get_first_non_null
+from app.vectorstores.abstract import VectorStoreBase
 from app.vectorstores.astra_client import AstraClient, QueryResponse
+from app.vectorstores.embeddings import get_embeddings_model_provider
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,11 @@ class Response:
         self.metadata = metadata or {}
 
 
-class AstraVectorStore:
+class AstraVectorStore(VectorStoreBase):
     def __init__(
         self,
         options: dict,
+        embeddings_model_provider: EmbeddingsModelProvider,
         astra_id: str = None,
         astra_region: str = None,
         astra_application_token: str = None,
@@ -90,9 +92,8 @@ class AstraVectorStore:
             variables["ASTRA_DB_COLLECTION_NAME"],
         )
 
-        self.embeddings = OpenAIEmbeddings(
-            model="text-embedding-ada-002",
-            openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        self.embeddings = get_embeddings_model_provider(
+            embeddings_model_provider=embeddings_model_provider
         )
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)

@@ -6,11 +6,13 @@ import backoff
 import pinecone
 from decouple import config
 from langchain.docstore.document import Document
-from langchain.embeddings.openai import OpenAIEmbeddings  # type: ignore
 from pinecone.core.client.models import QueryResponse
 from pydantic.dataclasses import dataclass
 
+from app.models.request import EmbeddingsModelProvider
 from app.utils.helpers import get_first_non_null
+from app.vectorstores.abstract import VectorStoreBase
+from app.vectorstores.embeddings import get_embeddings_model_provider
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +37,11 @@ class Response:
         self.metadata = metadata or {}
 
 
-class PineconeVectorStore:
+class PineconeVectorStore(VectorStoreBase):
     def __init__(
         self,
         options: dict,
+        embeddings_model_provider: EmbeddingsModelProvider,
         index_name: str = None,
         environment: str = None,
         pinecone_api_key: str = None,
@@ -63,6 +66,8 @@ class PineconeVectorStore:
             ),
         }
 
+        logger.info(f"USING VECTORSTORE: {variables}")
+
         for var, value in variables.items():
             if not value:
                 raise ValueError(
@@ -79,9 +84,7 @@ class PineconeVectorStore:
         self.index_name = variables["PINECONE_INDEX"]
         logger.info(f"Index name: {self.index_name}")
         self.index = pinecone.Index(self.index_name)
-        self.embeddings = OpenAIEmbeddings(
-            model="text-embedding-ada-002", openai_api_key=config("OPENAI_API_KEY")
-        )  # type: ignore
+        self.embeddings = get_embeddings_model_provider(embeddings_model_provider)
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)
     def _embed_with_retry(self, texts):

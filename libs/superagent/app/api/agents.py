@@ -1,22 +1,20 @@
 import asyncio
 import json
 import logging
-from typing import AsyncIterable
+import tempfile
+from abc import ABC, abstractmethod
+from typing import AsyncIterable, List, Optional
 
-from app.utils.token import obtener_token_supabase, modificar_estado_agente
-from app.utils.chatwoot import enviar_respuesta_chatwoot
-
-
+import requests
 import segment.analytics as analytics
+from agentops.langchain_callback_handler import AsyncLangchainCallbackHandler
 from decouple import config
-from fastapi import HTTPException
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
 from langfuse import Langfuse
-from langfuse.model import CreateTrace
-from langsmith import Client
+from openai import AsyncOpenAI
 
 from app.agents.base import AgentBase
 from app.models.request import (
@@ -34,6 +32,9 @@ from app.models.request import (
 from app.models.request import (
     AgentTool as AgentToolRequest,
 )
+from app.models.request import (
+    AgentUpdate as AgentUpdateRequest,
+)
 from app.models.response import (
     Agent as AgentResponse,
 )
@@ -46,23 +47,144 @@ from app.models.response import (
 from app.models.response import (
     AgentList as AgentListResponse,
 )
-from app.models.response import AgentRunList as AgentRunListResponse
 from app.models.response import (
     AgentToolList as AgentToolListResponse,
 )
 from app.utils.api import get_current_api_user, handle_exception
-from app.utils.llm import LLM_PROVIDER_MAPPING
+from app.utils.callbacks import CostCalcAsyncHandler, CustomAsyncIteratorCallbackHandler
+from app.utils.llm import LLM_MAPPING, LLM_PROVIDER_MAPPING
 from app.utils.prisma import prisma
-from app.utils.streaming import CustomAsyncIteratorCallbackHandler
+from prisma.enums import AgentType
+from prisma.models import LLM
 
 SEGMENT_WRITE_KEY = config("SEGMENT_WRITE_KEY", None)
+analytics.write_key = SEGMENT_WRITE_KEY
 
 router = APIRouter()
-analytics.write_key = SEGMENT_WRITE_KEY
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-# Agent endpoints
+class LLMPayload:
+    def __init__(self, provider: str, model: str):
+        self.provider = provider
+        self.model = model
+
+
+async def get_llm_or_raise(data: LLMPayload) -> LLM:
+    provider = data.provider
+
+    print(data)
+    print("---------------------------------data")
+
+    if data.model:
+        for key, models in LLM_PROVIDER_MAPPING.items():
+            if data.model in models:
+                provider = key
+                break
+
+    if not provider:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="LLM provider not found",
+        )
+
+    llm = await prisma.llm.find_first(where={"provider": provider})
+    print(llm)
+
+    if not llm:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please set an LLM first",
+        )
+
+    return llm
+
+
+class Assistant(ABC):
+    @abstractmethod
+    async def create_assistant(self, body: AgentRequest) -> dict:
+        pass
+
+    @abstractmethod
+    async def delete_assistant(self, assistant_id: str):
+        pass
+
+    @abstractmethod
+    async def update_assistant(self, assistant_id: str, body: AgentRequest) -> dict:
+        pass
+
+    @abstractmethod
+    async def upload_file(self, url: str):
+        pass
+
+
+class OpenAIAssistantSdk(Assistant):
+    def __init__(self, llm: Optional[LLM] = None):
+        self.llm = llm
+        self.openai = AsyncOpenAI(api_key=self.llm.apiKey)
+
+    async def create_assistant(self, body: AgentRequest) -> dict:
+        openai_options = body.parameters or {}
+        metadata = openai_options.get("metadata", {})
+        tools = openai_options.get("tools", [])
+        file_ids = openai_options.get("file_ids", [])
+
+        oai_assistant = await self.openai.beta.assistants.create(
+            model=LLM_MAPPING[body.llmModel],
+            instructions=body.prompt,
+            name=body.name,
+            description=body.description,
+            metadata=metadata,
+            tools=tools,
+            file_ids=file_ids,
+        )
+        return oai_assistant.json()
+
+    async def delete_assistant(self, assistant_id: str):
+        return await self.openai.beta.assistants.delete(assistant_id)
+
+    async def update_assistant(
+        self, assistant_id: str, body: AgentUpdateRequest
+    ) -> dict:
+        metadata = body.metadata or {}
+        tools = metadata.get("tools", [])
+        file_ids = metadata.get("file_ids", [])
+
+        oai_assistant = await self.openai.beta.assistants.update(
+            assistant_id=assistant_id,
+            # passing only non-None values
+            **{
+                key: value
+                for key, value in {
+                    "model": body.llmModel,
+                    "instructions": body.prompt,
+                    "name": body.name,
+                    "description": body.description,
+                    # "metadata": metadata,
+                    "tools": tools,
+                    "file_ids": file_ids,
+                }.items()
+                if value is not None
+            },
+        )
+
+        return oai_assistant.json()
+
+    async def upload_file(self, url: str):
+        with tempfile.TemporaryFile() as temp_file:
+            temp_file.write(requests.get(url).content)
+            temp_file.seek(0)
+            file = temp_file.read()
+        return await self.openai.files.create(
+            file=file,
+            purpose="assistants",
+        )
+
+    async def delete_file(self, file_id: str):
+        return await self.openai.files.delete(file_id)
+
+
 @router.post(
     "/agents",
     name="create",
@@ -71,52 +193,79 @@ logging.basicConfig(level=logging.INFO)
 )
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
-    try:
-        # TODO: Fixing
-        subscription = await prisma.subscription.find_first(where={"apiUserId": api_user.id})
-        if subscription is None:
-            raise HTTPException(status_code=404, detail="Subscription not found.")
-        tier_credits = await prisma.tiercredit.find_unique(where={"tier": subscription.tier})
-        if tier_credits is None:
-            raise HTTPException(status_code=404, detail="Tier credits not found.")
-        agent_limit = tier_credits.agentLimit
-        agent_count_record = await prisma.count.find_unique(where={"apiUserId": api_user.id})
-        if agent_count_record is None:
-            await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
-            agent_count = 0
-        else:
-            agent_count = agent_count_record.agentCount
-        if agent_count >= agent_limit:
-            raise HTTPException(status_code=400, detail="Agent limit reached.")
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"agentCount": agent_count + 1}
-        )
+    # TODO: Fixing
+    subscription = await prisma.subscription.find_first(
+        where={"apiUserId": api_user.id}
+    )
+    if subscription is None:
+        raise HTTPException(status_code=404, detail="Subscription not found.")
+    tier_credits = await prisma.tiercredit.find_unique(
+        where={"tier": subscription.tier}
+    )
+    if tier_credits is None:
+        raise HTTPException(status_code=404, detail="Tier credits not found.")
+    agent_limit = tier_credits.agentLimit
+    agent_count_record = await prisma.count.find_unique(
+        where={"apiUserId": api_user.id}
+    )
+    if agent_count_record is None:
+        await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
+        agent_count = 0
+    else:
+        agent_count = agent_count_record.agentCount
+    if agent_count >= agent_limit:
+        return {"success": False, "message": "Los agentes llegaron a su limite."}
+    await prisma.count.update(
+        where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
+    )
 
-        agent = await prisma.agent.create(
-            {**body.dict(), "apiUserId": api_user.id},
-            include={
-                "tools": {"include": {"tool": True}},
-                "datasources": {"include": {"datasource": True}},
-                "llms": {"include": {"llm": True}},
-            },
-        )
-        provider = None
-        for key, models in LLM_PROVIDER_MAPPING.items():
-            if body.llmModel in models:
-                provider = key
-                break
-        llm = await prisma.llm.find_first(
-            where={"provider": provider}
-        )
+    print(body)
+    print("------------------------------------- body")
+
+    user_id = api_user.id
+    llm_provider = body.llmProvider
+    llm_model = body.llmModel
+    metadata = json.dumps(body.metadata) or "{}"
+
+    if SEGMENT_WRITE_KEY:
+        analytics.track(user_id, "Created Agent", {**body.dict()})
+
+    print(llm_provider)
+    print("-----------------------------")
+
+    llm = await get_llm_or_raise(LLMPayload(provider=llm_provider, model=llm_model))
+
+    print(llm)
+
+    if body.type:
+        if body.type == AgentType.OPENAI_ASSISTANT:
+            assistant = OpenAIAssistantSdk(llm)
+
+            metadata = await assistant.create_assistant(body)
+
+    agent = await prisma.agent.create(
+        {
+            **body.dict(exclude={"llmProvider", "parameters"}),
+            "apiUserId": user_id,
+            "metadata": metadata,
+        },
+        include={
+            "tools": {"include": {"tool": True}},
+            "datasources": {"include": {"datasource": True}},
+            "llms": {"include": {"llm": True}},
+        },
+    )
+
+    if llm:
         await prisma.agentllm.create({"agentId": agent.id, "llmId": llm.id})
-        return {"success": True, "data": agent}
-    except Exception as e:
-        if "Agent limit reached" in str(e):
-            raise
-        else:
-            handle_exception(e)
-            return {"success": False, "message": "An error occurred while creating the agent. You may have reached the creation limit for your tier or encountered another issue. Please try again or contact support if the problem persists."}
+
+    agent.metadata = json.dumps(metadata)
+
+    return {
+        "success": True,
+        "data": agent,
+    }
+
 
 @router.get(
     "/agents",
@@ -142,6 +291,9 @@ async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int 
         # Calculate the total number of pages
         total_pages = math.ceil(total_count / take)
 
+        for agent in data:
+            agent.metadata = json.dumps(agent.metadata)
+
         return {"success": True, "data": data, "total_pages": total_pages}
     except Exception as e:
         handle_exception(e)
@@ -164,11 +316,15 @@ async def get(agent_id: str, api_user=Depends(get_current_api_user)):
                 "llms": {"include": {"llm": True}},
             },
         )
+        # TODO: Remove all stringifiying, create a new Pydantic model for the response
+        data.metadata = json.dumps(data.metadata)
+
         for llm in data.llms:
             llm.llm.options = json.dumps(llm.llm.options)
         for tool in data.tools:
             if isinstance(tool.tool.toolConfig, dict):
                 tool.tool.toolConfig = json.dumps(tool.tool.toolConfig)
+
         return {"success": True, "data": data}
     except Exception as e:
         handle_exception(e)
@@ -185,8 +341,25 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Deleted Agent")
-        await prisma.agent.delete(where={"id": agent_id})
-        return {"success": True, "data": None}
+        deleted = await prisma.agent.delete(where={"id": agent_id})
+
+        agent_count_record = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
+        if agent_count_record:
+            new_agent_count = max(
+                agent_count_record.agentCount - 1, 0
+            )  # Ensure the count doesn't go below 0
+            await prisma.count.update(
+                where={"apiUserId": api_user.id}, data={"agentCount": new_agent_count}
+            )
+
+        metadata = deleted.metadata
+        if metadata and metadata.get("id"):
+            llm = await prisma.llm.find_first_or_raise(where={"provider": "OPENAI"})
+            oai = AsyncOpenAI(api_key=llm.apiKey)
+            await oai.beta.assistants.delete(metadata.get("id"))
+        return {"success": True, "data": deleted}
     except Exception as e:
         handle_exception(e)
 
@@ -198,19 +371,66 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
     response_model=AgentResponse,
 )
 async def update(
-    agent_id: str, body: AgentRequest, api_user=Depends(get_current_api_user)
+    agent_id: str, body: AgentUpdateRequest, api_user=Depends(get_current_api_user)
 ):
     """Endpoint for patching an agent"""
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Updated Agent")
+
+        agent = await prisma.agent.find_unique_or_raise(where={"id": agent_id})
+        metadata = agent.metadata
+        if agent.type:
+            assistant_id = None
+
+            if agent.type == AgentType.OPENAI_ASSISTANT:
+                llm = await prisma.llm.find_first_or_raise(
+                    where={"provider": "OPENAI", "apiUserId": api_user.id}
+                )
+                assistant = OpenAIAssistantSdk(llm)
+                assistant_id = metadata.get("id")
+                if assistant_id:
+                    metadata = await assistant.update_assistant(assistant_id, body)
+
+        new_agent_data = {
+            **body.dict(exclude_unset=True),
+        }
+
+        if json.dumps(metadata) != json.dumps(agent.metadata):
+            new_agent_data["metadata"] = metadata
+
+        if new_agent_data.get("metadata"):
+            new_agent_data["metadata"] = json.dumps(new_agent_data["metadata"])
+
+        old_llm_model = agent.llmModel
+        new_llm_model = LLM_MAPPING.get(body.llmModel)
+
+        if not old_llm_model:
+            old_llm_model = agent.metadata.get("model")
+
+        if not new_llm_model and body.metadata:
+            new_llm_model = body.metadata.get("model")
+
+        if old_llm_model and new_llm_model and old_llm_model != new_llm_model:
+            from app.utils.llm import get_llm_provider
+
+            new_provider = get_llm_provider(new_llm_model)
+            new_llm = await prisma.llm.find_first_or_raise(
+                where={"provider": new_provider, "apiUserId": api_user.id}
+            )
+            await prisma.agentllm.update_many(
+                where={
+                    "agentId": agent_id,
+                },
+                data={"llmId": new_llm.id},
+            )
+
         data = await prisma.agent.update(
             where={"id": agent_id},
-            data={
-                **body.dict(),
-                "apiUserId": api_user.id,
-            },
+            data=new_agent_data,
         )
+        data.metadata = json.dumps(data.metadata)
+
         return {"success": True, "data": data}
     except Exception as e:
         handle_exception(e)
@@ -221,6 +441,10 @@ async def update(
     name="invoke",
     description="Invoke an agent",
     response_model=AgentInvokeResponse,
+    openapi_extra={
+        "x-fern-sdk-group-name": "agent",
+        "x-fern-sdk-method-name": "invoke",
+    },
 )
 async def invoke(
     agent_id: str, body: AgentInvokeRequest, api_user=Depends(get_current_api_user)
@@ -230,23 +454,28 @@ async def invoke(
     try:
         credit_entry = await prisma.credit.find_first(where={"apiUserId": api_user.id})
         if not credit_entry:
-            raise HTTPException(status_code=404, detail="No se encontró la entrada de créditos para el usuario.")
+            raise HTTPException(
+                status_code=404,
+                detail="No se encontró la entrada de créditos para el usuario.",
+            )
         available_credits = credit_entry.credits
         count_entry = await prisma.count.find_unique(where={"apiUserId": api_user.id})
         if count_entry:
             new_count = count_entry.queryCount + 1
             if new_count > available_credits:
-                raise HTTPException(status_code=429, detail="Se ha alcanzado el límite de créditos disponibles.")
+                raise HTTPException(
+                    status_code=429,
+                    detail="Se ha alcanzado el límite de créditos disponibles.",
+                )
             await prisma.count.update(
-                where={"apiUserId": api_user.id},
-                data={"queryCount": new_count}
+                where={"apiUserId": api_user.id}, data={"queryCount": new_count}
             )
         else:
             if available_credits <= 0:
-                raise HTTPException(status_code=429, detail="No hay créditos disponibles.")
-            await prisma.count.create(
-                data={"apiUserId": api_user.id, "queryCount": 1}
-            )
+                raise HTTPException(
+                    status_code=429, detail="No hay créditos disponibles."
+                )
+            await prisma.count.create(data={"apiUserId": api_user.id, "queryCount": 1})
     except Exception as e:
         handle_exception(e)
 
@@ -254,93 +483,240 @@ async def invoke(
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
     langfuse_host = config("LANGFUSE_HOST", "https://cloud.langfuse.com")
     langfuse_handler = None
+
+    session_id = body.sessionId or ""
+    session_id = f"agt_{agent_id}_{session_id}"
+
     if langfuse_public_key and langfuse_secret_key:
         langfuse = Langfuse(
             public_key=langfuse_public_key,
             secret_key=langfuse_secret_key,
             host=langfuse_host,
+            sdk_integration="Superagent",
         )
-        session_id = f"{agent_id}-{body.sessionId}" if body.sessionId else f"{agent_id}"
         trace = langfuse.trace(
-            CreateTrace(
-                id=session_id,
-                name="Assistant",
-                userId=api_user.id,
-                metadata={"agentId": agent_id},
-            )
+            id=session_id,
+            name="Assistant",
+            tags=[agent_id],
+            metadata={"agentId": agent_id},
+            user_id=api_user.id,
         )
         langfuse_handler = trace.get_langchain_handler()
 
+    agentops_api_key = config("AGENTOPS_API_KEY", default=None)
+    agentops_org_key = config("AGENTOPS_ORG_KEY", default=None)
+
+    agentops_handler = None
+    if agentops_api_key or agentops_org_key:
+        agentops_handler = AsyncLangchainCallbackHandler(
+            api_key=agentops_api_key,
+            org_key=agentops_org_key,
+            tags=[agent_id, session_id],
+        )
+
+    agent_config = await prisma.agent.find_unique_or_raise(
+        where={"id": agent_id},
+        include={
+            "llms": {"include": {"llm": True}},
+            "datasources": {"include": {"datasource": {"include": {"vectorDb": True}}}},
+            "tools": {"include": {"tool": True}},
+        },
+    )
+    print(agent_config)
+
+    model = LLM_MAPPING.get(agent_config.llmModel)
+    print(model)
+
+    metadata = agent_config.metadata or {}
+    if not model and metadata.get("model"):
+        model = metadata.get("model")
+
+    print(metadata)
+
+    def track_agent_invocation(result):
+        intermediate_steps_to_obj = [
+            {
+                **vars(toolClass),
+                "message_log": str(toolClass.message_log),
+                "response": response,
+            }
+            for toolClass, response in result.get("intermediate_steps", [])
+        ]
+
+        analytics.track(
+            api_user.id,
+            "Invoked Agent",
+            {
+                "agent": agent_config.id,
+                "llm_model": agent_config.llmModel,
+                "sessionId": session_id,
+                # default http status code is 200
+                "response": {
+                    "status_code": result.get("status_code", 200),
+                    "error": result.get("error", None),
+                },
+                "output": result.get("output", None),
+                "input": result.get("input", None),
+                "intermediate_steps": intermediate_steps_to_obj,
+                "prompt_tokens": costCallback.prompt_tokens,
+                "completion_tokens": costCallback.completion_tokens,
+                "prompt_tokens_cost_usd": costCallback.prompt_tokens_cost_usd,
+                "completion_tokens_cost_usd": costCallback.completion_tokens_cost_usd,
+                "type": agent_config.type,
+            },
+        )
+
+    costCallback = CostCalcAsyncHandler(model=model)
+
+    monitoring_callbacks = [costCallback]
+
+    if langfuse_handler:
+        monitoring_callbacks.append(langfuse_handler)
+
+    if agentops_handler:
+        monitoring_callbacks.append(agentops_handler)
+
     async def send_message(
         agent: LLMChain | AgentExecutor,
-        content: str,
-        callback: CustomAsyncIteratorCallbackHandler,
+        input: dict[str, str],
+        streaming_callback: CustomAsyncIteratorCallbackHandler,
+        callbacks: List[CustomAsyncIteratorCallbackHandler] = [],
     ) -> AsyncIterable[str]:
         try:
             task = asyncio.ensure_future(
-                agent.acall(
-                    inputs={"input": content},
-                    tags=[agent_id],
-                    callbacks=[langfuse_handler] if langfuse_handler else None,
+                agent.ainvoke(
+                    input,
+                    config={
+                        "callbacks": [streaming_callback, *callbacks],
+                        "tags": [agent_id],
+                    },
                 )
             )
 
-            async for token in callback.aiter():
-                yield f"data: {token}\n\n"
+            # we are not streaming token by token if output schema is set
+            schema_tokens = ""
+            async for token in streaming_callback.aiter():
+                if not output_schema:
+                    yield ("event: message\n" f"data: {token}\n\n")
+                else:
+                    schema_tokens += token
+
+            # stream line by line to prevent streaming large data in one go
+            for line in schema_tokens.split("\n"):
+                yield ("event: message\n" f"data: {line}\n\n")
 
             await task
+
             result = task.result()
+
+            if SEGMENT_WRITE_KEY:
+                try:
+                    track_agent_invocation(
+                        {
+                            "user_id": api_user.id,
+                            "agent": agent_config,
+                            "session_id": session_id,
+                            **result,
+                            **vars(cost_callback),
+                        }
+                    )
+                except Exception as e:
+                    logger.error(f"Error tracking agent invocation: {e}")
+
             if "intermediate_steps" in result:
                 for step in result["intermediate_steps"]:
-                    agent_action_message_log = step[0]
+                    (agent_action_message_log, tool_response) = step
                     function = agent_action_message_log.tool
                     args = agent_action_message_log.tool_input
                     if function and args:
                         yield (
                             "event: function_call\n"
                             f'data: {{"function": "{function}", '
-                            f'"args": {json.dumps(args)}}}\n\n'
+                            f'"args": {json.dumps(args)}, '
+                            f'"response": {json.dumps(tool_response)}}}\n\n'
                         )
-        except Exception as e:
-            logging.error(f"Error in send_message: {e}")
+        except Exception as error:
+            logger.error(f"Error in send_message: {error}")
+            if SEGMENT_WRITE_KEY:
+                try:
+                    track_agent_invocation({"error": str(error), "status_code": 500})
+                except Exception as e:
+                    logger.error(f"Error tracking agent invocation: {e}")
+            yield ("event: error\n" f"data: {error}\n\n")
         finally:
-            callback.done.set()
+            streaming_callback.done.set()
 
-    if SEGMENT_WRITE_KEY:
-        analytics.track(api_user.id, "Invoked Agent")
-
-    logging.info("Invoking agent...")
-    session_id = body.sessionId
+    logger.info("Invoking agent...")
     input = body.input
+    print(body.input)
     enable_streaming = body.enableStreaming
-    output_schema = body.outputSchema
-    callback = CustomAsyncIteratorCallbackHandler()
-    agent = await AgentBase(
+    print(enable_streaming)
+    output_schema = body.outputSchema or agent_config.outputSchema
+    cost_callback = CostCalcAsyncHandler(model=model)
+    streaming_callback = CustomAsyncIteratorCallbackHandler()
+
+    agent_base = AgentBase(
         agent_id=agent_id,
         session_id=session_id,
         enable_streaming=enable_streaming,
         output_schema=output_schema,
-        callback=callback,
-    ).get_agent()
+        callbacks=monitoring_callbacks,
+        llm_params=body.llm_params,
+        agent_config=agent_config,
+    )
+
+    print(agent_base)
+    agent = await agent_base.get_agent()
+
+    agent_input = agent_base.get_input(
+        input,
+        agent_type=agent_config.type,
+    )
 
     if enable_streaming:
-        logging.info("Streaming enabled. Preparing streaming response...")
+        logger.info("Streaming enabled. Preparing streaming response...")
 
-        generator = send_message(agent, content=input, callback=callback)
+        generator = send_message(
+            agent,
+            input=agent_input,
+            streaming_callback=streaming_callback,
+            callbacks=[cost_callback],
+        )
+        print(generator)
         return StreamingResponse(generator, media_type="text/event-stream")
 
-    logging.info("Streaming not enabled. Invoking agent synchronously...")
-    output = await agent.acall(
-        inputs={"input": input},
-        tags=[agent_id],
-        callbacks=[langfuse_handler] if langfuse_handler else None,
+    logger.info("Streaming not enabled. Invoking agent synchronously...")
+
+    output = await agent.ainvoke(
+        input=agent_input,
+        config={
+            "callbacks": [cost_callback],
+            "tags": [agent_id],
+        },
     )
-    if output_schema:
+
+    print(output)
+
+    if not enable_streaming and SEGMENT_WRITE_KEY:
         try:
-            output = json.loads(output.get("output"))
+            track_agent_invocation(
+                {
+                    "user_id": api_user.id,
+                    "agent": agent_config,
+                    "session_id": session_id,
+                    **output,
+                    **vars(cost_callback),
+                }
+            )
         except Exception as e:
-            logging.error(f"Error parsing output: {e}")
-            output = None
+            logger.error(f"Error tracking agent invocation: {e}")
+
+    if output_schema:
+        from langchain.output_parsers.json import SimpleJsonOutputParser
+
+        json_parser = SimpleJsonOutputParser()
+        output["output"] = json_parser.parse(text=output["output"])
+
     return {"success": True, "data": output}
 
 
@@ -354,20 +730,12 @@ async def invoke(
 async def add_llm(
     agent_id: str, body: AgentLLMRequest, api_user=Depends(get_current_api_user)
 ):
-  # Verificar si ya existe la combinación agentId y llmId
-    existing_record = await prisma.agentllm.find_first(
-        where={"agentId": agent_id, "llmId": body.llmId}
-    )
-    if existing_record:
-        return {"success": False, "message": "Este agente ya tiene asignado este LLM."}
-
+    """Endpoint for adding an LLM to an agent"""
     try:
         await prisma.agentllm.create({**body.dict(), "agentId": agent_id})
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
-    finally:
-        await prisma.disconnect()
 
 
 @router.delete(
@@ -479,6 +847,7 @@ async def add_datasource(
     try:
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Added Agent Datasource")
+
         agent_datasource = await prisma.agentdatasource.find_unique(
             where={
                 "agentId_datasourceId": {
@@ -560,84 +929,3 @@ async def remove_datasource(
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
-
-
-# Agent runs
-@router.get(
-    "/agents/{agent_id}/runs",
-    name="list_runs",
-    description="List agent runs",
-    response_model=AgentRunListResponse,
-)
-async def list_runs(agent_id: str, api_user=Depends(get_current_api_user)):
-    """Endpoint for listing agent runs"""
-    is_langsmith_enabled = config("LANGCHAIN_TRACING_V2", False)
-    if is_langsmith_enabled == "True":
-        langsmith_client = Client()
-        try:
-            output = langsmith_client.list_runs(
-                project_id=config("LANGSMITH_PROJECT_ID"),
-                filter=f"has(tags, '{agent_id}')",
-            )
-            return {"success": True, "data": output}
-        except Exception as e:
-            handle_exception(e)
-
-    return {"success": False, "data": []}
-
-# Agent Bot with Chatwoot
-@router.post("/webhook/{agent_id}/chatwoot")
-async def chatwoot_webhook(agent_id: str, request: Request):
-    body = await request.json()
-    user_id = body.get("sender", {}).get("account", {}).get("id")
-    account_id = body.get("account", {}).get("id")
-    content = body.get("content")
-    conversation_id = body.get("conversation", {}).get("id")
-    message_type = body.get("message_type")
-    print(conversation_id)
-    # Process only incoming messages (messages from clients)
-    if message_type != "incoming":
-        logging.info("Ignoring non-client message")
-        return {"message": "Non-client message ignored", "agent_id": agent_id, "ignored": True}
-    # Check if the client wants to speak with a human
-    try:
-        token = await obtener_token_supabase(user_id=user_id)
-        if not token:
-            raise HTTPException(status_code=404, detail="Token not found")
-
-        valor_token = token['data'].agentToken
-        ia_assistant_active = token['data'].isAgentActive
-
-        agent = await prisma.agent.find_unique(where={"id": agent_id})
-        if not agent:
-            raise HTTPException(status_code=404, detail="Agent not found")
-
-        agent_base = await AgentBase(agent_id=agent_id).get_agent()
-        if ia_assistant_active:
-            if content.lower() == "quiero hablar con una persona":
-                await modificar_estado_agente(user_id=user_id, es_respuesta_de_bot=False)
-                await enviar_respuesta_chatwoot(conversation_id, "Ya te derivamos con un agente...", valor_token, account_id, es_respuesta_de_bot=True)
-                return {"message": "Request to speak with a human agent received", "agent_id": agent_id}
-            # Function to send message to superagent for processing
-            async def send_message(agent: AgentBase, content: str) -> str:
-                try:
-                    result = await agent.acall(
-                        inputs={"input": content},
-                        tags=[agent_id],
-                        callbacks=None,
-                    )
-                    return result.get("output", "")
-                except Exception as e:
-                    logging.error(f"Error in send_message: {e}")
-                    raise
-
-            response = await send_message(agent_base, content)
-
-            if not response:
-                raise HTTPException(status_code=500, detail="Failed to generate a response")
-
-            await enviar_respuesta_chatwoot(conversation_id, response, valor_token, account_id, es_respuesta_de_bot=True)
-            return {"message": "Data received and processed by the Superagent bot", "agent_id": agent_id, "response": response}
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        return {"message": "An error occurred while processing the data", "agent_id": agent_id}

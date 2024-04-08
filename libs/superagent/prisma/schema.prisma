@@ -10,20 +10,32 @@ datasource db {
   shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
 
+enum AgentType {
+  SUPERAGENT
+  OPENAI_ASSISTANT
+  LLM
+}
+
 enum LLMProvider {
   OPENAI
   AZURE_OPENAI
   HUGGINGFACE
+  PERPLEXITY
+  TOGETHER_AI
+  ANTHROPIC
 }
 
 enum LLMModel {
   GPT_3_5_TURBO_16K_0613
   GPT_3_5_TURBO_0613
   GPT_3_5_TURBO_1106
+  GPT_3_5_TURBO_0125
   GPT_4_0613
   GPT_4_32K_0613
   GPT_4_1106_PREVIEW
+  GPT_4_TURBO_PREVIEW
   MISTRAL_7B_INSTRUCT_V01
+  MIXTRAL_8X7B_INSTRUCT_V01
 }
 
 enum ToolType {
@@ -45,6 +57,11 @@ enum ToolType {
   HAND_OFF
   FUNCTION
   HTTP
+  SUPERRAG
+  RESEARCH
+  GITHUB
+  SCRAPER
+  GOOGLE_SEARCH
 }
 
 enum DatasourceType {
@@ -78,27 +95,44 @@ enum VectorDbProvider {
   ASTRA_DB
   WEAVIATE
   QDRANT
+  SUPABASE
 }
 
 model ApiUser {
-  id          String       @id @default(uuid())
-  token       String?
-  email       String?      @db.Text
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  agents      Agent[]
-  datasources Datasource[]
-  tools       Tool[]
-  workflows   Workflow[]
-  vectorDb    VectorDb[]
+  id              String           @id @default(uuid())
+  token           String?
+  email           String?          @db.Text
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  agents          Agent[]
+  datasources     Datasource[]
+  tools           Tool[]
+  workflows       Workflow[]
+  vectorDb        VectorDb[]
+  workflowConfigs WorkflowConfig[]
+  apiKeys         ApiKey[]
   tokens Token[]
   subscriptions Subscription[]
   credits Credit[]
   counts Count[]
+  platformKey  PlatformKey[]
+}
+
+model ApiKey {
+  id            String   @id @default(uuid())
+  name          String
+  displayApiKey String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  apiUserId     String
+  apiUser       ApiUser  @relation(fields: [apiUserId], references: [id])
+
+  @@index([apiUserId], name: "api_user_id")
 }
 
 model Agent {
   id             String            @id @default(uuid())
+  type           AgentType         @default(SUPERAGENT)
   name           String
   avatar         String?
   initialMessage String?           @db.Text()
@@ -107,13 +141,15 @@ model Agent {
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   llms           AgentLLM[]
-  llmModel       LLMModel          @default(GPT_3_5_TURBO_16K_0613)
+  llmModel       LLMModel?         @default(GPT_3_5_TURBO_16K_0613)
   prompt         String?
   apiUserId      String
   apiUser        ApiUser           @relation(fields: [apiUserId], references: [id])
   datasources    AgentDatasource[]
   tools          AgentTool[]
   workflowSteps  WorkflowStep[]
+  metadata       Json?
+  outputSchema   String?
 }
 
 model Datasource {
@@ -138,7 +174,7 @@ model AgentDatasource {
   agentId      String
   datasourceId String
   agent        Agent      @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  datasource   Datasource @relation(fields: [datasourceId], references: [id])
+  datasource   Datasource @relation(fields: [datasourceId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -151,7 +187,7 @@ model Tool {
   description  String
   type         ToolType
   returnDirect Boolean     @default(false)
-  metadata     String      @db.Text
+  metadata     String?     @db.Text
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   apiUserId    String
@@ -164,7 +200,7 @@ model AgentTool {
   agentId   String
   toolId    String
   agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  tool      Tool     @relation(fields: [toolId], references: [id])
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -193,27 +229,39 @@ model AgentLLM {
 }
 
 model Workflow {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  steps       WorkflowStep[]
-  apiUserId   String
-  apiUser     ApiUser        @relation(fields: [apiUserId], references: [id])
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  steps           WorkflowStep[]
+  apiUserId       String
+  apiUser         ApiUser          @relation(fields: [apiUserId], references: [id])
+  workflowConfigs WorkflowConfig[]
+}
+
+model WorkflowConfig {
+  id         String   @id @default(uuid())
+  config     Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  ApiUser    ApiUser? @relation(fields: [apiUserId], references: [id])
+  apiUserId  String?
 }
 
 model WorkflowStep {
   id         String   @id @default(uuid())
   order      Int
   workflowId String
-  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   input      String?  @db.Text
   output     String?  @db.Text
   agentId    String
-  agent      Agent    @relation(fields: [agentId], references: [id])
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 }
 
 model VectorDb {
@@ -285,4 +333,16 @@ model TierCredit {
   datasourceLimit Int    @default(1)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model PlatformKey {
+  id        String   @id @default(uuid())
+  key       String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  apiUser   ApiUser  @relation(fields: [apiUserId], references: [id])
+  apiUserId String
+
+  @@unique([apiUserId])
 }

@@ -5,15 +5,15 @@ import pandas as pd
 from io import StringIO
 from decouple import config
 from tempfile import NamedTemporaryFile
-from langchain.tools import BaseTool
+from langchain_community.tools import BaseTool
 from llama import Context, LLMEngine, Type
-from app.vectorstores.base import VectorStoreBase
+from app.vectorstores.base import VectorStoreMain
 from app.datasource.loader import DataLoader
 from prisma.models import Datasource
 
 from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain.chat_models.openai import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 
 class DatasourceFinetuneTool(BaseTool):
@@ -74,9 +74,10 @@ class DatasourceTool(BaseTool):
         question: str,
     ) -> str:
         """Use the tool."""
-        vector_store = VectorStoreBase(
+        vector_store = VectorStoreMain(
             options=self.metadata["options"],
             vector_db_provider=self.metadata["provider"],
+            embeddings_model_provider=self.metadata["embeddings_model_provider"],
         )
         result = vector_store.query_documents(
             prompt=question,
@@ -91,9 +92,10 @@ class DatasourceTool(BaseTool):
         question: str,
     ) -> str:
         """Use the tool asynchronously."""
-        vector_store = VectorStoreBase(
+        vector_store = VectorStoreMain(
             options=self.metadata["options"],
             vector_db_provider=self.metadata["provider"],
+            embeddings_model_provider=self.metadata["embeddings_model_provider"],
         )
         result = vector_store.query_documents(
             prompt=question,

@@ -4,26 +4,39 @@ from typing import Any, Literal, Optional
 from decouple import config
 from langchain.docstore.document import Document
 
+from app.models.request import EmbeddingsModelProvider
 from app.utils.helpers import get_first_non_null
+from app.vectorstores.abstract import VectorStoreBase
 from app.vectorstores.astra import AstraVectorStore
 from app.vectorstores.pinecone import PineconeVectorStore
 from app.vectorstores.qdrant import QdrantVectorStore
+from app.vectorstores.supabase import SupabaseVectorStore
 from app.vectorstores.weaviate import WeaviateVectorStore
 from prisma.enums import VectorDbProvider
 
-vector_db_mapping = {
+# TODO: use the VectorDbProvider enum
+VECTOR_DB_MAPPING = {
     "pinecone": "PINECONE",
     "qdrant": "QDRANT",
     "astra": "ASTRA_DB",
     "weaviate": "WEAVIATE",
+    "supabase": "SUPABASE",
+    # NOTE: we used "supabase" name initially for the pgvector databases in our database
+    "pgvector": "SUPABASE",
 }
+
+REVERSE_VECTOR_DB_MAPPING = {v: k for k, v in VECTOR_DB_MAPPING.items()}
 
 logger = logging.getLogger(__name__)
 
 
-# NOTE: Need an abstract class for the base vectorstore with defined methods
-class VectorStoreBase:
-    def __init__(self, options: Optional[dict], vector_db_provider: Optional[str]):
+class VectorStoreMain(VectorStoreBase):
+    def __init__(
+        self,
+        options: Optional[dict],
+        vector_db_provider: Optional[str],
+        embeddings_model_provider: EmbeddingsModelProvider,
+    ):
         """
         Determine the vectorstore
         """
@@ -33,9 +46,10 @@ class VectorStoreBase:
             vector_db_provider,
             # config VECTORSTORE returns lowercase
             # vectorstore name (e.g. pinecone, astra)
-            vector_db_mapping.get(config("VECTORSTORE", None)),
+            VECTOR_DB_MAPPING.get(config("VECTORSTORE", None)),
             VectorDbProvider.PINECONE.value,
         )
+        self.embeddings_model_provider = embeddings_model_provider
         self.instance = self.get_database()
 
     def get_database(self, index_name: Optional[str] = None) -> Any:
@@ -44,6 +58,7 @@ class VectorStoreBase:
             "ASTRA_DB": AstraVectorStore,
             "WEAVIATE": WeaviateVectorStore,
             "QDRANT": QdrantVectorStore,
+            "SUPABASE": SupabaseVectorStore,
         }
         index_names = {
             "PINECONE": get_first_non_null(
@@ -66,6 +81,11 @@ class VectorStoreBase:
                 config("QDRANT_INDEX", None),
                 self.DEFAULT_INDEX_NAME,
             ),
+            "SUPABASE": get_first_non_null(
+                self.options.get("SUPABASE_TABLE_NAME"),
+                config("SUPABASE_TABLE_NAME", None),
+                self.DEFAULT_INDEX_NAME,
+            ),
         }
 
         logger.info(f"Using {self.vectorstore} vectorstore")
@@ -73,7 +93,9 @@ class VectorStoreBase:
         if index_name is None:
             index_name = index_names.get(self.vectorstore)
         return vectorstore_classes.get(self.vectorstore)(
-            index_name=index_name, options=self.options
+            index_name=index_name,
+            options=self.options,
+            embeddings_model_provider=self.embeddings_model_provider,
         )
 
     def query(
@@ -102,8 +124,14 @@ class VectorStoreBase:
     # def _embed_with_retry(self, texts):
     #     return self.instance.embeddings.embed_documents(texts)
 
-    def embed_documents(self, documents: list[Document], batch_size: int = 20):
-        self.instance.embed_documents(documents, batch_size)
+    def embed_documents(
+        self, documents: list[Document], datasource_id: str, batch_size: int = 20
+    ):
+        newDocuments = [
+            document.metadata.update({"datasource_id": datasource_id}) or document
+            for document in documents
+        ]
+        self.instance.embed_documents(documents=newDocuments, batch_size=batch_size)
 
     def clear_cache(self, agent_id: str, datasource_id: str | None = None):
         self.instance.clear_cache(agent_id, datasource_id)

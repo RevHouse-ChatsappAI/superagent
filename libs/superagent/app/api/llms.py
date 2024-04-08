@@ -46,9 +46,7 @@ async def create(body: LLMRequest, api_user=Depends(get_current_api_user)):
 async def list(api_user=Depends(get_current_api_user)):
     """Endpoint for listing all LLMs"""
     try:
-        data = await prisma.llm.find_many(
-            order={"createdAt": "desc"}
-        )
+        data = await prisma.llm.find_many(order={"createdAt": "desc"})
         # Convert options to string
         for item in data:
             item.options = json.dumps(item.options)
@@ -57,6 +55,7 @@ async def list(api_user=Depends(get_current_api_user)):
         handle_exception(e)
 
 
+# TODO: No update
 @router.get(
     "/llms/{llm_id}",
     name="get",
@@ -66,9 +65,7 @@ async def list(api_user=Depends(get_current_api_user)):
 async def get(llm_id: str, api_user=Depends(get_current_api_user)):
     """Endpoint for getting a single LLM"""
     try:
-        data = await prisma.llm.find_first(
-            where={"id": llm_id, "apiUserId": api_user.id}
-        )
+        data = await prisma.llm.find_first(where={"id": llm_id})
         data.options = json.dumps(data.options)
         return {"success": True, "data": data}
     except Exception as e:
@@ -89,7 +86,7 @@ async def update(llm_id: str, body: LLMRequest, api_user=Depends(get_current_api
         data = await prisma.llm.update(
             where={"id": llm_id},
             data={
-                **body.dict(),
+                **body.dict(exclude_unset=True),
                 "options": Json(body.options),
             },
         )

@@ -1,11 +1,12 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
-from app.utils.prisma import prisma
-from app.utils.streaming import CustomAsyncIteratorCallbackHandler
-from prisma.models import Agent, AgentDatasource, AgentLLM, AgentTool
+from app.models.request import LLMParams
+from app.utils.callbacks import CustomAsyncIteratorCallbackHandler
+from prisma.enums import AgentType
+from prisma.models import Agent
 
 DEFAULT_PROMPT = (
-    "You are a helpful AI Assistant, anwer the users questions to "
+    "You are a helpful AI Assistant, answer the users questions to "
     "the best of your ability."
 )
 
@@ -17,41 +18,68 @@ class AgentBase:
         session_id: str = None,
         enable_streaming: bool = False,
         output_schema: str = None,
-        callback: CustomAsyncIteratorCallbackHandler = None,
+        callbacks: List[CustomAsyncIteratorCallbackHandler] = [],
+        llm_params: Optional[LLMParams] = {},
+        agent_config: Agent = None,
     ):
         self.agent_id = agent_id
         self.session_id = session_id
         self.enable_streaming = enable_streaming
         self.output_schema = output_schema
-        self.callback = callback
+        self.callbacks = callbacks
+        self.llm_params = llm_params
+        self.agent_config = agent_config
 
     async def _get_tools(
-        self, agent_datasources: List[AgentDatasource], agent_tools: List[AgentTool]
+        self,
     ) -> List:
         raise NotImplementedError
 
-    async def _get_llm(self, agent_llm: AgentLLM, model: str) -> Any:
+    async def _get_llm(
+        self,
+    ) -> Any:
         raise NotImplementedError
 
-    async def _get_prompt(self, agent: Agent) -> str:
+    async def _get_prompt(
+        self,
+    ) -> str:
         raise NotImplementedError
 
     async def _get_memory(self) -> List:
         raise NotImplementedError
 
     async def get_agent(self):
-        agent_config = await prisma.agent.find_unique_or_raise(
-            where={"id": self.agent_id},
-            include={
-                "llms": {"include": {"llm": True}},
-                "datasources": {
-                    "include": {"datasource": {"include": {"vectorDb": True}}}
-                },
-                "tools": {"include": {"tool": True}},
-            },
-        )
-        print(agent_config)
-        if agent_config.llms[0].llm.provider in ["OPENAI", "AZURE_OPENAI"]:
+        print(self.agent_id)
+        for attr, value in vars(self).items():
+            print(f"{attr}: {value}")
+
+        if self.agent_config.type == AgentType.OPENAI_ASSISTANT:
+            from app.agents.openai import OpenAiAssistant
+
+            agent = OpenAiAssistant(
+                agent_id=self.agent_id,
+                session_id=self.session_id,
+                enable_streaming=self.enable_streaming,
+                output_schema=self.output_schema,
+                callbacks=self.callbacks,
+                llm_params=self.llm_params,
+                agent_config=self.agent_config,
+            )
+
+        elif self.agent_config.type == AgentType.LLM:
+            from app.agents.llm import LLMAgent
+
+            agent = LLMAgent(
+                agent_id=self.agent_id,
+                session_id=self.session_id,
+                enable_streaming=self.enable_streaming,
+                output_schema=self.output_schema,
+                callbacks=self.callbacks,
+                llm_params=self.llm_params,
+                agent_config=self.agent_config,
+            )
+
+        else:
             from app.agents.langchain import LangchainAgent
 
             agent = LangchainAgent(
@@ -59,17 +87,24 @@ class AgentBase:
                 session_id=self.session_id,
                 enable_streaming=self.enable_streaming,
                 output_schema=self.output_schema,
-                callback=self.callback,
-            )
-        else:
-            from app.agents.superagent import SuperagentAgent
-
-            agent = SuperagentAgent(
-                agent_id=self.agent_id,
-                session_id=self.session_id,
-                enable_streaming=self.enable_streaming,
-                output_schema=self.output_schema,
-                callback=self.callback,
+                callbacks=self.callbacks,
+                llm_params=self.llm_params,
+                agent_config=self.agent_config,
             )
 
-        return await agent.get_agent(config=agent_config)
+        return await agent.get_agent()
+
+    def get_input(self, input: str, agent_type: AgentType):
+        agent_input = {
+            "input": input,
+        }
+
+        if agent_type == AgentType.OPENAI_ASSISTANT:
+            agent_input = {
+                "content": input,
+            }
+
+        if agent_type == AgentType.LLM:
+            agent_input = input
+
+        return agent_input

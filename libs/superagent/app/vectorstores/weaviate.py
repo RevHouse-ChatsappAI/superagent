@@ -7,9 +7,11 @@ import backoff
 import weaviate
 from decouple import config
 from langchain.docstore.document import Document
-from langchain.embeddings.openai import OpenAIEmbeddings  # type: ignore
 from pydantic.dataclasses import dataclass
 from app.utils.helpers import get_first_non_null
+from app.vectorstores.abstract import VectorStoreBase
+from app.vectorstores.embeddings import get_embeddings_model_provider
+from app.models.request import EmbeddingsModelProvider
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +48,11 @@ class Response:
         self.metadata = metadata or {}
 
 
-class WeaviateVectorStore:
+class WeaviateVectorStore(VectorStoreBase):
     def __init__(
         self,
         options: dict,
+        embeddings_model_provider: EmbeddingsModelProvider,
         index_name: str = None,
         api_key: str = None,
         url: str = None,
@@ -84,8 +87,8 @@ class WeaviateVectorStore:
             url=variables["WEAVIATE_URL"],
             auth_client_secret=auth,
         )
-        self.embeddings = OpenAIEmbeddings(
-            model="text-embedding-ada-002", openai_api_key=config("OPENAI_API_KEY")
+        self.embeddings = get_embeddings_model_provider(
+            embeddings_model_provider=embeddings_model_provider
         )
 
         self.index_name = variables["WEAVIATE_INDEX"]
