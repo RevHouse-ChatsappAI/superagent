@@ -180,7 +180,7 @@ export default function Storage({
           <DialogHeader>
             <DialogTitle>{selectedDB?.name}</DialogTitle>
             <DialogDescription>
-              Connect your private {selectedDB?.name} account to Superagent.
+              Conecta tu cuenta privada de {selectedDB?.name} a ChatsAppAI.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col">

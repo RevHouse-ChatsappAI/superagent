@@ -28,11 +28,11 @@ const StepThree = ({
   const [form, setForm] = useState({
     name: "",
     description: "",
-    llmModel: "GPT_3_5_TURBO_16K_0613",
+    llmProvider: "AZURE_OPENAI",
     isActive: true,
     tools: [],
     datasources: [],
-    prompt: "You are an helpful AI Assistant",
+    prompt: "Eres un Asistente de IA útil",
   })
 
   //Context

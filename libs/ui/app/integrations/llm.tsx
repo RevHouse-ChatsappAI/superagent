@@ -144,8 +144,8 @@ export default function LLM({
           <DialogHeader>
             <DialogTitle>{selectedProvider?.name}</DialogTitle>
             <DialogDescription>
-              Connect your private {selectedProvider?.name} account to
-              Superagent.
+              Conecta tu cuenta privada de {selectedProvider?.name} a
+              ChatsAppAI.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col">
