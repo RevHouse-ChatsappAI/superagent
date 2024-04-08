@@ -97,7 +97,7 @@ export default function IndexPage() {
                 company: profile.company,
               })
             }
-            window.location.href = "/workflows"
+            window.location.href = "/agents"
           }
           fetchProfileAndIdentify()
         }

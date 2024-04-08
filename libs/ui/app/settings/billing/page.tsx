@@ -17,9 +17,9 @@ export default async function Billing() {
   return (
     <div className="flex flex-col space-y-8">
       <div className="flex flex-col space-y-2">
-        <p className="text-lg font-bold">Billing Plans</p>
+        <p className="text-lg font-bold">Planes de Facturación</p>
         <p className="text-sm text-muted-foreground">
-          Subscribe to a plan to get started.
+          Suscríbete a un plan para comenzar.
         </p>
       </div>
       <hr />
