@@ -1,7 +1,10 @@
+import asyncio
 import json
 import logging
+from typing import AsyncIterable, List
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
 
@@ -10,7 +13,9 @@ from app.models.request import ApiPlaformKey as ApiPlaformKeyRequest
 from app.models.response import GetCredit as GetCreditResponse
 from app.models.response import GetKeyPlatform as GetKeyPlatformResponse
 from app.utils.api import get_current_api_user, handle_exception
+from app.utils.callbacks import CostCalcAsyncHandler, CustomAsyncIteratorCallbackHandler
 from app.utils.chatwoot import chatwoot_human_handoff, enviar_respuesta_chatwoot
+from app.utils.llm import LLM_MAPPING
 from app.utils.prisma import prisma
 from app.utils.token import obtener_token_supabase
 from app.utils.validateURL import validate_url
@@ -151,6 +156,7 @@ async def update_platformkey(
 @router.post("/webhook/{agent_id}/chatwoot")
 async def chatwoot_webhook(agent_id: str, request: Request):
     body = await request.json()
+    print(agent_id)
 
     message_status = body.get("conversation", {}).get("status")
 
@@ -166,6 +172,9 @@ async def chatwoot_webhook(agent_id: str, request: Request):
     content = body.get("content")
     conversation_id = body.get("conversation", {}).get("id")
     message_type = body.get("message_type")
+
+    session_id = f"agt_{agent_id}_"
+    logger = logging.getLogger(__name__)
 
     try:
         token = await prisma.token.find_unique(where={"apiUserChatwoot": str(user_id)})
@@ -220,54 +229,155 @@ async def chatwoot_webhook(agent_id: str, request: Request):
             raise HTTPException(status_code=404, detail="Token not found")
 
         valor_token = token["data"].agentToken
-        ia_assistant_active = token["data"].isAgentActive
         userTokenChatwoot = token["data"].userToken
 
-        agent = await prisma.agent.find_unique(where={"id": agent_id})
-        if not agent:
-            raise HTTPException(status_code=404, detail="Agent not found")
+        agent_config = await prisma.agent.find_unique_or_raise(
+            where={"id": agent_id},
+            include={
+                "llms": {"include": {"llm": True}},
+                "datasources": {
+                    "include": {"datasource": {"include": {"vectorDb": True}}}
+                },
+                "tools": {"include": {"tool": True}},
+            },
+        )
+        print(agent_config)
 
-        agent_base = await AgentBase(agent_id=agent_id).get_agent()
-        if not ia_assistant_active:
-            return {
-                "message": "Request to speak with a human agent received",
-                "agent_id": agent_id,
-            }
+        model = LLM_MAPPING.get(agent_config.llmModel)
+        print(model)
+
+        metadata = agent_config.metadata or {}
+        if not model and metadata.get("model"):
+            model = metadata.get("model")
+
+        costCallback = CostCalcAsyncHandler(model=model)
+
+        monitoring_callbacks = [costCallback]
 
         async def send_message(
             agent: LLMChain | AgentExecutor,
-            content: str,
-        ) -> str:
+            input: dict[str, str],
+            streaming_callback: CustomAsyncIteratorCallbackHandler,
+            callbacks: List[CustomAsyncIteratorCallbackHandler] = [],
+        ) -> AsyncIterable[str]:
             try:
-                result = await agent.acall(
-                    inputs={"input": content},
-                    tags=[agent_id],
-                    callbacks=None,
+                task = asyncio.ensure_future(
+                    agent.ainvoke(
+                        input,
+                        config={
+                            "callbacks": [streaming_callback, *callbacks],
+                            "tags": [agent_id],
+                        },
+                    )
                 )
+
+                # we are not streaming token by token if output schema is set
+                schema_tokens = ""
+                async for token in streaming_callback.aiter():
+                    if not output_schema:
+                        yield ("event: message\n" f"data: {token}\n\n")
+                    else:
+                        schema_tokens += token
+
+                # stream line by line to prevent streaming large data in one go
+                for line in schema_tokens.split("\n"):
+                    yield ("event: message\n" f"data: {line}\n\n")
+
+                await task
+
+                result = task.result()
 
                 if "intermediate_steps" in result:
                     for step in result["intermediate_steps"]:
                         (agent_action_message_log, tool_response) = step
                         tool_response_dict = json.loads(tool_response)
+                        print("hola")
                         action = tool_response_dict.get("action")
 
                         function = str(action)
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print(function)
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print("---------------------------------")
+                        print("---------------------------------")
                         if function == "hand-off":
                             await chatwoot_human_handoff(
                                 conversation_id, userTokenChatwoot, account_id
                             )
-                    return result.get("output", "")
-            except Exception as e:
-                logging.error(f"Error in send_message: {e}")
-                raise
+                    yield result.get("output", "")
+            except Exception as error:
+                print(error)
+            finally:
+                streaming_callback.done.set()
 
-        logging.info("Collecting response from the agent...")
-        response_message = await send_message(agent_base, content=content)
+        logger.info("Invoking agent...")
+        enable_streaming = body.get("enableStreaming", False)
+        output_schema = agent_config.outputSchema
+
+        agent_base = AgentBase(
+            agent_id=agent_id,
+            session_id=session_id,
+            enable_streaming=False,
+            output_schema={},
+            callbacks=monitoring_callbacks,
+            llm_params=None,
+            agent_config=agent_config,
+        )
+        agent = await agent_base.get_agent()
+        print(agent)
+        agent_input = agent_base.get_input(
+            content,
+            agent_type=agent_config.type,
+        )
+        print(agent_input)
+
+        if enable_streaming:
+            logger.info("Streaming enabled. Preparing streaming response...")
+
+            generator = send_message(
+                agent,
+                input=agent_input,
+            )
+            print("..........-------------------------")
+            print(generator)
+            print("..........-------------------------")
+            print("..........-------------------------")
+            print("..........-------------------------")
+            print("..........-------------------------")
+            print("..........-------------------------")
+
+            return StreamingResponse(generator, media_type="text/event-stream")
+
+        logger.info("Streaming not enabled. Invoking agent synchronously...")
+        output = await agent.ainvoke(
+            input=agent_input,
+            config={
+                "tags": [agent_id],
+            },
+        )
+        print("-----------------------------------------")
+        print("-----------------------------------------")
+        intermediate_steps = output.get("intermediate_steps", [])
+        for step in intermediate_steps:
+            tool_response = json.loads(step[1])
+            action = tool_response.get("action")
+            if action == "hand-off":
+                # Do something with the hand-off action
+                print("Action is hand-off")
+                await chatwoot_human_handoff(
+                    conversation_id, userTokenChatwoot, account_id
+                )
+        message = output.get("output", "")
 
         try:
             await enviar_respuesta_chatwoot(
                 conversation_id,
-                response_message,
+                message,
                 valor_token,
                 account_id,
                 es_respuesta_de_bot=True,
@@ -277,8 +387,6 @@ async def chatwoot_webhook(agent_id: str, request: Request):
             raise HTTPException(
                 status_code=500, detail="Error sending the response to Chatwoot"
             )
-
-        return {"success": True, "message": "Response sent to Chatwoot"}
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         return {
