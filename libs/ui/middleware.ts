@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 
+import { Api } from "./lib/api"
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
@@ -24,13 +26,23 @@ export async function middleware(req: NextRequest) {
     }
 
     if (profile.is_onboarded && req.nextUrl.pathname === "/onboarding") {
-      return NextResponse.redirect(new URL("/workflows", req.url))
+      return NextResponse.redirect(new URL("/agents", req.url))
+    }
+
+    try {
+      const api = new Api(profile?.api_key)
+      const subscription = await api.getSubscription()
+      if (!subscription.success) {
+        if (req.nextUrl.pathname !== "/pricing") {
+          return NextResponse.redirect(new URL("/pricing", req.url))
+        }
+      }
+    } catch (error) {
+      console.error("Failed to check user subscription:", error)
     }
 
     if (user && req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(
-        new URL(`/workflows${req.nextUrl.search}`, req.url)
-      )
+      return NextResponse.redirect(new URL(`/agents`, req.url))
     }
   }
 
@@ -49,5 +61,8 @@ export const config = {
     "/integrations/:path*",
     "/workflows/:path*",
     "/onboarding",
+    "/pricing",
+    "/datasources",
+    "/apis",
   ],
 }
