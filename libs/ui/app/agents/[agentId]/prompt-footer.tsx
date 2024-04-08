@@ -9,14 +9,14 @@ export function PromptFooter({
   return (
     <p
       className={cn(
-        "text-muted-foreground px-2 text-center text-xs leading-normal",
+        "px-2 text-center text-xs leading-normal text-muted-foreground",
         className
       )}
       {...props}
     >
       Powered by{" "}
-      <Link passHref href="https://development.chatsappai.com/">
-        <span className="text-foreground">Chatsappai.com/</span>
+      <Link passHref href="https://beta.chatsappai.com/">
+        <span className="text-foreground">ChatsAppAI Cloud</span>
       </Link>
     </p>
   )

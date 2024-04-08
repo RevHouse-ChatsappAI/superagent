@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
+import Link from "next/link"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { promise } from "zod"
+import { TbBrandOpenai } from "react-icons/tb"
 
 import { Api } from "@/lib/api"
 
@@ -36,16 +37,33 @@ export default async function AgentPage({ params }: { params: any }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Header agent={agent} profile={profile} />
-      <div className="flex grow overflow-auto">
-        <Chat agent={agent} profile={profile} />
-        <Settings
-          agent={agent}
-          configuredLLMs={llms}
-          tools={tools}
-          profile={profile}
-          datasources={datasources}
-        />
-      </div>
+      {agent.type === "SUPERAGENT" ? (
+        <div className="flex grow overflow-auto">
+          <Chat agent={agent} profile={profile} />
+          <Settings
+            agent={agent}
+            configuredLLMs={llms}
+            tools={tools}
+            profile={profile}
+            datasources={datasources}
+          />
+        </div>
+      ) : (
+        <div className="container mt-20 flex max-w-lg flex-col space-y-4 rounded-lg border py-6 text-sm">
+          <TbBrandOpenai fontSize="30px" />
+          <div className="flex flex-col space-y-2">
+            <p className="font-semibold">Asistentes de OpenAI</p>
+            <p className="text-muted-foreground">
+              Actualmente no apoyamos la ejecución de Asistentes de OpenAI fuera
+              de los flujos de trabajo. Por favor, visita la{" "}
+              <Link className="underline" href="/workflows">
+                página de flujos de trabajo
+              </Link>{" "}
+              para ejecutar este asistente.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

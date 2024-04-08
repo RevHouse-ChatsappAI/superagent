@@ -59,24 +59,30 @@ export type DataType = {
   status: string
 }
 
-export function DeleteButton({ id, profile }: { id: string; profile: Profile }) {
-  const api = new Api(profile.api_key);
-  const router = useRouter();
+export function DeleteButton({
+  id,
+  profile,
+}: {
+  id: string
+  profile: Profile
+}) {
+  const api = new Api(profile.api_key)
+  const router = useRouter()
 
   const handleDelete = async () => {
     try {
-      await api.deleteDatasource(id);
+      await api.deleteDatasource(id)
       toast({
         description: "Fuente de datos eliminada con éxito",
-      });
-      router.refresh();
+      })
+      router.refresh()
     } catch (error: any) {
       toast({
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   return (
     <Button
@@ -85,9 +91,8 @@ export function DeleteButton({ id, profile }: { id: string; profile: Profile }) 
     >
       Borrar
     </Button>
-  );
+  )
 }
-
 
 export function CopyButton({ id }: { id: string }) {
   const { toast } = useToast()
@@ -134,10 +139,23 @@ export function EditTool({
       })
       router.refresh()
     } catch (error: any) {
-      toast({
-        description: error?.message,
-        variant: "destructive",
-      })
+      console.log(error.data)
+      if (
+        error.response &&
+        error.response.data &&
+        !error.response.data.success &&
+        error.response.data.message === "Límite de consultas excedido"
+      ) {
+        toast({
+          description: "Se excedió del límite de consultas a la base de datos.",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          description: "Error al actualizar la fuente de datos.",
+          variant: "destructive",
+        })
+      }
     }
   }
 

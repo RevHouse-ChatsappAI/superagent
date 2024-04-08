@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { FilePicker } from "@apideck/file-picker-js"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {
@@ -14,6 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
+import { CiSquarePlus } from "react-icons/ci"
 import { RxCross2 } from "react-icons/rx"
 import { v4 as uuidv4 } from "uuid"
 import * as z from "zod"
@@ -52,7 +52,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { DataTablePagination } from "@/components/data-table-pagination"
-import { PlusIcon } from "@/components/svg/PlusIcon"
 import { UploadButton } from "@/components/upload-button"
 
 interface DataTableProps<TData, TValue> {
@@ -91,7 +90,6 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const [isLoadingFilePicker, setIsLoadingFilePicker] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [isDownloadingFile, setIsDownloadingFile] = React.useState(false)
   const [selectedFile, setSelectedFile] = React.useState<any | null>()
@@ -143,7 +141,6 @@ export function DataTable<TData, TValue>({
       })
       router.refresh()
       setOpen(false)
-      setIsLoadingFilePicker(false)
       setSelectedType(null)
       form.reset()
     } catch (error: any) {
@@ -177,45 +174,6 @@ export function DataTable<TData, TValue>({
       body: JSON.stringify({ userId: profile.user_id }),
     })
     const { data } = await response.json()
-    FilePicker.open({
-      token: data.session_token,
-      title: "Superagent",
-      subTitle: "Select a file",
-      onReady: () => {
-        setIsLoadingFilePicker(false)
-      },
-      onSelect: async (file: any) => {
-        if (!supportedMimeTypes.includes(file.mime_type)) {
-          toast({
-            description: `File type ${file.mime_type} is not supported.`,
-            variant: "destructive",
-          })
-          form.reset()
-          return
-        }
-
-        setOpen(true)
-        setIsOpeningVault(false)
-        setSelectedFile(file)
-        setIsDownloadingFile(true)
-        const response = await fetch("/datasources/apideck/download", {
-          method: "POST",
-          body: JSON.stringify({
-            fileId: file.id,
-            userId: profile.user_id,
-            mimeType: file.mime_type,
-            fileName: file.name,
-          }),
-        })
-        const { publicUrl } = await response.json()
-        const fileType = mapMimeTypeToFileType(file.mime_type)
-
-        form.setValue("url", publicUrl)
-        form.setValue("type", fileType)
-
-        setIsDownloadingFile(false)
-      },
-    })
   }
 
   const handleLocalFileUpload = async (file: File) => {
@@ -264,7 +222,7 @@ export function DataTable<TData, TValue>({
             <Spinner />
           ) : (
             <>
-              <PlusIcon />
+              <CiSquarePlus />
               <span>Crear nueva fuente de datos</span>
             </>
           )}
@@ -508,7 +466,7 @@ export function DataTable<TData, TValue>({
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
                             <p className="text-sm">Seleccionar archivos</p>
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Subir archivos locales desde tu dispositivo
                             </p>
                           </div>
@@ -542,7 +500,7 @@ export function DataTable<TData, TValue>({
                         <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                           <div className="flex flex-col items-center justify-center">
                             <p className="text-sm">Conectar a tus cuentas</p>
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Google Drive, Dropbox, Box, etc.
                             </p>
                           </div>

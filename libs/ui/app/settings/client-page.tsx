@@ -1,13 +1,12 @@
 "use client"
 
 import { useCallback } from "react"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { Profile } from "@/types/profile"
+import { getSupabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -33,12 +32,12 @@ const formSchema = z.object({
   company: z.string(),
 })
 
+const supabase = getSupabase()
+
 const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
   profile,
   user,
 }) => {
-  const router = useRouter()
-  const supabase = createClientComponentClient()
   const { toast } = useToast()
   const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,8 +67,9 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
 
       return
     }
+
     toast({
-      description: `¡Los ajustes han sido guardados!`,
+      description: `Settings have been saved!`,
     })
   }
 
@@ -77,8 +77,8 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
     <div className="flex max-w-xl flex-col items-start justify-start space-y-8">
       <div className="flex flex-col space-y-2">
         <p className="text-sm font-bold">Personal</p>
-        <p className="text-muted-foreground text-sm">
-          Actualiza tus configuraciones personales
+        <p className="text-sm text-muted-foreground">
+          Actualiza tus ajustes personales
         </p>
       </div>
       <Form {...form}>
@@ -105,9 +105,9 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
               name="last_name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Apellidos</FormLabel>
+                  <FormLabel>Apellido</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingresa tus apellidos" {...field} />
+                    <Input placeholder="Ingresa tu apellido" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -120,7 +120,10 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
                 <FormItem>
                   <FormLabel>Nombre de la empresa</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingresa el nombre de tu empresa" {...field} />
+                    <Input
+                      placeholder="Ingresa el nombre de tu empresa"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,7 +141,7 @@ const SettingsClientPage: React.FC<SettingsClientPageProps> = ({
             {form.control._formState.isSubmitting ? (
               <Spinner />
             ) : (
-              "Guardar configuraciones"
+              "Guardar configuración"
             )}
           </Button>
         </form>

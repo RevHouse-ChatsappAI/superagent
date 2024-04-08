@@ -3,12 +3,10 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
-import { Profile } from "@/types/profile"
 import { ProfileChatwoot } from "@/types/profileChatwoot"
 import { Api } from "@/lib/api"
 import { ApiChatwoot } from "@/lib/api_chatwoot"
@@ -17,13 +15,19 @@ interface ChatwootProviderProps {
   children: ReactNode
 }
 
+interface PlatformKey {
+  key: string
+  url: string
+}
+
 export const ChatwootContext = createContext<{
   token: string
   tokenActive: boolean
   userProfileChatwoot: ProfileChatwoot | null
-  agentToken: string,
-  apiAgent: string,
-  accountId: string,
+  agentToken: string
+  apiAgent: string
+  accountId: string
+  platformKey: PlatformKey | null
   handleChangeToken: (value: string) => void
   handleChangeActiveToken: (value: boolean) => void
   handleProfileChatwoot: (profile: ProfileChatwoot) => void
@@ -31,6 +35,7 @@ export const ChatwootContext = createContext<{
   handleAgentApi: (id: string) => void
   handleAccountId: (id: string) => void
 }>({
+  platformKey: null,
   token: "",
   agentToken: "",
   userProfileChatwoot: null,
@@ -42,20 +47,19 @@ export const ChatwootContext = createContext<{
   handleProfileChatwoot: () => {},
   handleTokenChange: () => {},
   handleAgentApi: () => {},
-  handleAccountId: () => {}
+  handleAccountId: () => {},
 })
 
 export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
   children,
 }) => {
   const [token, setToken] = useState<string>("")
+  const [platformKey, setPlatformKey] = useState<PlatformKey | null>(null)
   const [tokenActive, setTokenActive] = useState<boolean>(false)
 
   const [agentToken, setAgentToken] = useState("")
   const [apiAgent, setApiAgent] = useState("")
   const [accountId, setAccountId] = useState("")
-
-
 
   const [userProfileChatwoot, setUserProfileChatwoot] =
     useState<ProfileChatwoot | null>(null)
@@ -78,9 +82,12 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
           const api = new Api(profile.api_key)
           const response = await api.getToken()
 
+          const responsePlatformKey = await api.platformKey()
+
           if (response.success && response.data) {
             setTokenActive(true)
             setToken(response?.data?.userToken)
+            setPlatformKey(responsePlatformKey?.data)
             // setAccountId(response.data.userProfileChatwoot)
             const apiChatwoot = new ApiChatwoot(response.data.userToken)
 
@@ -128,6 +135,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
   return (
     <ChatwootContext.Provider
       value={{
+        platformKey,
         userProfileChatwoot,
         token,
         handleChangeToken,
@@ -139,7 +147,7 @@ export const ChatwootProvider: React.FC<ChatwootProviderProps> = ({
         apiAgent,
         handleAgentApi,
         accountId,
-        handleAccountId
+        handleAccountId,
       }}
     >
       {children}

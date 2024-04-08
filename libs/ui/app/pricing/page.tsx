@@ -1,15 +1,12 @@
+import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
-import type { Metadata } from "next";
-
+import { DataTable } from "./data-table"
 
 export const metadata: Metadata = {
   title: "ChatsAppAI - Subscripciones",
-};
-
-
-import { DataTable } from "./data-table"
+}
 
 export default async function Pricing() {
   const supabase = createRouteHandlerClient({ cookies })
@@ -31,7 +28,7 @@ export default async function Pricing() {
               Simple, transparente, rentable.
             </h2>
             <div className="flex flex-col gap-1">
-              <p className="font-light text-gray-700 sm:text-xl dark:text-gray-400">
+              <p className="font-light text-gray-700 dark:text-gray-400 sm:text-xl">
                 Sin burocracia📄. Sin costos sorpresa💸. Cancela cuando quieras
                 🏗️.
               </p>

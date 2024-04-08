@@ -1,13 +1,11 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useForm } from "react-hook-form"
-import Stripe from "stripe"
 import * as z from "zod"
 
+import { initialSamlValue } from "@/config/saml"
 import { Api } from "@/lib/api"
-import { stripe } from "@/lib/stripe"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -30,18 +28,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
-const formSchema = z.object({
-  first_name: z.string().nonempty("Nombre inválido."),
-  last_name: z.string().nonempty("Apellido inválido."),
-  company: z.string(),
-})
+import { onboardFormSchema } from "../api/onboard/form-schema"
 
 export default function OnboardingClientPage() {
-  const api = new Api()
-  const supabase = createClientComponentClient()
   const { toast } = useToast()
-  const { ...form } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { ...form } = useForm<z.infer<typeof onboardFormSchema>>({
+    resolver: zodResolver(onboardFormSchema),
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -49,54 +41,25 @@ export default function OnboardingClientPage() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { first_name, last_name, company } = values
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user?.email) {
-      toast({
-        description: `¡Vaya! Falta el correo electrónico del usuario.`,
-        variant: "destructive",
-      })
-      return
-    }
-    const {
-      data: { token: api_key },
-    } = await api.createApiKey(user.email)
-    const params: Stripe.CustomerCreateParams = {
-      name: company,
-    }
-    let customer: Stripe.Customer | null = null
-    if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-      customer = await stripe.customers.create(params)
-    }
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        api_key,
-        first_name,
-        last_name,
-        company,
-        stripe_customer_id: customer?.id,
-        is_onboarded: true,
-      })
-      .eq("user_id", user?.id)
-
-    if (error) {
-      toast({
-        description: `Ooops! ${error?.message}`,
-        variant: "destructive",
-      })
-
-      return
-    }
-
-    toast({
-      description: "¡Configuraciones actualizadas!",
+  async function onSubmit(values: z.infer<typeof onboardFormSchema>) {
+    const res = await fetch("/api/onboard", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
     })
 
-    window.location.href = "/home"
+    const profile = await res.json()
+
+    if (!res.ok || !profile) {
+      return toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      })
+    }
+
+    window.location.href = `/pricing`
   }
 
   return (
@@ -109,9 +72,9 @@ export default function OnboardingClientPage() {
           >
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">¡Bienvenido!</CardTitle>
+                <CardTitle className="text-lg">Welcome!</CardTitle>
                 <CardDescription>
-                  Cuéntanos un poco más sobre ti.
+                  Tell us a bit more about yourself.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -122,10 +85,10 @@ export default function OnboardingClientPage() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Nombre</FormLabel>
+                          <FormLabel>First name</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Ingresa tu nombre"
+                              placeholder="Enter your first name"
                               {...field}
                             />
                           </FormControl>
@@ -138,10 +101,10 @@ export default function OnboardingClientPage() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Apellido</FormLabel>
+                          <FormLabel>Last name</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Ingresa tu apellido"
+                              placeholder="Enter your last name"
                               {...field}
                             />
                           </FormControl>
@@ -155,10 +118,10 @@ export default function OnboardingClientPage() {
                     name="company"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nombre de la empresa</FormLabel>
+                        <FormLabel>Company name</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Ingresa el nombre de tu empresa"
+                            placeholder="Enter your company name"
                             {...field}
                           />
                         </FormControl>
@@ -170,7 +133,7 @@ export default function OnboardingClientPage() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" size="sm" className="w-full">
-                  {form.control._formState.isSubmitting ? <Spinner /> : "Guardar"}
+                  {form.control._formState.isSubmitting ? <Spinner /> : "Save"}
                 </Button>
               </CardFooter>
             </Card>

@@ -1,94 +1,88 @@
 import { VectorDbProvider } from "@/models/models"
-import { GoWorkflow } from "react-icons/go"
+import { CiCloudOn } from "react-icons/ci"
+import { IoDocumentOutline } from "react-icons/io5"
 import {
-  RxAvatar,
-  RxDesktop,
-  RxDiscordLogo,
-  RxFileText,
-  RxGithubLogo,
-  RxGlobe,
-  RxHome,
-  RxPlay,
-  RxReader,
-} from "react-icons/rx"
-import { TbBrain, TbDatabase } from "react-icons/tb"
+  TbBrandDiscord,
+  TbFileCode,
+  TbPlug,
+  TbRobot,
+  TbStack2,
+  TbUserCircle,
+} from "react-icons/tb"
 
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "ChatsappAI Cloud",
+  name: "ChatsappAI",
   description: "The agent framework for large language models",
+  paymentPlans: {
+    hobby: process.env.NEXT_PUBLIC_STRIPE_HOBBY_PLAN!,
+    pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN!,
+  },
   mainNav: [
     {
-      title: "Home",
-      href: "/",
-      icon: RxHome,
-    },
-    {
-      title: "Dashboard",
-      href: "/dashboard",
-      icon: RxDesktop,
-    },
-    {
-      title: "Agents",
+      title: "Agentes de IA",
       href: "/agents",
-      icon: RxPlay,
+      icon: TbRobot,
     },
     {
-      title: "workflows",
+      title: "Flujos de trabajo",
       href: "/workflows",
-      icon: GoWorkflow,
+      icon: TbStack2,
     },
     {
-      title: "datasources",
+      title: "Fuentes de datos",
       href: "/datasources",
-      icon: RxReader,
+      icon: IoDocumentOutline,
     },
     {
-      title: "apis",
+      title: "Herramientas & APIs",
       href: "/apis",
-      icon: RxGlobe,
+      icon: CiCloudOn,
     },
     {
-      title: "llms",
-      href: "/llms",
-      icon: TbBrain,
-    },
-    {
-      title: "vector databases",
-      href: "/vector-databases",
-      icon: TbDatabase,
+      title: "Integraciones",
+      href: "/integrations",
+      icon: TbPlug,
     },
   ],
   footerNav: [
     {
+      title: "Discord",
+      href: "https://discord.com/invite/mhmJUTjW4b",
+      icon: TbBrandDiscord,
+    },
+    {
       title: "Documentation",
       href: "https://docs.superagent.sh",
-      icon: RxFileText,
+      icon: TbFileCode,
     },
     {
       title: "Settings",
       href: "/settings",
-      icon: RxAvatar,
+      icon: TbUserCircle,
     },
   ],
   settingsNav: [
     {
-      title: "Usuario",
+      id: "user",
+      title: "Perfil",
       href: "/settings",
     },
     {
-      title: "Claves de API",
+      id: "apiKeys",
+      title: "API keys",
       href: "/settings/api-keys",
     },
     {
+      id: "appearance",
       title: "Apariencia",
       href: "/settings/appearance",
     },
     {
-      title: "Facturación",
+      id: "billing",
+      title: "Planes",
       href: "/settings/billing",
-      disabled: true,
     },
   ],
   defaultLLM: "GPT_3_5_TURBO_16K_0613",
@@ -98,7 +92,6 @@ export const siteConfig = {
       description:
         "Power your assistants with the latest models from OpenAI, powerful for calling external APIs and reasoning.",
       name: "OpenAI",
-      logo: "/openai-logo.png",
       options: [
         {
           value: "GPT_3_5_TURBO_16K_0613",
@@ -113,12 +106,20 @@ export const siteConfig = {
           title: "gpt-3.5-turbo-1106",
         },
         {
+          value: "GPT_3_5_TURBO_0125",
+          title: "gpt-3.5-turbo-0125",
+        },
+        {
           value: "GPT_4_0613",
           title: "gpt-4-0613",
         },
         {
           value: "GPT_4_1106_PREVIEW",
           title: "gpt-4-1106-preview",
+        },
+        {
+          value: "GPT_4_TURBO_PREVIEW",
+          title: "gpt-4-turbo-preview",
         },
       ],
     },
@@ -128,7 +129,6 @@ export const siteConfig = {
       description:
         "Use Azure OpenAI to power your assistants with the latest OpenAI models.",
       name: "Azure OpenAI",
-      logo: "/azure-logo.png",
       options: [],
     },
     {
@@ -136,7 +136,6 @@ export const siteConfig = {
       id: "HUGGINGFACE",
       description: "Use Open Source models on HuggingFace.",
       name: "HuggingFace",
-      logo: "/hf-logo.png",
       options: [
         {
           value: "MISTRAL_7B_INSTRUCT_V01",
@@ -242,6 +241,28 @@ export const siteConfig = {
           key: "arguments",
           type: "json",
           label: "Other arguments",
+        },
+      ],
+    },
+    {
+      value: "SCRAPER",
+      title: "Web extractor",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Replicate API key",
+        },
+      ],
+    },
+    {
+      value: "GOOGLE_SEARCH",
+      title: "Google search",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Google search api key",
         },
       ],
     },
@@ -379,12 +400,133 @@ export const siteConfig = {
         },
       ],
     },
+    {
+      value: "RESEARCH",
+      title: "Research",
+      metadata: [{ key: "apiKey", type: "input", label: "Tavily API key" }],
+    },
+    {
+      value: "SUPERRAG",
+      title: "SuperRag",
+      metadata: [
+        {
+          key: "vector_database.type",
+          type: "select",
+          options: [
+            { value: "pinecone", title: "Pinecone" },
+            { value: "qdrant", title: "Qdrant" },
+            { value: "weaviate", title: "Weaviate" },
+          ],
+          label: "Vector Database Provider",
+        },
+        {
+          key: "index_name",
+          type: "input",
+          label: "SuperRag Index Name",
+        },
+      ],
+    },
   ],
-
+  llmForm: [
+    {
+      disabled: false,
+      formDescription: "Please enter your OpenAI API key.",
+      provider: "OPENAI",
+      name: "OpenAI",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "OpenAI API Key",
+        },
+      ],
+    },
+    {
+      disabled: false,
+      formDescription: "Please enter your Perplexity API key.",
+      provider: "PERPLEXITY",
+      name: "Perplexity AI",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Perplexity API Key",
+        },
+      ],
+    },
+    {
+      disabled: false,
+      formDescription: "Please enter your Together API key.",
+      provider: "TOGETHER_AI",
+      name: "Together AI",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Together API Key",
+        },
+      ],
+    },
+    {
+      disabled: false,
+      formDescription: "Please enter your Anthropic API key.",
+      provider: "ANTHROPIC",
+      name: "Anthropic",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Anthropic API Key",
+        },
+      ],
+    },
+    {
+      disabled: true,
+      formDescription: "Please enter your HF API key.",
+      provider: "HUGGINGFACE",
+      name: "Hugging Face",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "HF API Key",
+        },
+      ],
+    },
+    {
+      disabled: false,
+      formDescription: "Please enter your Azure OpenAI API key.",
+      provider: "AZURE_OPENAI",
+      name: "Azure OpenAI",
+      metadata: [
+        {
+          key: "apiKey",
+          type: "input",
+          label: "Azure API Key",
+        },
+        {
+          key: "options.azure_endpoint",
+          type: "input",
+          label: "Azure endpoint URL",
+        },
+        {
+          key: "options.openai_api_version",
+          type: "input",
+          label: "Azure API version",
+        },
+        {
+          key: "options.azure_deployment",
+          type: "input",
+          label: "Azure deployment name",
+        },
+      ],
+    },
+  ],
   vectorDbs: [
     {
       provider: VectorDbProvider[VectorDbProvider.PINECONE],
       name: "Pinecone",
+      logo: "/pinecone.png",
       description:
         "Cloud-based database for storing and searching vectors, enabling fast similarity comparisons. Scales well for large datasets.",
       formDescription: "Please enter your Pinecone credentials.",
@@ -409,6 +551,7 @@ export const siteConfig = {
     {
       provider: VectorDbProvider[VectorDbProvider.QDRANT],
       name: "Qdrant",
+      logo: "/qdrant.png",
       description:
         "Open-source database optimized for efficient vector search and filtering. Handles large datasets effectively while requiring minimal resources.",
       formDescription: "Please enter your Qdrant credentials.",
@@ -433,6 +576,7 @@ export const siteConfig = {
     {
       provider: VectorDbProvider[VectorDbProvider.ASTRA_DB],
       name: "Astra DB",
+      logo: "/datastax.jpeg",
       description:
         "Serverless database built on Cassandra, offering integration with Pinecone for vector similarity search.",
       formDescription: "Please enter your Astra DB credentials",
@@ -467,6 +611,7 @@ export const siteConfig = {
     {
       provider: VectorDbProvider[VectorDbProvider.WEAVIATE],
       name: "Weaviate",
+      logo: "/weaviate.png",
       description:
         "Semantic vector database with schema-based organization. Supports both vector search and connections between data points like a graph.",
       formDescription: "Please enter your Weaviate credentials.",
@@ -485,6 +630,64 @@ export const siteConfig = {
           key: "WEAVIATE_INDEX",
           type: "input",
           label: "Weaviate Index",
+        },
+      ],
+    },
+    {
+      provider: VectorDbProvider[VectorDbProvider.SUPABASE],
+      name: "Supabase",
+      logo: "/supabase.png",
+      description:
+        "The PGVector extension is particularly useful for tasks such as vector similarity search, retrieval, generation, and clustering",
+      formDescription: "Please enter your Supabase PGVector credentials.",
+      metadata: [
+        {
+          key: "SUPABASE_DB_URL",
+          type: "input",
+          label: "Database Connection URI",
+          placeholder: "postgres://postgres:postgres@localhost:5432/postgres",
+          helpText:
+            "The connection URI for your database. You can find this in your Supabase dashboard.",
+        },
+        {
+          key: "SUPABASE_TABLE_NAME",
+          type: "input",
+          label: "Table Name",
+          placeholder: "my_collection",
+          helpText:
+            "The database table name which your vector embeddings will be stored in.",
+        },
+      ],
+    },
+  ],
+  platformProvider: [
+    {
+      provider: "CHATSAPP_CRM",
+      name: "ChatsAPP CRM",
+      logo: "/logo.png",
+      description:
+        " Bienvenido a ChatsApp.com CRM, tu puente hacia una comunicación efectiva y organizada. Simplemente ingresa tus datos para conectarte y aprovechar al máximo nuestra plataforma integrada de conexión.",
+      formDescription: "Por favor ingrese una cuenta.",
+      metadata: [
+        {
+          key: "CHATSAPP_NAME",
+          type: "input",
+          label: "Nombre",
+        },
+        {
+          key: "CHATSAPP_EMAIL",
+          type: "input",
+          label: "Correo electronico",
+        },
+        {
+          key: "CHATSAPP_PASSWORD",
+          type: "input",
+          label: "Contraseña",
+        },
+        {
+          key: "CHATSAPP_REPITPASSWORD",
+          type: "input",
+          label: "Repetir Contraseña",
         },
       ],
     },

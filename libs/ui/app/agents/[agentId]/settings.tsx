@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { LLMProvider } from "@/models/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -30,26 +31,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
+import AddDatasource from "./add-datasource"
+import AddTool from "./add-tool"
 import Avatar from "./avatar"
 
 const formSchema = z.object({
-  name: z.string().nonempty({
-    message: "Name is required",
-  }),
-  description: z.string().nonempty({
-    message: "Description is required",
-  }),
+  description: z.string().min(1, { message: "Description is required" }),
   initialMessage: z.string(),
   llms: z.string(),
   isActive: z.boolean().default(true),
-  llmModel: z.string().nonempty({
-    message: "Model is required",
-  }),
+  llmModel: z.string().nullable(),
   prompt: z.string(),
   tools: z.array(z.string()),
   datasources: z.array(z.string()),
@@ -81,13 +78,13 @@ export default function Settings({
   tools,
   profile,
 }: SettingsProps) {
+  console.log("agent", agent)
   const api = new Api(profile.api_key)
   const router = useRouter()
   const { toast } = useToast()
   const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: agent.name,
       description: agent.description,
       initialMessage: agent.initialMessage || "",
       llms: agent.llms?.[0]?.llm.provider,
@@ -100,7 +97,7 @@ export default function Settings({
     },
   })
   const avatar = form.watch("avatar")
-  const llms = form.watch("llms")
+  const currLlmProvider = form.watch("llms") as LLMProvider
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { tools, datasources } = values
 
@@ -145,9 +142,9 @@ export default function Settings({
         (datasourceId) => api.deleteAgentDatasource(agent.id, datasourceId)
       )
 
-      if (llms !== agent.llms?.[0]?.llm.provider) {
+      if (currLlmProvider !== agent.llms?.[0]?.llm.provider) {
         const configuredLLM = configuredLLMs.find(
-          (llm) => llm.provider === llms
+          (llm) => llm.provider === currLlmProvider
         )
 
         if (configuredLLM) {
@@ -157,7 +154,7 @@ export default function Settings({
       }
 
       toast({
-        description: "Agente actualizado",
+        description: "Agente Actualizado",
       })
       router.refresh()
     } catch (error: any) {
@@ -176,25 +173,12 @@ export default function Settings({
   )
 
   return (
-    <ScrollArea className="relative flex max-w-lg flex-1 grow p-4">
+    <ScrollArea className="relative flex max-w-lg flex-1 grow px-4 py-2">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-4"
+          className="w-full space-y-4 px-2 pb-20"
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ej. Mi agente" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="description"
@@ -202,8 +186,8 @@ export default function Settings({
               <FormItem>
                 <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Ej. este agente es un experto en..."
+                  <Input
+                    placeholder="Por ejemplo, asistente para detalles de autos"
                     {...field}
                   />
                 </FormControl>
@@ -216,11 +200,11 @@ export default function Settings({
             name="prompt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Indicación</FormLabel>
+                <FormLabel>Instrucciones</FormLabel>
                 <FormControl>
                   <Textarea
-                    className="h-[200px]"
-                    placeholder="Ej. tú eres un asistente de IA que..."
+                    className="h-[400px]"
+                    placeholder="Por ejemplo, eres un asistente de inteligencia artificial que..."
                     {...field}
                   />
                 </FormControl>
@@ -232,17 +216,19 @@ export default function Settings({
             control={form.control}
             name="initialMessage"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mensaje de introducción</FormLabel>
+              <FormItem className="hidden">
+                <FormLabel>Mensaje Introductorio</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej. Hola, ¿cómo puedo ayudarte?" {...field} />
+                  <Input
+                    placeholder="Por ejemplo, Hola, ¿en qué puedo ayudarte?"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex flex-col space-y-2">
-            <FormLabel>Modelo de lenguaje</FormLabel>
             {agent.llms.length > 0 ? (
               <div className="flex justify-between space-x-2">
                 <FormField
@@ -279,10 +265,10 @@ export default function Settings({
                   control={form.control}
                   name="llmModel"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className="hidden flex-1">
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -291,7 +277,7 @@ export default function Settings({
                         </FormControl>
                         <SelectContent>
                           {siteConfig.llms
-                            .find((llm) => llm.id === llms)
+                            .find((llm) => llm.id === currLlmProvider)
                             ?.options.map((option) => (
                               <SelectItem
                                 key={option.value}
@@ -310,21 +296,33 @@ export default function Settings({
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
                 <p className="text-sm">¡Atención!</p>
-                <p className="text-muted-foreground text-sm">
-                  Necesitas agregar un LLM a este agente para que funcione. Esto se puede hacer a través del SDK o la API.
+                <p className="text-sm text-muted-foreground">
+                  Necesitas añadir un Modelo de Lenguaje a este agente para que
+                  funcione. Esto se puede hacer a través del SDK o la API.
                 </p>
               </div>
             )}
           </div>
+
           <FormField
             control={form.control}
             name="tools"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>APIs</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>APIs + Herramientas</FormLabel>
+                  <AddTool
+                    profile={profile}
+                    agent={agent}
+                    onSuccess={() => {
+                      window.location.reload()
+                    }}
+                  />
+                </div>
+
                 <FormControl>
                   <MultiSelect
-                    placeholder="Selecciona una API..."
+                    placeholder="Selecciona una herramienta..."
                     data={tools.map((tool: any) => ({
                       value: tool.id,
                       label: tool.name,
@@ -347,10 +345,20 @@ export default function Settings({
             name="datasources"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fuentes de datos</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Fuentes de datos</FormLabel>
+                  <AddDatasource
+                    profile={profile}
+                    agent={agent}
+                    llmProvider={currLlmProvider}
+                    onSuccess={() => {
+                      window.location.reload()
+                    }}
+                  />
+                </div>
                 <FormControl>
                   <MultiSelect
-                    placeholder="Selecciona una fuente de datos..."
+                    placeholder="Selecciona fuentes de datos..."
                     data={datasources.map((datasource: Datasource) => ({
                       value: datasource.id,
                       label: datasource.name,
@@ -370,7 +378,7 @@ export default function Settings({
               </FormItem>
             )}
           />
-          <div className="inset-x-0 bottom-0 flex py-4">
+          <div className="absolute inset-x-5 bottom-2 flex py-4">
             <Button
               type="submit"
               size="sm"
