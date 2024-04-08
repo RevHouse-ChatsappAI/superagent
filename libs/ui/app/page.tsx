@@ -111,7 +111,9 @@ export default function IndexPage() {
 
   return (
     <section className="container flex h-screen max-w-md flex-col justify-center space-y-8">
-      <Logo width={50} height={50} />
+      <div className="flex justify-center rounded-full bg-black p-1 dark:bg-transparent">
+        <Logo width={50} height={50} />
+      </div>
       <Alert>
         <AlertTitle>¡Atención!</AlertTitle>
         <AlertDescription>
@@ -121,7 +123,7 @@ export default function IndexPage() {
         </AlertDescription>
       </Alert>
       <div className="flex flex-col space-y-0">
-        <p className="text-lg font-bold">Iniciar sesión en Superagent</p>
+        <p className="text-lg font-bold">Iniciar sesión en ChatsAppAI Cloud</p>
         <p className="text-sm text-muted-foreground">
           Ingresa tu correo electrónico para recibir una contraseña de uso único
         </p>

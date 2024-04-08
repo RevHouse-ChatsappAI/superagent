@@ -48,11 +48,15 @@ export const NavBar = () => {
   }
   return (
     <nav className="flex items-center justify-end gap-10 px-6 py-3">
-      <NextLink href="/asdfsadf" className="flex items-center gap-2">
+      <NextLink href="/settings" className="flex items-center gap-2">
         <PiHeadphones className="text-xl" />
         <span>Centro de ayuda</span>
       </NextLink>
-      <NextLink href="/asdfsadf" className="flex items-center gap-2">
+      <NextLink
+        target="_blank"
+        href="https://app.chatsappai.com/"
+        className="flex items-center gap-2"
+      >
         <FiSend className="text-lg" />
         <span>CRM</span>
         <RiShareBoxFill className="text-lg" />
