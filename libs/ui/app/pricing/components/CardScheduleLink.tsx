@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 
-import { CalendarIcon } from "@/components/svg/CalendarIcon"
+// import { CalendarIcon } from "@/components/svg/CalendarIcon"
 
 export const CardScheduleLink = () => {
   return (
@@ -26,7 +26,7 @@ export const CardScheduleLink = () => {
             href="https://cal.com/sebastianrinaldi/chatsappai-basico"
             className="flex w-full items-center justify-start gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
           >
-            <CalendarIcon />
+            {/* <CalendarIcon /> */}
             <span>Demo Básico</span>
           </Link>
           <Link
@@ -34,7 +34,7 @@ export const CardScheduleLink = () => {
             href="https://cal.com/sebastianrinaldi/chatsappai-para-pymes"
             className="flex w-full items-center justify-start gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
           >
-            <CalendarIcon />
+            {/* <CalendarIcon /> */}
             <span>Demo para PyMEs</span>
           </Link>
           <Link
@@ -42,7 +42,7 @@ export const CardScheduleLink = () => {
             href="https://cal.com/sebastianrinaldi/chatsappai-para-pymes-con-alto-volumen"
             className="flex w-full items-center justify-start gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
           >
-            <CalendarIcon />
+            {/* <CalendarIcon /> */}
             <span>Demo para PyMEs con alto volumen</span>
           </Link>
           <Link
@@ -50,7 +50,7 @@ export const CardScheduleLink = () => {
             href="https://cal.com/sebastianrinaldi/chatsappai-personalizado"
             className="flex w-full items-center justify-start gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
           >
-            <CalendarIcon />
+            {/* <CalendarIcon /> */}
             <span>Demo Personalizado</span>
           </Link>
         </div>
