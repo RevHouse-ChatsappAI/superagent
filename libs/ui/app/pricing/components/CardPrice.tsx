@@ -1,7 +1,8 @@
 import React from "react"
 
 import { Profile } from "@/types/profile"
-import { ButtonPrice } from "@/components/ButtonPrice"
+
+// import { ButtonPrice } from "@/components/ButtonPrice"
 
 interface CardPriceProps {
   uiMode: string
@@ -67,13 +68,13 @@ export const CardPrice: React.FC<CardPriceProps> = ({
         </ul>
       </div>
       <div className="flex flex-col gap-2">
-        <ButtonPrice
+        {/* <ButtonPrice
           uiMode="hosted"
           nickname={status}
           profile={profile}
           priceId={priceId}
           title="Asignar Pago"
-        />
+        /> */}
       </div>
     </div>
   )
