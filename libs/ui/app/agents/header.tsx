@@ -25,11 +25,11 @@ export default function Header({ profile }: { profile: Profile }) {
   })
 
   return (
-    <div className="flex items-center justify-between border-b px-6 py-3 font-medium">
+    <div className="flex items-center justify-between px-6 py-3 font-medium">
       <span>Agents</span>
       <Button size="sm" className="space-x-2" onClick={createWorkflow}>
         {loading ? <Spinner /> : <TbPlus />}
-        <span>New agent</span>
+        <span>Nuevo agente</span>
       </Button>
     </div>
   )

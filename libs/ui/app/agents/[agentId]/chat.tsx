@@ -267,7 +267,7 @@ export default function Chat({
   }, [messages])
 
   return (
-    <div className="relative flex flex-1 flex-col overflow-hidden border-r">
+    <div className="relative flex flex-1 flex-col">
       <div className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-4">
         <p
           className={`${
@@ -278,7 +278,7 @@ export default function Chat({
         </p>
 
         <div className="absolute right-0 z-50 flex items-center space-x-2 px-6 py-4">
-          <div className="flex items-center space-x-2">
+          <div className="hidden items-center space-x-2">
             <span className="font-mono text-sm  text-muted-foreground">
               Streaming
             </span>

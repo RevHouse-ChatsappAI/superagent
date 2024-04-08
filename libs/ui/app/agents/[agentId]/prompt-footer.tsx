@@ -15,8 +15,8 @@ export function PromptFooter({
       {...props}
     >
       Powered by{" "}
-      <Link passHref href="https://www.superagent.sh">
-        <span className="text-foreground">Superagent.sh</span>
+      <Link passHref href="https://beta.chatsappai.com/">
+        <span className="text-foreground">ChatsAppAI Cloud</span>
       </Link>
     </p>
   )

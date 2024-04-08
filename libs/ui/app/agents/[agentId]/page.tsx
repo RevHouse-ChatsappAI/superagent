@@ -52,14 +52,14 @@ export default async function AgentPage({ params }: { params: any }) {
         <div className="container mt-20 flex max-w-lg flex-col space-y-4 rounded-lg border py-6 text-sm">
           <TbBrandOpenai fontSize="30px" />
           <div className="flex flex-col space-y-2">
-            <p className="font-semibold">OpenAI Assistants</p>
+            <p className="font-semibold">Asistentes de OpenAI</p>
             <p className="text-muted-foreground">
-              We currently don&apos;t support running OpenAI Assistants outside
-              of workflows. Please visit the{" "}
+              Actualmente no apoyamos la ejecución de Asistentes de OpenAI fuera
+              de los flujos de trabajo. Por favor, visita la{" "}
               <Link className="underline" href="/workflows">
-                workflows page
+                página de flujos de trabajo
               </Link>{" "}
-              to run this assistant.
+              para ejecutar este asistente.
             </p>
           </div>
         </div>

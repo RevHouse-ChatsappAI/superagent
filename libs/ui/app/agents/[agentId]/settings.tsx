@@ -154,7 +154,7 @@ export default function Settings({
       }
 
       toast({
-        description: "Agent updated",
+        description: "Agente Actualizado",
       })
       router.refresh()
     } catch (error: any) {
@@ -177,22 +177,17 @@ export default function Settings({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-4 pb-20"
+          className="w-full space-y-4 px-2 pb-20"
         >
-          <Avatar
-            accept=".jpg, .jpeg, .png"
-            onSelect={handleUpload}
-            imageUrl={avatar || agent.avatar || "/logo.png"}
-          />
           <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Descripción</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="E.g this agent is an expert at..."
+                    placeholder="Por ejemplo, asistente para detalles de autos"
                     {...field}
                   />
                 </FormControl>
@@ -205,11 +200,11 @@ export default function Settings({
             name="prompt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Prompt</FormLabel>
+                <FormLabel>Instrucciones</FormLabel>
                 <FormControl>
                   <Textarea
-                    className="h-[100px]"
-                    placeholder="E.g you are an ai assistant that..."
+                    className="h-[400px]"
+                    placeholder="Por ejemplo, eres un asistente de inteligencia artificial que..."
                     {...field}
                   />
                 </FormControl>
@@ -221,17 +216,19 @@ export default function Settings({
             control={form.control}
             name="initialMessage"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Intro message</FormLabel>
+              <FormItem className="hidden">
+                <FormLabel>Mensaje Introductorio</FormLabel>
                 <FormControl>
-                  <Input placeholder="E.g Hi, how can I help you?" {...field} />
+                  <Input
+                    placeholder="Por ejemplo, Hola, ¿en qué puedo ayudarte?"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex flex-col space-y-2">
-            <FormLabel>Language model</FormLabel>
             {agent.llms.length > 0 ? (
               <div className="flex justify-between space-x-2">
                 <FormField
@@ -245,7 +242,7 @@ export default function Settings({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a provider" />
+                            <SelectValue placeholder="Selecciona un proveedor" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -268,14 +265,14 @@ export default function Settings({
                   control={form.control}
                   name="llmModel"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className="hidden flex-1">
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a model" />
+                            <SelectValue placeholder="Selecciona un modelo" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -298,20 +295,14 @@ export default function Settings({
               </div>
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
-                <p className="text-sm">Heads up!</p>
+                <p className="text-sm">¡Atención!</p>
                 <p className="text-sm text-muted-foreground">
-                  You need to add an LLM to this agent for it work. This can be
-                  done through the SDK or API.
+                  Necesitas añadir un Modelo de Lenguaje a este agente para que
+                  funcione. Esto se puede hacer a través del SDK o la API.
                 </p>
               </div>
             )}
           </div>
-
-          <Separator className="!my-8 flex items-center justify-center">
-            <span className="text-sm text-muted-foreground">
-              Tools & Datasources
-            </span>
-          </Separator>
 
           <FormField
             control={form.control}
@@ -319,7 +310,7 @@ export default function Settings({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Tools</FormLabel>
+                  <FormLabel>APIs + Herramientas</FormLabel>
                   <AddTool
                     profile={profile}
                     agent={agent}
@@ -331,7 +322,7 @@ export default function Settings({
 
                 <FormControl>
                   <MultiSelect
-                    placeholder="Select tool..."
+                    placeholder="Selecciona una herramienta..."
                     data={tools.map((tool: any) => ({
                       value: tool.id,
                       label: tool.name,
@@ -355,7 +346,7 @@ export default function Settings({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Datasources</FormLabel>
+                  <FormLabel>Fuentes de datos</FormLabel>
                   <AddDatasource
                     profile={profile}
                     agent={agent}
@@ -367,7 +358,7 @@ export default function Settings({
                 </div>
                 <FormControl>
                   <MultiSelect
-                    placeholder="Select datasource..."
+                    placeholder="Selecciona fuentes de datos..."
                     data={datasources.map((datasource: Datasource) => ({
                       value: datasource.id,
                       label: datasource.name,
@@ -387,7 +378,7 @@ export default function Settings({
               </FormItem>
             )}
           />
-          <div className="absolute inset-x-0 bottom-2 left-5 right-5 flex py-4">
+          <div className="absolute inset-x-5 bottom-2 flex py-4">
             <Button
               type="submit"
               size="sm"
@@ -397,7 +388,7 @@ export default function Settings({
               {form.control._formState.isSubmitting ? (
                 <Spinner />
               ) : (
-                "Update agent"
+                "Actualizar agente"
               )}
             </Button>
           </div>
