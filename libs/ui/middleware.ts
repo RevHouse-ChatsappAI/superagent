@@ -64,5 +64,6 @@ export const config = {
     "/pricing",
     "/datasources",
     "/apis",
+    "/pricing",
   ],
 }

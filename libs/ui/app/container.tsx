@@ -33,12 +33,10 @@ export default function RootLayout({
       */}
         <NavBar />
         <div className="flex">
-          {session && !(isOnboarding || isPricing) && <Sidebar />}
+          {session && !isOnboarding && <Sidebar />}
           <div
             className={`${
-              session && !(isOnboarding || isPricing)
-                ? "ml-[255px]"
-                : "ml-[0px]"
+              session && !isOnboarding ? "ml-[255px]" : "ml-[0px]"
             } mt-2 flex-1 overflow-auto`}
           >
             {children}
