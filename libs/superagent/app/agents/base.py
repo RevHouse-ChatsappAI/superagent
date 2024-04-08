@@ -49,6 +49,10 @@ class AgentBase:
         raise NotImplementedError
 
     async def get_agent(self):
+        print(self.agent_id)
+        for attr, value in vars(self).items():
+            print(f"{attr}: {value}")
+
         if self.agent_config.type == AgentType.OPENAI_ASSISTANT:
             from app.agents.openai import OpenAiAssistant
 
