@@ -74,7 +74,7 @@ export default function Sidebar() {
               className={`flex items-center gap-1 rounded-lg transition-all ${
                 pathname.includes(navItem.href)
                   ? "bg-slate-900 text-white dark:bg-slate-900"
-                  : "hover:bg-slate-600/50"
+                  : " text-black hover:bg-slate-600/50 dark:text-white"
               }`}
             >
               <Button
