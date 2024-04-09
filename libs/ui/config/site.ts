@@ -1,6 +1,7 @@
 import { VectorDbProvider } from "@/models/models"
 import { CiCloudOn } from "react-icons/ci"
 import { IoDocumentOutline } from "react-icons/io5"
+import { LuHome } from "react-icons/lu"
 import {
   TbBrandDiscord,
   TbFileCode,
@@ -14,12 +15,17 @@ export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
   name: "ChatsappAI",
-  description: "The agent framework for large language models",
+  description: "El marco de agente para modelos de lenguaje grandes",
   paymentPlans: {
     hobby: process.env.NEXT_PUBLIC_STRIPE_HOBBY_PLAN!,
     pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN!,
   },
   mainNav: [
+    {
+      title: "Inicio",
+      href: "/home",
+      icon: LuHome,
+    },
     {
       title: "Agentes de IA",
       href: "/agents",

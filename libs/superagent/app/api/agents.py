@@ -197,17 +197,27 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     subscription = await prisma.subscription.find_first(
         where={"apiUserId": api_user.id}
     )
+    print("----------------------------")
+    print(subscription)
+    print("----------------------------")
+
     if subscription is None:
         raise HTTPException(status_code=404, detail="Subscription not found.")
     tier_credits = await prisma.tiercredit.find_unique(
         where={"tier": subscription.tier}
     )
+    print("----------------------------")
+    print(tier_credits)
+    print("----------------------------")
     if tier_credits is None:
         raise HTTPException(status_code=404, detail="Tier credits not found.")
     agent_limit = tier_credits.agentLimit
     agent_count_record = await prisma.count.find_unique(
         where={"apiUserId": api_user.id}
     )
+    print("----------------------------")
+    print(tier_credits)
+    print("----------------------------")
     if agent_count_record is None:
         await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
         agent_count = 0
@@ -384,9 +394,7 @@ async def update(
             assistant_id = None
 
             if agent.type == AgentType.OPENAI_ASSISTANT:
-                llm = await prisma.llm.find_first_or_raise(
-                    where={"provider": "AZURE_OPENAI"}
-                )
+                llm = await prisma.llm.find_first_or_raise(where={"provider": "OPENAI"})
                 assistant = OpenAIAssistantSdk(llm)
                 assistant_id = metadata.get("id")
                 if assistant_id:

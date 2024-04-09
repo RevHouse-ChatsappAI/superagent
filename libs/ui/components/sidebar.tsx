@@ -42,6 +42,8 @@ export default function Sidebar() {
 
     return true
   }, [])
+
+  console.log(showSidebar)
   const pathname = usePathname()
 
   const handleClose = () => {
@@ -50,7 +52,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`fixed inset-y-0 flex h-full w-[245px] flex-col justify-between space-y-6 rounded-r-2xl border border-gray-700 bg-muted py-4 align-top${
+      className={`fixed inset-y-0 flex h-full w-[245px] flex-col justify-between space-y-6 rounded-r-2xl border border-gray-700 bg-muted py-4 align-top ${
         !showSidebar && "hidden"
       }`}
     >
@@ -74,7 +76,7 @@ export default function Sidebar() {
               className={`flex items-center gap-1 rounded-lg transition-all ${
                 pathname.includes(navItem.href)
                   ? "bg-slate-900 text-white dark:bg-slate-900"
-                  : "hover:bg-slate-600/50"
+                  : " text-black hover:bg-slate-600/50 dark:text-white"
               }`}
             >
               <Button

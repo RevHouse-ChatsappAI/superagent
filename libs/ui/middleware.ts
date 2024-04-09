@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
     }
 
     if (profile.is_onboarded && req.nextUrl.pathname === "/onboarding") {
-      return NextResponse.redirect(new URL("/agents", req.url))
+      return NextResponse.redirect(new URL("/home", req.url))
     }
 
     try {
@@ -42,12 +42,12 @@ export async function middleware(req: NextRequest) {
     }
 
     if (user && req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(new URL(`/agents`, req.url))
+      return NextResponse.redirect(new URL(`/home`, req.url))
     }
   }
 
   if (!user && req.nextUrl.pathname !== "/") {
-    return NextResponse.redirect(new URL("/", req.url))
+    return NextResponse.redirect(new URL("/home", req.url))
   }
 
   return res
@@ -57,6 +57,8 @@ export const config = {
   matcher: [
     "/",
     "/logs/:path*",
+    "/agents/:path*",
+    "/home",
     "/settings/:path*",
     "/integrations/:path*",
     "/workflows/:path*",
