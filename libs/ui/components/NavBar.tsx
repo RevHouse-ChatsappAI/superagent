@@ -2,13 +2,18 @@
 
 import React, { useEffect, useState } from "react"
 import NextLink from "next/link"
+import { usePathname } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTheme } from "next-themes"
 import { useForm } from "react-hook-form"
 import { FiSend } from "react-icons/fi"
 import { PiHeadphones } from "react-icons/pi"
 import { RiShareBoxFill } from "react-icons/ri"
+import { useAsync } from "react-use"
 import { z } from "zod"
+
+import { Profile } from "@/types/profile"
+import { getSupabase } from "@/lib/supabase"
 
 import { DarkMode } from "./icons/DarkMode"
 import { toast } from "./ui/use-toast"
@@ -20,8 +25,40 @@ const appearanceFormSchema = z.object({
 })
 
 type ThemeFormValues = z.infer<typeof appearanceFormSchema>
+const supabase = getSupabase()
 
 export const NavBar = () => {
+  const [profile, setProfile] = useState<Profile | null>()
+
+  const [closeModal, setCloseModal] = useState<Boolean>(false)
+
+  const { value: showSidebar } = useAsync(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      return false
+    }
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user?.id)
+      .single()
+    if (!profile.is_onboarded) {
+      return false
+    }
+    setProfile(profile)
+
+    return true
+  }, [])
+
+  console.log(showSidebar)
+  const pathname = usePathname()
+
+  const handleClose = () => {
+    setCloseModal(true)
+  }
+
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const form = useForm<ThemeFormValues>({
@@ -47,7 +84,11 @@ export const NavBar = () => {
     return null
   }
   return (
-    <nav className="flex items-center justify-end gap-10 px-6 py-3">
+    <nav
+      className={`flex items-center justify-end gap-10 px-6 py-3 ${
+        !showSidebar && "hidden"
+      }`}
+    >
       <NextLink href="/settings" className="flex items-center gap-2">
         <PiHeadphones className="text-xl" />
         <span>Centro de ayuda</span>
