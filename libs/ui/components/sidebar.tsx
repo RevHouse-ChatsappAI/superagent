@@ -52,7 +52,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`fixed inset-y-0 flex h-full w-[245px] flex-col justify-between space-y-6 rounded-r-2xl border border-gray-700 bg-muted py-4 align-top ${
+      className={`scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-transparent hover:scrollbar-thumb-gray-400 flex h-screen w-[245px] flex-col justify-between space-y-6 overflow-auto rounded-r-2xl border border-gray-700 bg-muted py-4 align-top ${
         !showSidebar && "hidden"
       }`}
     >
