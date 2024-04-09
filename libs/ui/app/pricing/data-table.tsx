@@ -91,7 +91,7 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
         toast({
           description: response?.message,
         })
-        window.location.href = "/agents"
+        window.location.href = "/"
         return
       }
 
@@ -99,7 +99,7 @@ export const DataTable = ({ profile }: { profile: Profile }) => {
         toast({
           description: response?.message,
         })
-        window.location.href = "/agents"
+        window.location.href = "/"
         return
       }
     } catch (error) {

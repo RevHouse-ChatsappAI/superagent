@@ -18,8 +18,9 @@ export default function Header({ profile }: { profile: Profile }) {
       name: "My Agent",
       description: "",
       llmProvider: "AZURE_OPENAI",
+      llmModel: "GPT_3_5_TURBO_16K_0613",
       isActive: true,
-      prompt: "You are a helpful AI Assistant",
+      prompt: "Eres un asistente de IA útil",
     })
     router.push(`/agents/${agent.id}`)
   })
