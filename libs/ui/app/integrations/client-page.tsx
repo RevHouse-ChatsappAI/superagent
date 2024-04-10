@@ -42,7 +42,7 @@ export default function IntegrationsClientPage({
       </TabsContent>
       <TabsContent value="datasources" className="h-full text-sm"></TabsContent>
       <TabsContent value="tools" className="h-full text-sm"></TabsContent> */}
-        <TabsContent value="platform" className="h-full text-sm">
+        <TabsContent value="platform" className="h-full px-6 text-sm">
           <PlaltformExtend profile={profile} />
         </TabsContent>
       </Tabs>
