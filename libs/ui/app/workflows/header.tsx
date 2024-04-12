@@ -27,7 +27,7 @@ export default function Header({ profile }: { profile: Profile }) {
       <span>Workflows</span>
       <Button size="sm" className="space-x-2" onClick={createWorkflow}>
         {loading ? <Spinner /> : <TbPlus />}
-        <span>New workflow</span>
+        <span>Nuevo WorkFlow</span>
       </Button>
     </div>
   )

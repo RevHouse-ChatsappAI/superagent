@@ -55,7 +55,7 @@ export default function Header({
       <div className="flex flex-col">
         <div className="flex space-x-2 py-2 text-sm text-muted-foreground">
           <Link passHref href="/agents">
-            <span>Agents</span>
+            <span>Volver a los agentes</span>
           </Link>
           <span>/</span>
           <Badge variant="secondary">

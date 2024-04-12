@@ -184,7 +184,7 @@ function AddDatasource({
           ) : (
             <div className="flex items-center space-x-2">
               <TbPlus />
-              <span>New</span>
+              <span>Agregar Fuente de Datos</span>
             </div>
           )}
         </Button>
