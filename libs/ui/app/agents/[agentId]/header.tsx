@@ -39,7 +39,7 @@ export default function Header({
   const onAgentDelete = async () => {
     await api.deleteAgentById(agent.id)
     toast({
-      description: `Agent with ID: ${agent.id} deleted!`,
+      description: `¡Agente con ID: ${agent.id} eliminado!`,
     })
     router.refresh()
     router.push("/agents")
@@ -53,6 +53,19 @@ export default function Header({
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <div className="flex flex-col">
+        <div className="flex space-x-2 py-2 text-sm text-muted-foreground">
+          <Link passHref href="/agents">
+            <span>Agents</span>
+          </Link>
+          <span>/</span>
+          <Badge variant="secondary">
+            <div className="flex items-center space-x-1">
+              <span className="font-mono font-normal text-muted-foreground">
+                {agent?.id}
+              </span>
+            </div>
+          </Badge>
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col space-y-2">
             {useEditableField(agent.name, onUpdateAgentName)}
@@ -67,20 +80,20 @@ export default function Header({
           onClick={() => setDeleteModalOpen(true)}
         >
           <TbTrash size={20} />
-          <span>Delete</span>
+          <span>Eliminar</span>
         </Button>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              Esta acción no se puede deshacer. Esto eliminará permanentemente
+              su cuenta y eliminará sus datos de nuestros servidores.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={onAgentDelete}>
-              Yes, delete!
+              ¡Sí, borrar!
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

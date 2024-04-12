@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTheme } from "next-themes"
 import { useForm } from "react-hook-form"
 import { FiSend } from "react-icons/fi"
+import { IoMdSunny } from "react-icons/io"
 import { PiHeadphones } from "react-icons/pi"
 import { RiShareBoxFill } from "react-icons/ri"
 import { useAsync } from "react-use"
@@ -85,7 +86,7 @@ export const NavBar = () => {
   }
   return (
     <nav
-      className={`flex items-center justify-end gap-10 px-6 py-3 ${
+      className={`flex h-[60px] items-center justify-end gap-10 border-b px-6 py-3 ${
         !showSidebar && "hidden"
       }`}
     >
@@ -107,9 +108,15 @@ export const NavBar = () => {
         onClick={() =>
           handleToggle({ theme: theme == "light" ? "dark" : "light" })
         }
-        className="rounded-lg bg-slate-900 p-2 transition-all hover:bg-slate-800 dark:bg-transparent dark:hover:bg-slate-100/30"
+        className={`rounded-lg p-2 transition-all hover:bg-slate-800 ${
+          theme === "light" ? "bg-slate-900" : "bg-slate-900"
+        }`}
       >
-        <DarkMode />
+        {theme === "light" ? (
+          <DarkMode />
+        ) : (
+          <IoMdSunny className="text-xl text-yellow-500" />
+        )}
       </button>
     </nav>
   )
