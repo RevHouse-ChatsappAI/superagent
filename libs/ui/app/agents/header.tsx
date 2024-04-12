@@ -27,7 +27,7 @@ export default function Header({ profile }: { profile: Profile }) {
 
   return (
     <div className="flex items-center justify-between px-6 py-3 font-medium">
-      <span>Agents</span>
+      <span>Agentes</span>
       <Button size="sm" className="space-x-2" onClick={createWorkflow}>
         {loading ? <Spinner /> : <TbPlus />}
         <span>Nuevo agente</span>

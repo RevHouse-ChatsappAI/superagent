@@ -15,7 +15,7 @@ export default function RootLayout({
   session,
 }: RootLayoutProps) {
   return (
-    <section className="flex">
+    <section className="flex h-screen">
       {/*
           {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && (
             <BillingModal profile={profile} />
@@ -24,7 +24,12 @@ export default function RootLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <NavBar />
-        <div className={`mt-2 flex-1 overflow-auto`}>{children}</div>
+        <div
+          style={{ height: "calc(100vh - 80px)" }}
+          className="mt-2 overflow-auto"
+        >
+          {children}
+        </div>
       </div>
     </section>
   )

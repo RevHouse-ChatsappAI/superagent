@@ -126,7 +126,7 @@ function AddTool({
           ) : (
             <div className="flex items-center space-x-2">
               <TbPlus />
-              <span>New</span>
+              <span>Agregar APIs</span>
             </div>
           )}
         </Button>

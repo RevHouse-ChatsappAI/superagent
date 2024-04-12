@@ -55,7 +55,7 @@ export default function PromptFrom({
           )}
         >
           <RxPlus />
-          <span className="sr-only">New Chat</span>
+          <span className="sr-only">Nuevo Chat</span>
         </button>
         <Textarea
           ref={inputRef}
@@ -78,7 +78,7 @@ export default function PromptFrom({
               )}
             >
               <RxStop size="18px" />
-              <span className="sr-only">Send message</span>
+              <span className="sr-only">Enviar mensaje</span>
             </Button>
           ) : (
             <Button
@@ -89,7 +89,7 @@ export default function PromptFrom({
               )}
             >
               <RxArrowUp size="18px" />
-              <span className="sr-only">Send message</span>
+              <span className="sr-only">Enviar mensaje</span>
             </Button>
           )}
         </div>
