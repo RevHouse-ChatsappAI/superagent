@@ -394,7 +394,9 @@ async def update(
             assistant_id = None
 
             if agent.type == AgentType.OPENAI_ASSISTANT:
-                llm = await prisma.llm.find_first_or_raise(where={"provider": "OPENAI"})
+                llm = await prisma.llm.find_first_or_raise(
+                    where={"provider": "AZURE_OPENAI"}
+                )
                 assistant = OpenAIAssistantSdk(llm)
                 assistant_id = metadata.get("id")
                 if assistant_id:
