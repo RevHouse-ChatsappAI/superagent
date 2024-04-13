@@ -10,11 +10,10 @@ SUBSCRIPTION = getenv("SUBSCRIPTION")
 async def enviar_respuesta_chatwoot(
     conversation_id, respuesta, token, account_id, es_respuesta_de_bot=True
 ):
-    print(respuesta)
     str_account_id = str(account_id)
     str_conversation_id = str(conversation_id)
     str_response = str(respuesta)
-    print(str_response)
+
     url = (
         f"{CHATWOOT_API_URL}{str_account_id}/conversations/"
         f"{str_conversation_id}/messages"
@@ -27,13 +26,12 @@ async def enviar_respuesta_chatwoot(
     }
 
     data = {"content": str_response, "message_type": "outgoing", "private": False}
-    print(data)
+
     if not es_respuesta_de_bot:
         data["sender"] = {"name": "John", "available_name": "John"}
 
     async with ClientSession() as session:
         async with session.post(url, headers=headers, json=data) as response:
-            print("emtre")
             if response.status != 200:
                 response_body = await response.text()
                 error_message = (
@@ -47,9 +45,6 @@ async def enviar_respuesta_chatwoot(
 async def chatwoot_human_handoff(conversation_id, token, account_id):
     str_account_id = str(account_id)
     str_conversation_id = str(conversation_id)
-    print(str_conversation_id)
-    print(str_account_id)
-    print(token)
 
     url = (
         f"{CHATWOOT_API_URL}{str_account_id}/conversations/"
