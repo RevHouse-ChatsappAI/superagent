@@ -133,7 +133,7 @@ export class ApiChatwootPlatform {
         headers: {
           ...options.headers,
           "Content-Type": "application/json",
-          api_access_token: `${process.env.KEY_CHATWOOT_PLATFORM}`,
+          api_access_token: `${process.env.NEXT_PUBLIC_KEY_CHATWOOT_PLATFORM}`,
           "Ocp-Apim-Subscription-Key": `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`,
         },
       }
