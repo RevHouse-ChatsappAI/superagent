@@ -10,7 +10,6 @@ def get_embeddings_model_provider(embeddings_model_provider: EmbeddingsModelProv
     print(embeddings_model_provider)
     # print("---------------------------------------------")
     # print(embeddings_model_provider)
-    # print("soy yooooooo")
     # print("---------------------------------------------")
 
     # if embeddings_model_provider == EmbeddingsModelProvider.AZURE_OPENAI:
