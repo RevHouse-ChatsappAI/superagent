@@ -137,11 +137,13 @@ class AgentProcessor:
 
     async def process_assistants(self, old_config, new_config):
         validator = SAMLValidator(new_config, self.api_user)
+
         await validator.validate()
 
         old_assistants = old_config.get("workflows", [])
         new_assistants = new_config.get("workflows", [])
         workflow_step_order = 0
+
         for old_assistant_obj, new_assistant_obj in zip_longest(
             old_assistants, new_assistants, fillvalue={}
         ):
