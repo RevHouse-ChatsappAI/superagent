@@ -80,7 +80,6 @@ export default function Header({
           onClick={() => setDeleteModalOpen(true)}
         >
           <TbTrash size={20} />
-          <span>Eliminar</span>
         </Button>
         <AlertDialogContent>
           <AlertDialogHeader>

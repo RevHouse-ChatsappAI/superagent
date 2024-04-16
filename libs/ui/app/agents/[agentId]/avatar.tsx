@@ -35,7 +35,6 @@ export default function Avatar({ accept, onSelect, imageUrl }: AvatarProps) {
       const {
         data: { publicUrl },
       } = supabase.storage.from("superagent").getPublicUrl(path)
-      console.log(publicUrl)
       await onSelect(publicUrl)
       setIsLoading(false)
     }

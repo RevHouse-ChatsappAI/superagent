@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { LLMProvider } from "@/models/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { LuSave } from "react-icons/lu"
 import * as z from "zod"
 
 import { Agent } from "@/types/agent"
@@ -31,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
@@ -39,7 +39,6 @@ import { useToast } from "@/components/ui/use-toast"
 
 import AddDatasource from "./add-datasource"
 import AddTool from "./add-tool"
-import Avatar from "./avatar"
 
 const formSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
@@ -78,7 +77,6 @@ export default function Settings({
   tools,
   profile,
 }: SettingsProps) {
-  console.log("agent", agent)
   const api = new Api(profile.api_key)
   const router = useRouter()
   const { toast } = useToast()
@@ -147,10 +145,10 @@ export default function Settings({
           (llm) => llm.provider === currLlmProvider
         )
 
-        if (configuredLLM) {
-          await api.deleteAgentLLM(agent.id, agent.llms?.[0]?.llm.id)
-          await api.createAgentLLM(agent.id, configuredLLM.id)
-        }
+        // if (configuredLLM) {
+        //   await api.deleteAgentLLM(agent.id, agent.llms?.[0]?.llm.id)
+        //   await api.createAgentLLM(agent.id, configuredLLM.id)
+        // }
       }
 
       toast({
@@ -229,22 +227,23 @@ export default function Settings({
             )}
           />
           <div className="flex flex-col space-y-2">
+            <h2 className="text-xs font-medium">Azure Openai - Por defecto</h2>
             {agent.llms.length > 0 ? (
-              <div className="flex justify-between space-x-2">
+              <div className="flex flex-col">
                 <FormField
                   control={form.control}
                   name="llms"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className="w-full flex-1">
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl>
+                        {/* <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecciona un proveedor" />
                           </SelectTrigger>
-                        </FormControl>
+                        </FormControl> */}
                         <SelectContent>
                           {siteConfig.llms
                             .filter(({ id }) =>
@@ -265,7 +264,7 @@ export default function Settings({
                   control={form.control}
                   name="llmModel"
                   render={({ field }) => (
-                    <FormItem className="hidden flex-1">
+                    <FormItem className="w-full flex-1">
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value || ""}
@@ -277,7 +276,7 @@ export default function Settings({
                         </FormControl>
                         <SelectContent>
                           {siteConfig.llms
-                            .find((llm) => llm.id === currLlmProvider)
+                            .find((llm) => currLlmProvider)
                             ?.options.map((option) => (
                               <SelectItem
                                 key={option.value}
@@ -378,7 +377,7 @@ export default function Settings({
               </FormItem>
             )}
           />
-          <div className="absolute inset-x-5 bottom-2 flex py-4">
+          <div className="absolute bottom-2 right-5 flex py-4">
             <Button
               type="submit"
               size="sm"
@@ -388,7 +387,10 @@ export default function Settings({
               {form.control._formState.isSubmitting ? (
                 <Spinner />
               ) : (
-                "Actualizar agente"
+                <div className="flex items-center gap-2">
+                  <LuSave />
+                  <p className="text-xs font-medium">Gurdar cambios</p>
+                </div>
               )}
             </Button>
           </div>
