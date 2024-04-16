@@ -67,16 +67,6 @@ const Header = ({ profile, workflow }: HeaderProps) => {
           </span>
         </div>
         <div className="flex space-x-2">
-          <Link
-            passHref
-            target="_blank"
-            href="https://docs.superagent.sh/api-reference/api-reference/workflow/invoke"
-          >
-            <Button className="space-x-2" size="sm" variant="outline">
-              <TbCode size={20} />
-              <span>API</span>
-            </Button>
-          </Link>
           <AlertDialog open={open} onOpenChange={setOpen}>
             <Button
               className="space-x-2"
@@ -89,10 +79,13 @@ const Header = ({ profile, workflow }: HeaderProps) => {
             </Button>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  ¿Estás completamente seguro?
+                </AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  Esta acción no se puede deshacer. Esto eliminará
+                  permanentemente tu cuenta y eliminará tus datos de nuestros
+                  servidores.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

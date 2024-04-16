@@ -24,10 +24,10 @@ export default function Header({ profile }: { profile: Profile }) {
 
   return (
     <div className="font-mediu flex items-center justify-between border-b px-6 py-3">
-      <span>Workflows</span>
+      <span>Flujo de trabajo</span>
       <Button size="sm" className="space-x-2" onClick={createWorkflow}>
         {loading ? <Spinner /> : <TbPlus />}
-        <span>Nuevo WorkFlow</span>
+        <span>Nuevo flujo de trabajo</span>
       </Button>
     </div>
   )

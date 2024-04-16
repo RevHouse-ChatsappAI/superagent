@@ -1,5 +1,5 @@
 import { cookies } from "next/headers"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 
 import { Api } from "@/lib/api"
 
@@ -10,7 +10,7 @@ export default async function Assistant({
 }: {
   params: { id: string }
 }) {
-  const supabase = createRouteHandlerClient({ cookies })
+  const supabase = createServerComponentClient({ cookies })
   const { id } = params
   const {
     data: { user },
@@ -28,9 +28,9 @@ export default async function Assistant({
     <WorkflowDetail workflow={workflow} profile={profile} llms={llms} />
   ) : (
     <div className="flex flex-1 flex-col items-center justify-center">
-      <p className="text-sm font-medium">No assistant selected</p>
+      <p className="text-sm font-medium">Asistente no seleccionado</p>
       <p className="text-sm">
-        View details about an assistant by navigating the list to the left
+        Ver detalles sobre un asistente navegando por la lista a la izquierda
       </p>
     </div>
   )
