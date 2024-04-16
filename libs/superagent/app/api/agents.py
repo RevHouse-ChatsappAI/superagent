@@ -194,58 +194,43 @@ class OpenAIAssistantSdk(Assistant):
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     """Endpoint for creating an agent"""
     # TODO: Fixing
-    subscription = await prisma.subscription.find_first(
-        where={"apiUserId": api_user.id}
-    )
-    print("----------------------------")
-    print(subscription)
-    print("----------------------------")
+    # subscription = await prisma.subscription.find_first(
+    #     where={"apiUserId": api_user.id}
+    # )
 
-    if subscription is None:
-        raise HTTPException(status_code=404, detail="Subscription not found.")
-    tier_credits = await prisma.tiercredit.find_unique(
-        where={"tier": subscription.tier}
-    )
-    print("----------------------------")
-    print(tier_credits)
-    print("----------------------------")
-    if tier_credits is None:
-        raise HTTPException(status_code=404, detail="Tier credits not found.")
-    agent_limit = tier_credits.agentLimit
-    agent_count_record = await prisma.count.find_unique(
-        where={"apiUserId": api_user.id}
-    )
-    print("----------------------------")
-    print(tier_credits)
-    print("----------------------------")
-    if agent_count_record is None:
-        await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
-        agent_count = 0
-    else:
-        agent_count = agent_count_record.agentCount
-    if agent_count >= agent_limit:
-        return {"success": False, "message": "Los agentes llegaron a su limite."}
-    await prisma.count.update(
-        where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
-    )
+    # if subscription is None:
+    #     raise HTTPException(status_code=404, detail="Subscription not found.")
+    # tier_credits = await prisma.tiercredit.find_unique(
+    #     where={"tier": subscription.tier}
+    # )
 
-    print(body)
-    print("------------------------------------- body")
+    # if tier_credits is None:
+    #     raise HTTPException(status_code=404, detail="Tier credits not found.")
+    # agent_limit = tier_credits.agentLimit
+    # agent_count_record = await prisma.count.find_unique(
+    #     where={"apiUserId": api_user.id}
+    # )
+
+    # if agent_count_record is None:
+    #     await prisma.count.create({"apiUserId": api_user.id, "agentCount": 0})
+    #     agent_count = 0
+    # else:
+    #     agent_count = agent_count_record.agentCount
+    # if agent_count >= agent_limit:
+    #     return {"success": False, "message": "Los agentes llegaron a su limite."}
+    # await prisma.count.update(
+    #     where={"apiUserId": api_user.id}, data={"agentCount": agent_count + 1}
+    # )
 
     user_id = api_user.id
-    llm_provider = body.llmProvider
+    llm_provider = "AZURE_OPENAI"
     llm_model = body.llmModel
     metadata = json.dumps(body.metadata) or "{}"
 
     if SEGMENT_WRITE_KEY:
         analytics.track(user_id, "Created Agent", {**body.dict()})
 
-    print(llm_provider)
-    print("-----------------------------")
-
     llm = await get_llm_or_raise(LLMPayload(provider=llm_provider, model=llm_model))
-
-    print(llm)
 
     if body.type:
         if body.type == AgentType.OPENAI_ASSISTANT:
@@ -366,7 +351,9 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
 
         metadata = deleted.metadata
         if metadata and metadata.get("id"):
-            llm = await prisma.llm.find_first_or_raise(where={"provider": "OPENAI"})
+            llm = await prisma.llm.find_first_or_raise(
+                where={"provider": "AZURE_OPENAI"}
+            )
             oai = AsyncOpenAI(api_key=llm.apiKey)
             await oai.beta.assistants.delete(metadata.get("id"))
         return {"success": True, "data": deleted}
@@ -424,9 +411,9 @@ async def update(
         if old_llm_model and new_llm_model and old_llm_model != new_llm_model:
             from app.utils.llm import get_llm_provider
 
-            new_provider = get_llm_provider(new_llm_model)
+            get_llm_provider(new_llm_model)
             new_llm = await prisma.llm.find_first_or_raise(
-                where={"provider": new_provider}
+                where={"provider": "AZURE_OPENAI"}
             )
             await prisma.agentllm.update_many(
                 where={
@@ -532,16 +519,12 @@ async def invoke(
             "tools": {"include": {"tool": True}},
         },
     )
-    print(agent_config)
 
     model = LLM_MAPPING.get(agent_config.llmModel)
-    print(model)
 
     metadata = agent_config.metadata or {}
     if not model and metadata.get("model"):
         model = metadata.get("model")
-
-    print(metadata)
 
     def track_agent_invocation(result):
         intermediate_steps_to_obj = [
