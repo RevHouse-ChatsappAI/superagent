@@ -44,7 +44,6 @@ const DeleteButton = ({ profile, api_key }: ActionButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const onDeleteApiKey = async () => {
-    console.log("Deleting API key", api_key.id)
     await api.deleteApiKey(api_key.id)
 
     router.refresh()
