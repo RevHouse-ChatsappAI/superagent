@@ -263,7 +263,7 @@ export class LLM {
 
   constructor(obj: any) {
     this.id = obj.id || ""
-    this.provider = obj.provider || LLMProvider.OPENAI
+    this.provider = obj.provider || LLMProvider.AZURE_OPENAI
     this.apiKey = obj.apiKey || ""
     this.options = obj.options || null
     this.agents = obj.agents || []

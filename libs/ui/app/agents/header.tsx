@@ -15,10 +15,10 @@ export default function Header({ profile }: { profile: Profile }) {
   const router = useRouter()
   const [{ loading }, createWorkflow] = useAsyncFn(async () => {
     const { data: agent } = await api.createAgent({
-      name: "My Agent",
+      name: "Mi agente",
       description: "",
       llmProvider: "AZURE_OPENAI",
-      llmModel: "GPT_3_5_TURBO_16K_0613",
+      llmModel: "GPT_4_1106_PREVIEW",
       isActive: true,
       prompt: "Eres un asistente de IA útil",
     })

@@ -98,8 +98,10 @@ class SAMLValidator:
                 )
 
             llm_provider = await prisma.llm.find_first(
-                where={"provider": provider, "apiUserId": self.api_user.id}
+                where={"provider": "AZURE_OPENAI"}
             )
+
+            print(llm_provider)
 
             if not llm_provider:
                 raise UnknownLLMProvider(

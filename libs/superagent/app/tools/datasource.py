@@ -92,6 +92,7 @@ class DatasourceTool(BaseTool):
         question: str,
     ) -> str:
         """Use the tool asynchronously."""
+
         vector_store = VectorStoreMain(
             options=self.metadata["options"],
             vector_db_provider=self.metadata["provider"],

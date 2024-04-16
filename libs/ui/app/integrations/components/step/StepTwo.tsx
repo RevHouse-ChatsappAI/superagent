@@ -49,7 +49,7 @@ const StepTwo = ({
           user_id: userProfileChatwoot?.id?.toString() || "",
           role: "administrator",
         }
-        console.log(adminUserDetails)
+
         await apiChatwoot.createAccountUser(
           accountResponse.id,
           adminUserDetails

@@ -1,14 +1,15 @@
 from decouple import config
 from langchain_openai import OpenAIEmbeddings
 
+from app.models.request import EmbeddingsModelProvider
 
 # from app.utils.helpers import get_first_non_null
 
 
-def get_embeddings_model_provider():
+def get_embeddings_model_provider(embeddings_model_provider: EmbeddingsModelProvider):
+    print(embeddings_model_provider)
     # print("---------------------------------------------")
     # print(embeddings_model_provider)
-    # print("soy yooooooo")
     # print("---------------------------------------------")
 
     # if embeddings_model_provider == EmbeddingsModelProvider.AZURE_OPENAI:

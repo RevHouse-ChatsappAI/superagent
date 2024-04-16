@@ -31,8 +31,6 @@ class ApiChatwootPlatformExtend:
             return response.json()
 
     async def create_user(self, user_details: dict):
-        print("entreeeee")
-        print(self.base_url)
         return await self.fetch_from_api("users", method="POST", data=user_details)
 
     async def create_agent_bot(self, agent_bot_details: dict):

@@ -64,11 +64,12 @@ async def create(
         )
 
         vector_db = None
-
+        print(body.vectorDbId)
         if body.vectorDbId is not None:
             vector_db = await prisma.vectordb.find_first(
                 where={"id": body.vectorDbId, "apiUserId": api_user.id}
             )
+            print(body.vector_db)
 
             if not vector_db:
                 raise HTTPException(
@@ -94,13 +95,17 @@ async def create(
             vector_db_provider: Optional[str],
             embeddings_model_provider: EmbeddingsModelProvider,
         ):
+            print("muñeca---------------------")
+            print(embeddings_model_provider)
+            print(vector_db_provider)
+            print("embeding---------------------")
             try:
                 await vectorize_datasource(
                     datasource=datasource,
                     # vector db configurations (api key, index name etc.)
                     options=options,
                     vector_db_provider=vector_db_provider,
-                    embeddings_model_provider=embeddings_model_provider,
+                    embeddings_model_provider=EmbeddingsModelProvider.OPENAI,
                 )
             except Exception as flow_exception:
                 await prisma.datasource.update(
@@ -109,6 +114,10 @@ async def create(
                 )
                 handle_exception(flow_exception)
 
+        print("embeding---------------------")
+        print(body.embeddingsModelProvider)
+        print("embeding---------------------")
+
         asyncio.create_task(
             run_vectorize_flow(
                 datasource=data,
@@ -116,7 +125,7 @@ async def create(
                 vector_db_provider=(
                     vector_db.provider if vector_db is not None else None
                 ),
-                embeddings_model_provider=body.embeddingsModelProvider,
+                embeddings_model_provider=EmbeddingsModelProvider.OPENAI,
             )
         )
         return {"success": True, "data": data}
@@ -205,15 +214,6 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
         datasource = await prisma.datasource.find_first(
             where={"id": datasource_id}, include={"vectorDb": True}
         )
-
-        datasource_count = await prisma.count.find_unique(
-            where={"apiUserId": api_user.id}
-        )
-        if datasource_count and datasource_count.datasourceCount > 0:
-            await prisma.count.update(
-                where={"apiUserId": api_user.id},
-                data={"datasourceCount": datasource_count.datasourceCount - 1},
-            )
 
         async def run_delete_datasource_flow(
             datasource_id: str,

@@ -40,14 +40,11 @@ export const Platform = ({ profile }: { profile: any }) => {
   })
 
   async function onSubmit(values: any) {
-    console.log(values)
     const payload = {
       ...values,
       options:
         Object.keys(values.options).length === 0 ? undefined : values.options,
     }
-
-    console.log(payload)
 
     form.reset()
     router.refresh()

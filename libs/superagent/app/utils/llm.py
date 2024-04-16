@@ -15,7 +15,7 @@ LLM_REVERSE_MAPPING = {v: k for k, v in LLM_MAPPING.items()}
 
 
 LLM_PROVIDER_MAPPING = {
-    "OPENAI": [
+    "AZURE_OPENAI": [
         "GPT_3_5_TURBO_16K_0613",
         "GPT_3_5_TURBO_0613",
         "GPT_3_5_TURBO_1106",

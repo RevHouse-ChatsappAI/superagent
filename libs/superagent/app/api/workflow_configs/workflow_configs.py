@@ -32,7 +32,10 @@ analytics.write_key = SEGMENT_WRITE_KEY
 
 @router.get("/workflows/config/schema")
 async def get_schema():
-    return WorkflowConfigModel.schema()
+    print("Getting workflow config schema")
+    schema = WorkflowConfigModel.schema()
+    print(f"Schema: {schema}")
+    return schema
 
 
 @router.post("/workflows/{workflow_id}/config")
@@ -42,12 +45,15 @@ async def add_config(
     api_user=Depends(get_current_api_user),
 ):
     try:
+        print(f"Adding config for workflow ID: {workflow_id}")
         workflow_config = await prisma.workflowconfig.find_first(
             where={"workflowId": workflow_id}, order={"createdAt": "desc"}
         )
         try:
             parsed_yaml = yaml.safe_load(yaml_content)
+            print(f"Parsed YAML content: {parsed_yaml}")
         except yaml.YAMLError as e:
+            print(f"Invalid YAML format: {str(e)}")
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={"error": {"message": f"Invalid YAML format: {str(e)}"}},
@@ -55,9 +61,11 @@ async def add_config(
 
         try:
             new_config = WorkflowConfigModel(**parsed_yaml).dict()
+            print(f"New config: {new_config}")
         except ValidationError as e:
             logger.exception(e)
             errors = e.errors()
+            print(f"Validation error: {errors[0]['msg']}")
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={
@@ -68,9 +76,12 @@ async def add_config(
             )
 
         new_config_str = json.dumps(new_config)
+        print(f"New config string: {new_config_str}")
 
         new_config = json.loads(new_config_str)
+        print(f"New config despues de todo: {new_config}")
         old_config = {} if not workflow_config else workflow_config.config
+        print(f"Vieja configuración: {old_config}")
 
         agent_manager = ApiAgentManager(workflow_id, api_user)
         api_manager = ApiManager(api_user, agent_manager)
@@ -85,6 +96,7 @@ async def add_config(
             RepeatedNameError,
         ) as e:
             logger.exception(e)
+            print(f"Error during processing assistants: {str(e)}")
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={
@@ -101,10 +113,11 @@ async def add_config(
                 "apiUserId": api_user.id,
             }
         )
-
+        print(f"Config created: {config}")
         return {"success": True, "data": config}
     except Exception as e:
         logger.exception(e)
+        print("Something went wrong")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={

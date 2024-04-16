@@ -156,9 +156,13 @@ async def update_platformkey(
 @router.post("/webhook/{agent_id}/chatwoot")
 async def chatwoot_webhook(agent_id: str, request: Request):
     body = await request.json()
-    print(agent_id)
 
     message_status = body.get("conversation", {}).get("status")
+    user_id = body.get("sender", {}).get("account", {}).get("id")
+    account_id = body.get("account", {}).get("id")
+    content = body.get("content")
+    conversation_id = body.get("conversation", {}).get("id")
+    message_type = body.get("message_type")
 
     if message_status != "pending":
         return {
@@ -166,12 +170,6 @@ async def chatwoot_webhook(agent_id: str, request: Request):
             "agent_id": agent_id,
             "ignored": True,
         }
-
-    user_id = body.get("sender", {}).get("account", {}).get("id")
-    account_id = body.get("account", {}).get("id")
-    content = body.get("content")
-    conversation_id = body.get("conversation", {}).get("id")
-    message_type = body.get("message_type")
 
     session_id = f"agt_{agent_id}_"
     logger = logging.getLogger(__name__)
@@ -241,10 +239,8 @@ async def chatwoot_webhook(agent_id: str, request: Request):
                 "tools": {"include": {"tool": True}},
             },
         )
-        print(agent_config)
 
         model = LLM_MAPPING.get(agent_config.llmModel)
-        print(model)
 
         metadata = agent_config.metadata or {}
         if not model and metadata.get("model"):
@@ -291,20 +287,9 @@ async def chatwoot_webhook(agent_id: str, request: Request):
                     for step in result["intermediate_steps"]:
                         (agent_action_message_log, tool_response) = step
                         tool_response_dict = json.loads(tool_response)
-                        print("hola")
                         action = tool_response_dict.get("action")
 
                         function = str(action)
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print(function)
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print("---------------------------------")
-                        print("---------------------------------")
                         if function == "hand-off":
                             await chatwoot_human_handoff(
                                 conversation_id, userTokenChatwoot, account_id
@@ -329,12 +314,11 @@ async def chatwoot_webhook(agent_id: str, request: Request):
             agent_config=agent_config,
         )
         agent = await agent_base.get_agent()
-        print(agent)
+
         agent_input = agent_base.get_input(
             content,
             agent_type=agent_config.type,
         )
-        print(agent_input)
 
         if enable_streaming:
             logger.info("Streaming enabled. Preparing streaming response...")
@@ -343,13 +327,6 @@ async def chatwoot_webhook(agent_id: str, request: Request):
                 agent,
                 input=agent_input,
             )
-            print("..........-------------------------")
-            print(generator)
-            print("..........-------------------------")
-            print("..........-------------------------")
-            print("..........-------------------------")
-            print("..........-------------------------")
-            print("..........-------------------------")
 
             return StreamingResponse(generator, media_type="text/event-stream")
 
@@ -360,15 +337,30 @@ async def chatwoot_webhook(agent_id: str, request: Request):
                 "tags": [agent_id],
             },
         )
-        print("-----------------------------------------")
-        print("-----------------------------------------")
+
         intermediate_steps = output.get("intermediate_steps", [])
         for step in intermediate_steps:
-            tool_response = json.loads(step[1])
+            if isinstance(step[1], str) and step[1].strip():
+                try:
+                    tool_response = json.loads(step[1])
+                except json.JSONDecodeError as json_error:
+                    logging.error(f"JSON decode error: {json_error}")
+                    continue  # Skip this iteration if JSON is invalid
+            elif isinstance(step[1], list) and step[1]:
+                # If step[1] is a list, attempt to parse the first item as JSON
+                try:
+                    tool_response = json.loads(step[1][0])
+                except json.JSONDecodeError as json_error:
+                    logging.error(f"JSON decode error: {json_error}")
+                    continue  # Skip this iteration if JSON is invalid
+            else:
+                # If step[1] is empty or not a list/string, log an error and skip this iteration
+                logging.error("step[1] is empty or not in the expected format")
+                continue
+
             action = tool_response.get("action")
             if action == "hand-off":
                 # Do something with the hand-off action
-                print("Action is hand-off")
                 await chatwoot_human_handoff(
                     conversation_id, userTokenChatwoot, account_id
                 )

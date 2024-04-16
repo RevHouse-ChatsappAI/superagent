@@ -14,8 +14,7 @@ class OpenaiDataProcessor(BaseProcessor):
 
             llm = await prisma.llm.find_first(
                 where={
-                    "provider": "OPENAI",
-                    "apiUserId": self.api_manager.api_user.id,
+                    "provider": "AZURE_OPENAI",
                 }
             )
 
