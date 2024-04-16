@@ -53,7 +53,6 @@ export const NavBar = () => {
     return true
   }, [])
 
-  console.log(showSidebar)
   const pathname = usePathname()
 
   const handleClose = () => {
