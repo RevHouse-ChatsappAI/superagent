@@ -34,7 +34,6 @@ class FunctionCalling(AgentBase):
         openai_llm = await prisma.llm.find_first(
             where={
                 "provider": LLMProvider.OPENAI.value,
-                "apiUserId": self.agent_config.apiUserId,
             }
         )
 
