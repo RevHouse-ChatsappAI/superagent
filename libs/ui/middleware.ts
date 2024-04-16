@@ -29,17 +29,17 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/home", req.url))
     }
 
-    try {
-      const api = new Api(profile?.api_key)
-      const subscription = await api.getSubscription()
-      if (!subscription.success) {
-        if (req.nextUrl.pathname !== "/pricing") {
-          return NextResponse.redirect(new URL("/pricing", req.url))
-        }
-      }
-    } catch (error) {
-      console.error("Failed to check user subscription:", error)
-    }
+    // try {
+    //   const api = new Api(profile?.api_key)
+    //   const subscription = await api.getSubscription()
+    //   if (!subscription.success) {
+    //     if (req.nextUrl.pathname !== "/pricing") {
+    //       return NextResponse.redirect(new URL("/pricing", req.url))
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.error("Failed to check user subscription:", error)
+    // }
 
     if (user && req.nextUrl.pathname === "/") {
       return NextResponse.redirect(new URL(`/home`, req.url))
