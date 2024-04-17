@@ -140,17 +140,6 @@ export default function Settings({
         (datasourceId) => api.deleteAgentDatasource(agent.id, datasourceId)
       )
 
-      if (currLlmProvider !== agent.llms?.[0]?.llm.provider) {
-        const configuredLLM = configuredLLMs.find(
-          (llm) => llm.provider === currLlmProvider
-        )
-
-        // if (configuredLLM) {
-        //   await api.deleteAgentLLM(agent.id, agent.llms?.[0]?.llm.id)
-        //   await api.createAgentLLM(agent.id, configuredLLM.id)
-        // }
-      }
-
       toast({
         description: "Agente Actualizado",
       })
