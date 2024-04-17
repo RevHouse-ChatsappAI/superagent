@@ -140,17 +140,6 @@ export default function Settings({
         (datasourceId) => api.deleteAgentDatasource(agent.id, datasourceId)
       )
 
-      if (currLlmProvider !== agent.llms?.[0]?.llm.provider) {
-        const configuredLLM = configuredLLMs.find(
-          (llm) => llm.provider === currLlmProvider
-        )
-
-        // if (configuredLLM) {
-        //   await api.deleteAgentLLM(agent.id, agent.llms?.[0]?.llm.id)
-        //   await api.createAgentLLM(agent.id, configuredLLM.id)
-        // }
-      }
-
       toast({
         description: "Agente Actualizado",
       })
@@ -239,12 +228,12 @@ export default function Settings({
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        {/* <FormControl>
+                        <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecciona un proveedor" />
                           </SelectTrigger>
-                        </FormControl> */}
-                        <SelectContent>
+                        </FormControl>
+                        {/* <SelectContent>
                           {siteConfig.llms
                             .filter(({ id }) =>
                               configuredLLMs.some((llm) => llm.provider === id)
@@ -254,7 +243,7 @@ export default function Settings({
                                 {name}
                               </SelectItem>
                             ))}
-                        </SelectContent>
+                        </SelectContent> */}
                       </Select>
                       <FormMessage />
                     </FormItem>
