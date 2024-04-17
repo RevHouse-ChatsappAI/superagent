@@ -1,3 +1,5 @@
+"use client"
+
 // Componente StepOne.jsx
 import React, { useState } from "react"
 import { MdNavigateNext } from "react-icons/md"

@@ -1,4 +1,5 @@
-// Componente StepOne.jsx
+"use client"
+
 import React, { useMemo, useState } from "react"
 import { MdNavigateNext } from "react-icons/md"
 import { useAsync } from "react-use"

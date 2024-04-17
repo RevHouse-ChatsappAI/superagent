@@ -1,19 +1,12 @@
-"use client"
-
 import { NavBar } from "@/components/NavBar"
 import Sidebar from "@/components/sidebar"
 
 interface RootLayoutProps {
   children: React.ReactNode
   profile: any
-  session: any
 }
 
-export default function RootLayout({
-  children,
-  profile,
-  session,
-}: RootLayoutProps) {
+export default function RootLayout({ children, profile }: RootLayoutProps) {
   return (
     <section className="flex h-screen">
       {/*

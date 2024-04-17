@@ -3,9 +3,6 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
 import { Api } from "@/lib/api"
 
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
-
 export const dynamic = "force-dynamic"
 
 export default async function Datasources({

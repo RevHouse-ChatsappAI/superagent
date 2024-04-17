@@ -27,8 +27,14 @@ export default async function Agents({
     .eq("user_id", user?.id)
     .single()
   const api = new Api(profile.api_key)
+  const { take: takeStr, page: pageStr } = searchParams
+  const take = Number(takeStr) || 10,
+    page = Number(pageStr) || 1
 
-  const { data: agents, total_pages } = await api.getAgents()
+  const { data: agents, total_pages } = await api.getAgents({
+    skip: (page - 1) * take,
+    take,
+  })
 
   return (
     <div className="flex flex-col space-y-8">
@@ -38,8 +44,8 @@ export default async function Agents({
         data={agents || []}
         profile={profile}
         pagination={{
-          take: 1,
-          currentPageNumber: 1,
+          take,
+          currentPageNumber: page,
           totalPages: total_pages,
         }}
       />
