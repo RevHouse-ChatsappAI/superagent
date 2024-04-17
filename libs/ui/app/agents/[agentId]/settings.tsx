@@ -228,12 +228,12 @@ export default function Settings({
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl>
+                        {/* <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecciona un proveedor" />
                           </SelectTrigger>
-                        </FormControl>
-                        {/* <SelectContent>
+                        </FormControl> */}
+                        <SelectContent>
                           {siteConfig.llms
                             .filter(({ id }) =>
                               configuredLLMs.some((llm) => llm.provider === id)
@@ -243,7 +243,7 @@ export default function Settings({
                                 {name}
                               </SelectItem>
                             ))}
-                        </SelectContent> */}
+                        </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
