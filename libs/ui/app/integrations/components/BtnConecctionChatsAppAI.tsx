@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react"
 import { FaUser } from "react-icons/fa"
 import { MdSwitchAccount } from "react-icons/md"

@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react"
 import { CiCircleCheck } from "react-icons/ci"
 import { RxCommit, RxCursorArrow } from "react-icons/rx"

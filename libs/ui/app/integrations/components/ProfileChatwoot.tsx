@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react"
 import { FaRegUser } from "react-icons/fa"
 import { HiOutlineMail } from "react-icons/hi"
