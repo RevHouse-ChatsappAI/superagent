@@ -31,7 +31,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   profile: Profile
   pagination: {
-    take: number
+    take?: number
     currentPageNumber: number
     totalPages: number
   }
@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
       pagination: {
         pageIndex: 0, // we are setting pageIndex to 0 because we have only the current page's data
-        pageSize: take,
+        pageSize: take ?? 0,
       },
     },
   })
