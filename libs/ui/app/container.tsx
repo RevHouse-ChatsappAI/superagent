@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation"
+"use client"
 
 import { NavBar } from "@/components/NavBar"
 import Sidebar from "@/components/sidebar"
