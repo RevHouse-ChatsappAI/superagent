@@ -1,10 +1,30 @@
-"use client"
+import { cookies } from "next/headers"
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
-import { Separator } from "@/components/ui/separator"
+import { DataTable } from "./data-table"
 
-const Home = () => {
+export const dynamic = "force-dynamic"
+
+export default async function Agents({
+  searchParams,
+}: {
+  searchParams: {
+    id: string
+  }
+}) {
+  const supabase = createRouteHandlerClient({ cookies })
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user?.id)
+    .single()
+
   return (
     <div className="container text-black dark:text-white">
+      <DataTable profile={profile} />
       <div>
         <h2 className="text-2xl font-semibold">Bienvenido a ChatsApp CLOUD</h2>
         <p className="mt-1 w-2/3 text-sm font-light">
@@ -13,7 +33,6 @@ const Home = () => {
           interactúas y te comunicas.
         </p>
       </div>
-      <Separator className="mb-10 mt-2" />
       <div>
         <h2 className="text-md mb-5 font-semibold">
           ¡Inicia la aventura con nuestros tutoriales de IA para agentes!
@@ -43,5 +62,3 @@ const Home = () => {
     </div>
   )
 }
-
-export default Home
