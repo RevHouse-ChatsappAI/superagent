@@ -1,5 +1,6 @@
 import { NavBar } from "@/components/NavBar"
 import Sidebar from "@/components/sidebar"
+import WidgetComponent from "@/components/widget"
 
 interface RootLayoutProps {
   children: React.ReactNode
@@ -15,6 +16,7 @@ export default function RootLayout({ children, profile }: RootLayoutProps) {
             )}
           */}
       <Sidebar />
+      <WidgetComponent />
       <div className="flex flex-1 flex-col">
         <NavBar />
         <div
