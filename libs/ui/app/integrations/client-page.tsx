@@ -3,7 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { ChatwootProvider } from "../context/ChatwootContext"
-import { PlaltformExtend } from "./components/PlaltformExtend"
+import { PlatformExtend } from "./components/PlaltformExtend"
 
 export default function IntegrationsClientPage({
   profile,
@@ -26,7 +26,7 @@ export default function IntegrationsClientPage({
           </TabsTrigger>
         </TabsList>
         <TabsContent value="platform" className="h-full px-6 text-sm">
-          <PlaltformExtend profile={profile} />
+          <PlatformExtend profile={profile} />
         </TabsContent>
       </Tabs>
     </ChatwootProvider>

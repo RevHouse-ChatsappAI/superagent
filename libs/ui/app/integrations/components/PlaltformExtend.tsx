@@ -1,38 +1,47 @@
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
+import Image from "next/image"
 
-import Logo from "@/components/logo"
 import { useChatwoot } from "@/app/context/ChatwootContext"
 
-import { CardIntegration } from "./CardIntegration"
+import { BtnConecctionChatsAppAI } from "./BtnConecctionChatsAppAI"
 
-export const PlaltformExtend = ({ profile }: { profile: any }) => {
+export const PlatformExtend = ({ profile }: { profile: any }) => {
   const { tokenActive } = useChatwoot()
 
-  const [modal, setModal] = useState({
-    integration: "default",
-  })
-  const handleClick = (id: string) => {
-    setModal({ integration: id })
-  }
-
   return (
-    <div className="pt-10">
-      <CardIntegration
-        eventClick={handleClick}
-        title="ChatsappAI Connect"
-        description="Conecta tus cuentas de Whatsapp a tus agentes de IA de chatsappAI a través de nuestra plataforma CRM. "
-        id="chatwoot"
-        disabled={tokenActive}
-        isTokenActive={tokenActive}
-        titleBtn={tokenActive ? "Habilitado" : "Conectar"}
-        profile={profile}
-      >
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500">
-          <Logo />
+    <div className="container mt-5 flex max-w-4xl flex-col space-y-10">
+      <div className="flex flex-col">
+        <p className="text-lg font-medium">Plataformas</p>
+        <p className="text-muted-foreground">
+          Conecta fácilmente con tus sistemas y administra todos tus datos en un
+          solo lugar. Nuestra plataforma te ofrece la simplicidad y seguridad
+          que necesitas para llevar tu negocio al siguiente nivel. ¡Empieza
+          ahora!
+        </p>
+      </div>
+      <div className="flex-col border-b">
+        <div className="flex items-center justify-between border-t py-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <div className="rounded-full bg-green-500 p-2">
+                <Image
+                  src="/logo.png"
+                  width="25"
+                  height="25"
+                  alt="ChatsAPP CRM"
+                />
+              </div>
+              <p className="font-medium">ChatsAPP CRM</p>
+            </div>
+          </div>
+          <BtnConecctionChatsAppAI
+            profile={profile}
+            isTokenActive={tokenActive}
+          />
         </div>
-      </CardIntegration>
+      </div>
     </div>
   )
 }

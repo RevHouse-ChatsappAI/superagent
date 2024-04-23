@@ -25,23 +25,23 @@ export default async function Agents({
   return (
     <div className="container text-black dark:text-white">
       <DataTable profile={profile} />
-      <div>
-        <h2 className="text-2xl font-semibold">Bienvenido a ChatsApp CLOUD</h2>
-        <p className="mt-1 w-2/3 text-sm font-light">
+      <div className="flex flex-col gap-2 py-4">
+        <h2 className="text-2xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
+        <p className="text-md mt-1 w-2/3 font-light">
           ChatsApp es una plataforma innovadora que ofrece agentes inteligentes
           desarrollados con IA, diseñados para transformar la manera en que
           interactúas y te comunicas.
         </p>
       </div>
-      <div>
-        <h2 className="text-md mb-5 font-semibold">
+      <div className="border-t-2 pt-6">
+        <h2 className="mb-5 text-xl font-semibold">
           ¡Inicia la aventura con nuestros tutoriales de IA para agentes!
         </h2>
-        <div>
-          <div className="flex max-w-sm rounded-lg border border-gray-200 bg-white p-4 shadow-md dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex gap-2">
+          <div className="relative flex max-w-sm rounded-lg border border-gray-200 bg-white p-5 shadow-md transition-colors hover:border-black dark:border-gray-700 dark:bg-gray-800 dark:hover:border-white">
             <div className="grow">
               <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Crear un Agente
+                Creación de un Agente
               </h5>
               <p className="mb-3 text-sm font-normal text-gray-700 dark:text-gray-400">
                 Aprende a crear tu propio agente inteligente en ChatsApp y

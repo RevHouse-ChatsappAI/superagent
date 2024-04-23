@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { FaUser } from "react-icons/fa"
 import { MdSwitchAccount } from "react-icons/md"
+import { SiProbot } from "react-icons/si"
 
 import { Profile } from "@/types/profile"
 import { cn } from "@/lib/utils"
@@ -64,14 +65,14 @@ export const BtnConecctionChatsAppAI = ({
           centralizada y eficiente.
         </DialogDescription>
         <DialogHeader>
-          <Tabs>
+          <Tabs defaultValue="tab1">
             <TabsList>
               <TabsTrigger value="tab1">CRM</TabsTrigger>
               <TabsTrigger value="tab2">
                 <FaUser className="text-lg" />
               </TabsTrigger>
               <TabsTrigger value="tab3">
-                <MdSwitchAccount className="text-xl" />
+                <SiProbot className="text-lg" />
               </TabsTrigger>
             </TabsList>
             <TabsContent value="tab1">
@@ -127,16 +128,27 @@ export const BtnConecctionChatsAppAI = ({
               </div>
             </TabsContent>
             <TabsContent value="tab2">
-              {userProfileChatwoot && (
+              {userProfileChatwoot ? (
                 <div className="flex justify-center">
                   {userProfileChatwoot && (
                     <ProfileChatwoot profile={userProfileChatwoot} />
                   )}
                 </div>
+              ) : (
+                <div className="py-5">
+                  <div className="flex flex-col gap-2 rounded-lg bg-slate-900 p-5 text-center ">
+                    <h2 className="text-sm font-bold">
+                      No hay perfil disponible
+                    </h2>
+                    <p className="text-xs font-light">
+                      Por favor, crea una cuenta para visualizar el perfil.
+                    </p>
+                  </div>
+                </div>
               )}
             </TabsContent>
             <TabsContent value="tab3">
-              {userProfileChatwoot && (
+              {userProfileChatwoot ? (
                 <div className="flex justify-center">
                   {userProfileChatwoot && (
                     <AccountProfile
@@ -144,6 +156,17 @@ export const BtnConecctionChatsAppAI = ({
                       profile={userProfileChatwoot}
                     />
                   )}
+                </div>
+              ) : (
+                <div className="py-5">
+                  <div className="flex flex-col gap-2 rounded-lg bg-slate-900 p-5 text-center ">
+                    <h2 className="text-sm font-bold">
+                      No hay agentes disponibles
+                    </h2>
+                    <p className="text-xs font-light">
+                      Por favor, crea una cuenta para visualizar los agentes.
+                    </p>
+                  </div>
                 </div>
               )}
             </TabsContent>
