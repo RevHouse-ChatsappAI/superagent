@@ -30,7 +30,6 @@ export class Api {
     })
 
     if (!response.ok) {
-      window.location.href = "/"
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
