@@ -1,8 +1,6 @@
 import { cookies } from "next/headers"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
-import { DataTable } from "./data-table"
-
 export const dynamic = "force-dynamic"
 
 export default async function Agents({
@@ -24,7 +22,6 @@ export default async function Agents({
 
   return (
     <div className="container text-black dark:text-white">
-      <DataTable profile={profile} />
       <div className="flex flex-col gap-2 py-4">
         <h2 className="text-2xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
         <p className="text-md mt-1 w-2/3 font-light">
