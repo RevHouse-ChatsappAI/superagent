@@ -37,7 +37,10 @@ export default async function Agents({
                 g.onload = function() {
                   window.chatwootSDK.run({
                     websiteToken: 'sERCPLnqogA9awfsN7Qx3RXf',
-                    baseUrl: BASE_URL
+                    baseUrl: BASE_URL,
+                    position: 'right',
+                    type: 'expanded_bubble',
+                    launcherTitle: 'Chatea con ChatsappAI'
                   });
                 }
               })(document, "script");
