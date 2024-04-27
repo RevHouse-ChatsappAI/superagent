@@ -1,4 +1,5 @@
 import { cookies } from "next/headers"
+import Script from "next/script"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
 export const dynamic = "force-dynamic"
@@ -22,6 +23,30 @@ export default async function Agents({
 
   return (
     <div className="container text-black dark:text-white">
+      <Script
+        id="show-banner"
+        dangerouslySetInnerHTML={{
+          __html: `
+              (function(d, t) {
+                var BASE_URL = "https://app.chatsappai.com";
+                var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+                g.src = BASE_URL + "/packs/js/sdk.js";
+                g.defer = true;
+                g.async = true;
+                s.parentNode.insertBefore(g, s);
+                g.onload = function() {
+                  window.chatwootSDK.run({
+                    websiteToken: 'sERCPLnqogA9awfsN7Qx3RXf',
+                    baseUrl: BASE_URL,
+                    position: 'right',
+                    type: 'expanded_bubble',
+                    launcherTitle: 'Chatea con ChatsappAI'
+                  });
+                }
+              })(document, "script");
+            `,
+        }}
+      />
       <div className="flex flex-col gap-2 py-4">
         <h2 className="text-2xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
         <p className="text-md mt-1 w-2/3 font-light">
