@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="px-6">
-      <div className="mb-10 grid grid-cols-1 gap-5 rounded-md md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-5 rounded-md md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {data.map((agent: any) => (
           <div
             onClick={() => router.push(`/agents/${agent.id}`)}
