@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
         {data.map((agent: any) => (
           <div
             onClick={() => router.push(`/agents/${agent.id}`)}
-            className="relative cursor-pointer rounded-lg border bg-slate-200 p-3 hover:border-black dark:bg-slate-900 dark:text-white dark:hover:border-white"
+            className="relative h-[200px] cursor-pointer rounded-lg border bg-slate-200 p-3 hover:border-black dark:bg-slate-900 dark:text-white dark:hover:border-white"
           >
             <h2 className="text-xl font-bold">{agent.name}</h2>
             <p className="text-sm font-light">{agent.description}</p>
