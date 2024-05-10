@@ -4,14 +4,10 @@ import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useForm } from "react-hook-form"
-import { RxGithubLogo } from "react-icons/rx"
 import * as z from "zod"
 
-import { Api } from "@/lib/api"
-import { analytics } from "@/lib/segment"
-import { getSupabase } from "@/lib/supabase"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { ButtonAuth } from "@/components/ui/buttonAuth"
 import {
   Form,
   FormControl,
@@ -20,11 +16,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import Logo from "@/components/logo"
+import { GoogleIcon } from "@/components/svg/GoogleIcon"
+import { MicrosoftIcon } from "@/components/svg/MicrosoftIcon"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -32,9 +29,8 @@ const formSchema = z.object({
   }),
 })
 
-const supabase = getSupabase()
-
 export default function IndexPage() {
+  const supabase = createClientComponentClient()
   const { toast } = useToast()
   const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,13 +55,13 @@ export default function IndexPage() {
 
     toast({
       description:
-        "🎉 ¡Hurra! Revisa tu correo para el enlace de inicio de sesión.",
+        "🎉 ¡Hurra! Revisa tu correo electrónico para el enlace de inicio de sesión.",
     })
   }
 
   async function handleGithubLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
+      provider: "google",
     })
 
     if (error) {
@@ -79,27 +75,9 @@ export default function IndexPage() {
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, _session) => {
+      async (event, _session) => {
         if (event === "SIGNED_IN") {
-          const fetchProfileAndIdentify = async () => {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("user_id", _session?.user.id)
-              .single()
-            if (profile.api_key) {
-              const api = new Api(profile.api_key)
-              await api.indentifyUser({
-                anonymousId: (await analytics.user()).anonymousId(),
-                email: _session?.user.email,
-                firstName: profile.first_name,
-                lastName: profile.last_name,
-                company: profile.company,
-              })
-            }
-            window.location.href = "/home"
-          }
-          fetchProfileAndIdentify()
+          window.location.href = "/home"
         }
       }
     )
@@ -111,21 +89,10 @@ export default function IndexPage() {
 
   return (
     <section className="container flex h-screen max-w-md flex-col justify-center space-y-8">
-      <div className="flex justify-center rounded-full bg-black p-1 dark:bg-transparent">
-        <Logo width={50} height={50} />
-      </div>
-      <Alert>
-        <AlertTitle>¡Atención!</AlertTitle>
-        <AlertDescription>
-          Utiliza el método de autenticación que usaste la primera vez que te
-          registraste, ya sea correo electrónico o Github. Usar ambos resultará
-          en cuentas duplicadas.
-        </AlertDescription>
-      </Alert>
-      <div className="flex flex-col space-y-0">
-        <p className="text-lg font-bold">Iniciar sesión en ChatsAppAI Cloud</p>
+      <div className="flex flex-col space-y-4 text-center">
+        <p className="text-3xl font-bold">Crea una cuenta</p>
         <p className="text-sm text-muted-foreground">
-          Ingresa tu correo electrónico para recibir una contraseña de uso único
+          Coloca tu email debajo para crear tu cuenta
         </p>
       </div>
       <Form {...form}>
@@ -153,7 +120,29 @@ export default function IndexPage() {
           </Button>
         </form>
       </Form>
-      <Separator />
+      <p className="my-6 text-center uppercase">O continuar con</p>
+      <div className="flex flex-col items-center justify-center">
+        <div className="mb-4 text-xl font-semibold">Próximamente</div>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button
+            onClick={handleGithubLogin}
+            className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300"
+          >
+            <GoogleIcon />
+          </button>
+          <button className="flex h-24 w-24 cursor-not-allowed items-center justify-center rounded-lg border-2 border-dashed border-gray-300 opacity-50">
+            <MicrosoftIcon />
+          </button>
+        </div>
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Estamos trabajando para traerte nuevas formas de conectarte. ¡Mantente
+          al tanto!
+        </p>
+      </div>
+      <p className="mx-auto justify-center text-xs dark:text-gray-300">
+        Al hacer click en continuar, aceptas nuestros Términos de Servicio y
+        Política de Privacidad.
+      </p>
       <Toaster />
     </section>
   )
