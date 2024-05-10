@@ -19,12 +19,7 @@ export default function RootLayout({ children, profile }: RootLayoutProps) {
       <WidgetComponent />
       <div className="flex flex-1 flex-col">
         <NavBar />
-        <div
-          style={{ height: "calc(100vh - 80px)" }}
-          className="mt-2 overflow-auto"
-        >
-          {children}
-        </div>
+        <div className="overflow-auto">{children}</div>
       </div>
     </section>
   )
