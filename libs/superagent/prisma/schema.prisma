@@ -339,6 +339,7 @@ model PlatformKey {
   id        String   @id @default(uuid())
   key       String
   url       String
+  subscriptionId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   apiUser   ApiUser  @relation(fields: [apiUserId], references: [id])
