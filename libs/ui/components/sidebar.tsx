@@ -5,7 +5,7 @@ import NextLink from "next/link"
 import { usePathname } from "next/navigation"
 import { BsLayoutSidebarInset } from "react-icons/bs"
 import { FaRegPlayCircle } from "react-icons/fa"
-import { IoIosClose } from "react-icons/io"
+import { IoIosClose, IoMdSettings } from "react-icons/io"
 import { useAsync } from "react-use"
 
 import { Profile } from "@/types/profile"
@@ -68,7 +68,7 @@ export default function Sidebar() {
         <div className="border-b border-gray-500/40 px-4 pb-2">
           <div className="flex items-center gap-2 rounded-xl bg-slate-900 p-3 text-white">
             <div
-              className={` ${
+              className={`flex-1 ${
                 toggleModal
                   ? ""
                   : "flex h-8 w-8 items-center justify-center rounded-full bg-gray-500"
@@ -79,9 +79,14 @@ export default function Sidebar() {
               </p>
             </div>
             {!toggleModal && (
-              <div>
-                <h2 className="text-sm font-medium">{profile?.first_name}</h2>
-                <p className="text-xs font-light">{profile?.company}</p>
+              <div className="flex w-full items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  <h2 className="text-sm font-medium">{profile?.first_name}</h2>
+                  <p className="text-xs font-light">{profile?.company}</p>
+                </div>
+                <div>
+                  <IoMdSettings className="text-2xl" />
+                </div>
               </div>
             )}
           </div>
