@@ -80,14 +80,16 @@ async def send_platformkey(
             where={"apiUserId": api_user.id}
         )
         if existing_key:
+            updated_key = await prisma.platformkey.update(
+                where={"apiUserId": api_user.id}, data={"key": body.key}
+            )
             response_data = {
                 "success": True,
                 "message": "Plataforma agregada correctamente",
-                "data": existing_key,
+                "data": updated_key,
             }
         else:
             validate = validate_url(body.url)
-            print(validate)
             if validate:
                 key_data = {
                     "key": body.key,
