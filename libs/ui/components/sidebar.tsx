@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import NextLink from "next/link"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BsLayoutSidebarInset } from "react-icons/bs"
 import { FaRegPlayCircle } from "react-icons/fa"
@@ -68,7 +69,7 @@ export default function Sidebar() {
         <div className="border-b border-gray-500/40 px-4 pb-2">
           <div className="flex items-center gap-2 rounded-xl bg-slate-900 p-3 text-white">
             <div
-              className={`flex-1 ${
+              className={`${
                 toggleModal
                   ? ""
                   : "flex h-8 w-8 items-center justify-center rounded-full bg-gray-500"
@@ -79,13 +80,15 @@ export default function Sidebar() {
               </p>
             </div>
             {!toggleModal && (
-              <div className="flex w-full items-center justify-between gap-2">
+              <div className="flex w-full flex-1 items-center justify-between gap-2">
                 <div className="flex flex-col">
                   <h2 className="text-sm font-medium">{profile?.first_name}</h2>
                   <p className="text-xs font-light">{profile?.company}</p>
                 </div>
-                <div>
-                  <IoMdSettings className="text-2xl" />
+                <div className="border-l border-gray-400 p-3">
+                  <Link href="/settings">
+                    <IoMdSettings className="text-2xl transition-all hover:rotate-45 hover:transition-all" />
+                  </Link>
                 </div>
               </div>
             )}
@@ -157,9 +160,9 @@ export default function Sidebar() {
             {!toggleModal && (
               <>
                 <Logo width={20} height={20} />
-                <NextLink href="/settings" className="text-xs font-medium">
+                <span className="-mb-05 mt-0.5 text-xs font-medium">
                   Chatsappai.com
-                </NextLink>
+                </span>
               </>
             )}
           </div>
