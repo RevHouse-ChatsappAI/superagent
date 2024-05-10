@@ -191,6 +191,7 @@ class ApiPayment(BaseModel):
 class ApiPlaformKey(BaseModel):
     key: str
     url: str
+    subscriptionId: str
 
 
 class ApiTokenUpdate(BaseModel):
