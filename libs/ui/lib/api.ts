@@ -350,6 +350,7 @@ export class Api {
     return this.fetchFromApi("/count")
   }
 
+  // Chatwoot Extend
   async platformKey() {
     return this.fetchFromApi("/platform_key")
   }
