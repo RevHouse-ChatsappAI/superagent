@@ -1,11 +1,11 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Form, FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
+import { AiOutlineConsoleSql } from "react-icons/ai"
 import { IoChevronBack } from "react-icons/io5"
-import { string } from "zod"
 
 import { integrationsConfig } from "@/config/integration"
 import { Api } from "@/lib/api"
@@ -25,6 +25,9 @@ import { BadgeStatus } from "@/components/BadgeStatus"
 type Actions = {
   [key: string]: (values: any) => Promise<{ success: boolean }>
 }
+type GetResources = {
+  [key: string]: () => Promise<any>
+}
 
 export default function IntegrationsClientPage({
   profile,
@@ -41,8 +44,18 @@ export default function IntegrationsClientPage({
   )
 
   const formMethods = useForm()
-  const api = new Api(profile.api_key)
+  const api = useMemo(() => new Api(profile.api_key), [profile.api_key])
   const [isActive, setIsActive] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
+
+  const getResources: GetResources = useMemo(
+    () => ({
+      chatwoot: async () => {
+        return api.platformKey()
+      },
+    }),
+    [api]
+  )
 
   const actions: Actions = {
     chatwoot: async (values: any) => {
@@ -54,6 +67,30 @@ export default function IntegrationsClientPage({
     },
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const getResource = getResources[idIntegration as string]
+      if (getResource) {
+        try {
+          const resp = await getResource()
+
+          if (resp.success) {
+            setIsActive(resp.success)
+          }
+        } catch (error) {
+          console.error("Error al obtener datos de la plataforma:", error)
+        }
+      } else {
+        console.log(
+          "No hay función definida para obtener recursos de esta integración:",
+          idIntegration
+        )
+      }
+    }
+
+    fetchData()
+  }, [idIntegration, getResources])
+
   async function onSubmit(values: any) {
     const action = actions[idIntegration as string]
 
@@ -62,6 +99,7 @@ export default function IntegrationsClientPage({
         const resp = await action(values)
         if (resp.success) {
           setIsActive(resp.success)
+          setIsEdit(false)
         }
       } catch (error) {
         console.error("Error al ejecutar la acción:", error)
@@ -87,60 +125,84 @@ export default function IntegrationsClientPage({
       </div>
       <div className="mb-5 flex items-center gap-2 pt-3">
         <h2 className="text-2xl font-medium">{selectedProvider?.name}</h2>
-        {isActive && <BadgeStatus name="Conectado" style="bg-green-600" />}
+        {isActive && (
+          <div className="flex items-center gap-2">
+            <BadgeStatus name="Conectado" style="bg-green-600" />
+            <Button
+              onClick={() => setIsEdit(true)}
+              type="button"
+              size="xs"
+              className="bg-transparent text-xs dark:text-white dark:hover:text-black"
+            >
+              {formMethods.formState.isSubmitting ? <Spinner /> : "Editar"}
+            </Button>
+          </div>
+        )}
       </div>
 
-      {!isActive && (
-        <FormProvider {...formMethods}>
-          <form
-            onSubmit={formMethods.handleSubmit(onSubmit)}
-            className="w-full space-y-4"
-          >
-            {selectedProvider?.metadata.map((metadataField: any) => (
-              <FormField
-                key={metadataField.key}
-                control={formMethods.control}
-                name={metadataField.key}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {metadataField.label}{" "}
-                      <span className="text-xs text-red-600">
-                        {metadataField.required && "(*)"}
-                      </span>
-                    </FormLabel>
-                    {metadataField.type === "input" && (
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder={
-                            "placeholder" in metadataField
-                              ? metadataField.placeholder
-                              : ""
-                          }
-                          className="text-black dark:text-white"
-                          type="text"
-                        />
-                      </FormControl>
-                    )}
-                    {"helpText" in metadataField && (
-                      <FormDescription className="pb-2">
-                        {metadataField.helpText as string}
-                      </FormDescription>
-                    )}
-                    <FormMessage />
-                  </FormItem>
+      {!isActive ||
+        (isEdit && (
+          <FormProvider {...formMethods}>
+            <form
+              onSubmit={formMethods.handleSubmit(onSubmit)}
+              className="w-full space-y-4"
+            >
+              {selectedProvider?.metadata.map((metadataField: any) => (
+                <FormField
+                  key={metadataField.key}
+                  control={formMethods.control}
+                  name={metadataField.key}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {metadataField.label}{" "}
+                        <span className="text-xs text-red-600">
+                          {metadataField.required && "(*)"}
+                        </span>
+                      </FormLabel>
+                      {metadataField.type === "input" && (
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder={
+                              "placeholder" in metadataField
+                                ? metadataField.placeholder
+                                : ""
+                            }
+                            className="text-black dark:text-white"
+                            type="text"
+                          />
+                        </FormControl>
+                      )}
+                      {"helpText" in metadataField && (
+                        <FormDescription className="pb-2">
+                          {metadataField.helpText as string}
+                        </FormDescription>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              <div className="flex items-center justify-end gap-2">
+                {isEdit && (
+                  <Button
+                    disabled={formMethods.formState.isSubmitting}
+                    type="button"
+                    onClick={() => setIsEdit(false)}
+                    size="sm"
+                  >
+                    Cancelar edición
+                  </Button>
                 )}
-              />
-            ))}
-            <div className="flex justify-end">
-              <Button type="submit" size="sm">
-                {formMethods.formState.isSubmitting ? <Spinner /> : "Guardar"}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
-      )}
+
+                <Button type="submit" size="sm">
+                  {formMethods.formState.isSubmitting ? <Spinner /> : "Guardar"}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
+        ))}
     </div>
   )
 }
