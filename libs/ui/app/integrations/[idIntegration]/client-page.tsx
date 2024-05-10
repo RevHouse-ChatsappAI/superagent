@@ -68,7 +68,12 @@ export default function IntegrationsClientPage({
               name={metadataField.key}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{metadataField.label}</FormLabel>
+                  <FormLabel>
+                    {metadataField.label}{" "}
+                    <span className="text-xs text-red-600">
+                      {metadataField.required && "(*)"}
+                    </span>
+                  </FormLabel>
                   {metadataField.type === "input" && (
                     <FormControl>
                       <Input
