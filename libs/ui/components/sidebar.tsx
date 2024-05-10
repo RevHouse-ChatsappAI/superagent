@@ -52,7 +52,6 @@ export default function Sidebar() {
   }
 
   const handleToggleModal = () => {
-    console.log(toggleModal)
     setToggleModal(() => !toggleModal)
   }
 
