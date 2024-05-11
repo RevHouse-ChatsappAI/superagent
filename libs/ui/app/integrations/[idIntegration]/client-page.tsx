@@ -73,9 +73,9 @@ export default function IntegrationsClientPage({
       if (getResource) {
         try {
           const resp = await getResource()
-
           if (resp.success) {
             setIsActive(resp.success)
+            setIsEdit(true)
           }
         } catch (error) {
           console.error("Error al obtener datos de la plataforma:", error)
@@ -129,7 +129,7 @@ export default function IntegrationsClientPage({
           <div className="flex items-center gap-2">
             <BadgeStatus name="Conectado" style="bg-green-600" />
             <Button
-              onClick={() => setIsEdit(true)}
+              onClick={() => setIsEdit(!isEdit)}
               type="button"
               size="xs"
               className="bg-transparent text-xs dark:text-white dark:hover:text-black"
@@ -140,69 +140,68 @@ export default function IntegrationsClientPage({
         )}
       </div>
 
-      {!isActive ||
-        (isEdit && (
-          <FormProvider {...formMethods}>
-            <form
-              onSubmit={formMethods.handleSubmit(onSubmit)}
-              className="w-full space-y-4"
-            >
-              {selectedProvider?.metadata.map((metadataField: any) => (
-                <FormField
-                  key={metadataField.key}
-                  control={formMethods.control}
-                  name={metadataField.key}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {metadataField.label}{" "}
-                        <span className="text-xs text-red-600">
-                          {metadataField.required && "(*)"}
-                        </span>
-                      </FormLabel>
-                      {metadataField.type === "input" && (
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder={
-                              "placeholder" in metadataField
-                                ? metadataField.placeholder
-                                : ""
-                            }
-                            className="text-black dark:text-white"
-                            type="text"
-                          />
-                        </FormControl>
-                      )}
-                      {"helpText" in metadataField && (
-                        <FormDescription className="pb-2">
-                          {metadataField.helpText as string}
-                        </FormDescription>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-              <div className="flex items-center justify-end gap-2">
-                {isEdit && (
-                  <Button
-                    disabled={formMethods.formState.isSubmitting}
-                    type="button"
-                    onClick={() => setIsEdit(false)}
-                    size="sm"
-                  >
-                    Cancelar edición
-                  </Button>
+      {(!isActive || !isEdit) && (
+        <FormProvider {...formMethods}>
+          <form
+            onSubmit={formMethods.handleSubmit(onSubmit)}
+            className="w-full space-y-4"
+          >
+            {selectedProvider?.metadata.map((metadataField: any) => (
+              <FormField
+                key={metadataField.key}
+                control={formMethods.control}
+                name={metadataField.key}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {metadataField.label}{" "}
+                      <span className="text-xs text-red-600">
+                        {metadataField.required && "(*)"}
+                      </span>
+                    </FormLabel>
+                    {metadataField.type === "input" && (
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={
+                            "placeholder" in metadataField
+                              ? metadataField.placeholder
+                              : ""
+                          }
+                          className="text-black dark:text-white"
+                          type="text"
+                        />
+                      </FormControl>
+                    )}
+                    {"helpText" in metadataField && (
+                      <FormDescription className="pb-2">
+                        {metadataField.helpText as string}
+                      </FormDescription>
+                    )}
+                    <FormMessage />
+                  </FormItem>
                 )}
-
-                <Button type="submit" size="sm">
-                  {formMethods.formState.isSubmitting ? <Spinner /> : "Guardar"}
+              />
+            ))}
+            <div className="flex items-center justify-end gap-2">
+              {isEdit && (
+                <Button
+                  disabled={formMethods.formState.isSubmitting}
+                  type="button"
+                  onClick={() => setIsEdit(false)}
+                  size="sm"
+                >
+                  Cancelar edición
                 </Button>
-              </div>
-            </form>
-          </FormProvider>
-        ))}
+              )}
+
+              <Button type="submit" size="sm">
+                {formMethods.formState.isSubmitting ? <Spinner /> : "Guardar"}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
+      )}
     </div>
   )
 }
