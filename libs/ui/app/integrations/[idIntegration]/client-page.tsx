@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { BadgeStatus } from "@/components/BadgeStatus"
 
+import { Chatwoot } from "./components/Chatwoot"
+
 type Actions = {
   [key: string]: (values: any) => Promise<{ success: boolean }>
 }
@@ -47,6 +49,7 @@ export default function IntegrationsClientPage({
   const api = useMemo(() => new Api(profile.api_key), [profile.api_key])
   const [isActive, setIsActive] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
+  const [data, setData] = useState<any>(null)
 
   const getResources: GetResources = useMemo(
     () => ({
@@ -74,6 +77,7 @@ export default function IntegrationsClientPage({
         try {
           const resp = await getResource()
           if (resp.success) {
+            setData(resp.data)
             setIsActive(resp.success)
             setIsEdit(true)
           }
@@ -201,6 +205,14 @@ export default function IntegrationsClientPage({
             </div>
           </form>
         </FormProvider>
+      )}
+      {idIntegration == "chatwoot" && (
+        <Chatwoot
+          subscriptionId={data?.subscriptionId}
+          access_token={data?.key}
+          url={data?.url}
+          components={selectedProvider?.subMetaData || []}
+        />
       )}
     </div>
   )
