@@ -74,9 +74,6 @@ class LLMPayload:
 async def get_llm_or_raise(data: LLMPayload) -> LLM:
     provider = data.provider
 
-    print(data)
-    print("---------------------------------data")
-
     if data.model:
         for key, models in LLM_PROVIDER_MAPPING.items():
             if data.model in models:
@@ -90,7 +87,6 @@ async def get_llm_or_raise(data: LLMPayload) -> LLM:
         )
 
     llm = await prisma.llm.find_first(where={"provider": provider})
-    print(llm)
 
     if not llm:
         raise HTTPException(
@@ -641,9 +637,7 @@ async def invoke(
 
     logger.info("Invoking agent...")
     input = body.input
-    print(body.input)
     enable_streaming = body.enableStreaming
-    print(enable_streaming)
     output_schema = body.outputSchema or agent_config.outputSchema
     cost_callback = CostCalcAsyncHandler(model=model)
     streaming_callback = CustomAsyncIteratorCallbackHandler()
@@ -658,7 +652,6 @@ async def invoke(
         agent_config=agent_config,
     )
 
-    print(agent_base)
     agent = await agent_base.get_agent()
 
     agent_input = agent_base.get_input(
@@ -675,7 +668,6 @@ async def invoke(
             streaming_callback=streaming_callback,
             callbacks=[cost_callback],
         )
-        print(generator)
         return StreamingResponse(generator, media_type="text/event-stream")
 
     logger.info("Streaming not enabled. Invoking agent synchronously...")
@@ -687,8 +679,6 @@ async def invoke(
             "tags": [agent_id],
         },
     )
-
-    print(output)
 
     if not enable_streaming and SEGMENT_WRITE_KEY:
         try:
