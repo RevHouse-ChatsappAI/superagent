@@ -14,6 +14,9 @@ import {
 
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
+import { AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -25,6 +28,8 @@ import {
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { DataTablePagination } from "@/components/data-table-pagination"
+
+import Avatar from "./[agentId]/avatar"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -70,6 +75,35 @@ export function DataTable<TData, TValue>({
   return (
     <div className="px-6">
       <div className="mb-10 grid grid-cols-1 gap-5 rounded-md md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        <Card className="w-full max-w-xs overflow-hidden rounded-lg bg-white shadow-md">
+          <div className="relative">
+            <div className="flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 p-4">
+              h2
+            </div>
+          </div>
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-800">
+              CEO of Nexus
+            </h3>
+            <p className="text-gray-600">Assem Chammah</p>
+            <hr className="my-3" />
+            <div className="grid grid-cols-2 gap-2">
+              <Badge className="text-xs" variant="secondary">
+                Customer support
+              </Badge>
+              <Badge className="text-xs" variant="secondary">
+                NexusGPT
+              </Badge>
+              <Badge className="text-xs" variant="secondary">
+                AI
+              </Badge>
+              <Badge className="text-xs" variant="secondary">
+                Problem solving
+              </Badge>
+            </div>
+          </div>
+        </Card>
+
         {data.map((agent: any) => (
           <div
             onClick={() => router.push(`/agents/${agent.id}`)}
