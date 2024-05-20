@@ -378,7 +378,7 @@ export default function Settings({
               ) : (
                 <div className="flex items-center gap-2">
                   <LuSave />
-                  <p className="text-xs font-medium">Gurdar cambios</p>
+                  <p className="text-xs font-medium">Guardar cambios</p>
                 </div>
               )}
             </Button>
