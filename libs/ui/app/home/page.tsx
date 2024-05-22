@@ -1,4 +1,5 @@
 import { cookies } from "next/headers"
+import Image from "next/image"
 import Script from "next/script"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 
@@ -48,34 +49,114 @@ export default async function Agents({
         }}
       />
       <div className="flex flex-col gap-2 py-4">
-        <h2 className="text-2xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
+        <h2 className="text-3xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
         <p className="text-md mt-1 w-2/3 font-light">
           ChatsApp es una plataforma innovadora que ofrece agentes inteligentes
           desarrollados con IA, diseñados para transformar la manera en que
           interactúas y te comunicas.
         </p>
       </div>
-      <div className="border-t-2 pt-6">
+      <div className="pt-6">
         <h2 className="mb-5 text-xl font-semibold">
           ¡Inicia la aventura con nuestros tutoriales de IA para agentes!
         </h2>
-        <div className="flex gap-2">
-          <div className="relative flex max-w-sm rounded-lg border border-gray-200 bg-white p-5 shadow-md transition-colors hover:border-black dark:border-gray-700 dark:bg-gray-800 dark:hover:border-white">
-            <div className="grow">
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Creación de un Agente
-              </h5>
-              <p className="mb-3 text-sm font-normal text-gray-700 dark:text-gray-400">
-                Aprende a crear tu propio agente inteligente en ChatsApp y
-                mejora la interacción con tus usuarios.
-              </p>
-              <div className="mt-3 flex justify-end">
-                <button
-                  className="inline-flex cursor-not-allowed items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white opacity-50 dark:bg-blue-600"
-                  disabled
-                >
-                  Próximamente
-                </button>
+        <div className="grid grid-cols-4 gap-2">
+          <div className="max-w-xl rounded-md border">
+            <div className="mb-4">
+              <div className="group relative">
+                <div className="relative">
+                  <div className="aspect-video overflow-hidden rounded-md">
+                    <Image
+                      src={"/agenttuto.webp"}
+                      alt="Agent Tutorials"
+                      width={0}
+                      height={0}
+                      sizes="20vw"
+                      objectFit="cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <span className="h-full w-full rounded-md bg-muted object-cover transition group-hover:opacity-50" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
+                    <div className="cursor-pointer rounded-full bg-white p-2">
+                      <svg
+                        className="h-5 w-5 text-black"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-2 p-2">
+                <h3 className="text-lg font-semibold">Multiagentes</h3>
+                <p className="text-gray-500">
+                  Aprende a crear y gestionar múltiples agentes inteligentes en
+                  ChatsappAI para mejorar la interacción con tus usuarios.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-xl rounded-md border">
+            <div className="mb-4">
+              <div className="group relative">
+                <div className="relative">
+                  <div className="aspect-video overflow-hidden rounded-md">
+                    <Image
+                      src={"/tuto1.webp"}
+                      alt="Agent Tutorials"
+                      width={0}
+                      height={0}
+                      sizes="20vw"
+                      objectFit="cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <span className="h-full w-full rounded-md bg-muted object-cover transition group-hover:opacity-50" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
+                    <div className="cursor-pointer rounded-full bg-white p-2">
+                      <svg
+                        className="h-5 w-5 text-black"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-2 p-2">
+                <h3 className="text-lg font-semibold">Creación de un agente</h3>
+                <p className="text-gray-500">
+                  Aprende a crear tu propio agente inteligente en ChatsappAI y
+                  mejora la interacción con tus usuarios.
+                </p>
               </div>
             </div>
           </div>
