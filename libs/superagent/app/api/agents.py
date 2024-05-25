@@ -13,6 +13,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_openai import AzureChatOpenAI
 from langfuse import Langfuse
 from openai import AsyncOpenAI
 
@@ -34,6 +36,9 @@ from app.models.request import (
 )
 from app.models.request import (
     AgentUpdate as AgentUpdateRequest,
+)
+from app.models.request import (
+    GeneratePrompt as GeneratePromptRequest,
 )
 from app.models.response import (
     Agent as AgentResponse,
@@ -74,9 +79,6 @@ class LLMPayload:
 async def get_llm_or_raise(data: LLMPayload) -> LLM:
     provider = data.provider
 
-    print(data)
-    print("---------------------------------data")
-
     if data.model:
         for key, models in LLM_PROVIDER_MAPPING.items():
             if data.model in models:
@@ -90,7 +92,6 @@ async def get_llm_or_raise(data: LLMPayload) -> LLM:
         )
 
     llm = await prisma.llm.find_first(where={"provider": provider})
-    print(llm)
 
     if not llm:
         raise HTTPException(
@@ -922,3 +923,61 @@ async def remove_datasource(
         return {"success": True, "data": None}
     except Exception as e:
         handle_exception(e)
+
+
+@router.post("/generate-prompt")
+async def generate_prompt(
+    request: GeneratePromptRequest, api_user=Depends(get_current_api_user)
+):
+    llm_provider = "AZURE_OPENAI"
+    llm_model = "GPT_3_5_TURBO_16K_0613"
+
+    with open("openai.txt") as f:
+        docs = f.read()
+
+    template = """Based on the following instructions, help me write a good prompt TEMPLATE for the following task:
+
+    Task: {task}
+    Result: {result}
+    Description: {description}
+
+    Notably, this prompt TEMPLATE expects that additional information will be provided by the end user of the prompt you are writing. For the piece(s) of information that they are expected to provide, please write the prompt in a format where they can be formatted into as if a Python f-string.
+
+    When you have enough information to create a good prompt, return the prompt in the following format:\n\n```prompt\n\n...\n\n```
+
+    Instructions for a good prompt:
+
+    {instructions}
+    """
+
+    prompt_template = PromptTemplate.from_template(template).partial(instructions=docs)
+
+    llm_config = await get_llm_or_raise(
+        LLMPayload(provider=llm_provider, model=llm_model)
+    )
+    azure_options = llm_config.options
+
+    llm = AzureChatOpenAI(
+        api_key=llm_config.apiKey,
+        azure_endpoint=azure_options["azure_endpoint"],
+        deployment_name=azure_options["azure_deployment"],
+        api_version=azure_options["openai_api_version"],
+    )
+
+    agent = LLMChain(
+        llm=llm,
+        output_key="output",
+        verbose=True,
+        prompt=prompt_template,
+    )
+
+    task = request.task
+    result = request.result
+    description = request.description
+
+    try:
+        prompt = await agent.apredict(task=task, result=result, description=description)
+        return {"output": prompt}
+    except Exception as e:
+        logging.error(f"Error generating prompt: {e}")
+        raise HTTPException(status_code=500, detail="Error generating prompt")
