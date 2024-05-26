@@ -260,36 +260,10 @@ export default function Settings({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="llmModel"
-                  render={({ field }) => (
-                    <FormItem className="w-full flex-1">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value || ""}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un modelo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {siteConfig.llms
-                            .find((llm) => currLlmProvider)
-                            ?.options.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.title}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <Input
+                  placeholder="Por ejemplo, asistente para detalles de autos"
+                  value="GPT4o"
+                  disabled
                 />
               </div>
             ) : (

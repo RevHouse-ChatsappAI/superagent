@@ -59,12 +59,12 @@ export default async function Agents({
           interactúas y te comunicas.
         </p>
       </div>
-      <div className="pt-6">
+      <div className="py-6">
         <h2 className="mb-5 text-xl font-semibold">
           ¡Inicia la aventura con nuestros tutoriales de IA para agentes!
         </h2>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="rounded-lg border p-6 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
+        <div className="grid grid-cols-4 gap-3">
+          <div className="rounded-lg border px-6 pb-5 pt-3 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center">
                 <span className="rounded-full bg-gray-600 px-2 py-1 text-xs font-medium uppercase tracking-wider text-white">
@@ -107,7 +107,7 @@ export default async function Agents({
             </div>
           </div>
 
-          <div className="rounded-lg border p-6 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
+          <div className="rounded-lg border px-6 pb-5 pt-3 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center">
                 <span className="rounded-full bg-gray-600 px-2 py-1 text-xs font-medium uppercase tracking-wider text-white">
