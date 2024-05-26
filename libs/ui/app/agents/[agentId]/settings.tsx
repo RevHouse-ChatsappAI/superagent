@@ -37,6 +37,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
+import AddAutoPrompter from "./add-autoprompter"
 import AddDatasource from "./add-datasource"
 import AddTool from "./add-tool"
 
@@ -159,6 +160,10 @@ export default function Settings({
     [form]
   )
 
+  const handleAutoPromptChange = (newPrompt: string) => {
+    form.setValue("prompt", newPrompt)
+  }
+
   return (
     <ScrollArea className="relative flex max-w-lg flex-1 grow px-4 py-2">
       <Form {...form}>
@@ -188,13 +193,19 @@ export default function Settings({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Instrucciones</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="h-[400px]"
-                    placeholder="Por ejemplo, eres un asistente de inteligencia artificial que..."
-                    {...field}
+                <div className="relative">
+                  <FormControl>
+                    <Textarea
+                      className="h-[400px]"
+                      placeholder="Por ejemplo, eres un asistente de inteligencia artificial que..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <AddAutoPrompter
+                    profile={profile}
+                    handleAutoPromptChange={handleAutoPromptChange}
                   />
-                </FormControl>
+                </div>
                 <FormMessage />
               </FormItem>
             )}

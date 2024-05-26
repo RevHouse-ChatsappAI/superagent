@@ -36,6 +36,13 @@ export class Api {
     return await response.json()
   }
 
+  async generateTemplatePrompt(payload: any) {
+    return this.fetchFromApi("/generate-prompt", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  }
+
   async indentifyUser(payload: any) {
     return this.fetchFromApi("/api-users/identify", {
       method: "POST",
