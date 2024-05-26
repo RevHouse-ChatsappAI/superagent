@@ -95,10 +95,8 @@ async def create(
             vector_db_provider: Optional[str],
             embeddings_model_provider: EmbeddingsModelProvider,
         ):
-            print("muñeca---------------------")
             print(embeddings_model_provider)
             print(vector_db_provider)
-            print("embeding---------------------")
             try:
                 await vectorize_datasource(
                     datasource=datasource,
@@ -114,9 +112,7 @@ async def create(
                 )
                 handle_exception(flow_exception)
 
-        print("embeding---------------------")
         print(body.embeddingsModelProvider)
-        print("embeding---------------------")
 
         asyncio.create_task(
             run_vectorize_flow(
