@@ -96,14 +96,21 @@ function AddDatasource({
         vectorDbId: vectorDbs[0]?.id,
         embeddingsModelProvider: getEmbeddingsModelProvider(llmProvider),
       })
-      await api.createAgentDatasource(agent.id, datasource.id)
-      form.reset()
-      toast({
-        description: "Datasource created successfully",
-      })
+
+      if (datasource?.id) {
+        await api.createAgentDatasource(agent.id, datasource.id)
+        form.reset()
+        toast({
+          description: "Fuente de datos creada exitosamente",
+        })
+        onSuccess()
+      } else {
+        toast({
+          description: "Se alcanzo el limite de datos",
+        })
+      }
       setOpen(false)
       form.reset()
-      onSuccess()
     } catch (error: any) {
       toast({
         description: error?.message,
