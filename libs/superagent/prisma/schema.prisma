@@ -111,11 +111,16 @@ model ApiUser {
   vectorDb        VectorDb[]
   workflowConfigs WorkflowConfig[]
   apiKeys         ApiKey[]
-  tokens Token[]
-  subscriptions Subscription[]
-  credits Credit[]
-  counts Count[]
-  platformKey  PlatformKey[]
+  tokens          Token[]
+  subscriptions   Subscription[]
+  credits         Credit[]
+  counts          Count[]
+  platformKey     PlatformKey[]
+  subscription    Subscription?    @relation(name: "UserSubscription", fields: [subscriptionId], references: [id])
+  subscriptionId  String?
+  tier            String?
+
+  @@unique([id])
 }
 
 model ApiKey {
@@ -301,14 +306,15 @@ model Token {
 }
 
 model Subscription {
-  id             String   @id @default(uuid())
-  apiUserId      String
-  apiUser        ApiUser  @relation(fields: [apiUserId], references: [id])
-  stripeCustomerId String @unique
-  tier           String   @default("BASE")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  credits Credit[]
+  id              String    @id @default(uuid())
+  apiUserId       String
+  apiUser         ApiUser   @relation(fields: [apiUserId], references: [id])
+  stripeCustomerId String   @unique
+  tier            String    @default("BASE")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  credits         Credit[]
+  apiUsers        ApiUser[] @relation(name: "UserSubscription")
 
   @@unique([apiUserId])
 }
@@ -339,6 +345,7 @@ model PlatformKey {
   id        String   @id @default(uuid())
   key       String
   url       String
+  subscriptionId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   apiUser   ApiUser  @relation(fields: [apiUserId], references: [id])

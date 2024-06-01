@@ -7,24 +7,26 @@ interface Props {
 
 export class ApiChatwoot {
   private apiKey?: string
+  private apiUrl: string
+  private subscriptionId: string
 
-  constructor(apiKey?: string) {
+  constructor(apiKey?: string, apiUrl?: string, subscriptionId?: string) {
     this.apiKey = apiKey
+    this.apiUrl = apiUrl! ?? process.env.NEXT_PUBLIC_CHATWOOT_API_URL
+    this.subscriptionId =
+      subscriptionId! ?? process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION
   }
 
   async fetchFromApi(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_CHATWOOT_API_URL}/${endpoint}`,
-      {
-        ...options,
-        headers: {
-          ...options.headers,
-          "Content-Type": "application/json",
-          api_access_token: this.apiKey ?? "",
-          "Ocp-Apim-Subscription-Key": `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`,
-        },
-      }
-    )
+    const response = await fetch(`${this.apiUrl}/${endpoint}`, {
+      ...options,
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
+        api_access_token: this.apiKey ?? "",
+        "Ocp-Apim-Subscription-Key": this.subscriptionId,
+      },
+    })
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
@@ -183,28 +185,30 @@ export class ApiChatwootPlatform {
 }
 
 export class ApiChatwootPlatformExtend {
-  private apiKey?: string
+  private apiUrl: string
+  private subscriptionId: string
+  private access_token: string
 
-  constructor(apiKey?: string) {
-    this.apiKey = apiKey
+  constructor(apiUrl?: string, subscriptionId?: string, access_token?: string) {
+    this.apiUrl = apiUrl!
+    this.subscriptionId = subscriptionId!
+    this.access_token = access_token!
   }
 
   async fetchFromApi(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_CHATWOOT_PLATFORM_API_URL}/${endpoint}`,
-      {
-        ...options,
-        headers: {
-          ...options.headers,
-          "Content-Type": "application/json",
-          //TODO: Save enviroment Develop/Cloud
-          // Localhost: AceQA5vCC5Cn9PVrTYkwyuyA
-          //Cloud: eh2iJ7QoiBRxZSRAp59f19c1
-          api_access_token: "eh2iJ7QoiBRxZSRAp59f19c1",
-          "Ocp-Apim-Subscription-Key": `${process.env.NEXT_PUBLIC_CHATWOOT_SUBSCRIPTION}`,
-        },
-      }
-    )
+    console.log(this.apiUrl, this.subscriptionId, this.access_token)
+    const response = await fetch(`${this.apiUrl}/${endpoint}`, {
+      ...options,
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
+        api_access_token: this.access_token,
+        "Ocp-Apim-Subscription-Key": this.subscriptionId,
+        //TODO: Save enviroment Develop/Cloud
+        // Localhost: AceQA5vCC5Cn9PVrTYkwyuyA
+        //Cloud: eh2iJ7QoiBRxZSRAp59f19c1
+      },
+    })
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)

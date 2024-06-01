@@ -57,10 +57,15 @@ async def vectorize(
 
 @task
 async def handle_delete_datasource(
-    datasource_id: str, options: Optional[dict], vector_db_provider: Optional[str]
+    datasource_id: str,
+    options: Optional[dict],
+    vector_db_provider: Optional[str],
+    embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
     vector_store = VectorStoreMain(
-        options=options, vector_db_provider=vector_db_provider
+        options=options,
+        vector_db_provider=vector_db_provider,
+        embeddings_model_provider=embeddings_model_provider,
     )
     vector_store.delete(datasource_id=datasource_id)
 
@@ -109,10 +114,14 @@ async def revalidate_datasource(agent_id: str):
 
 @flow(name="delete_datasource", description="Delete datasource", retries=0)
 async def delete_datasource(
-    datasource_id: str, options: Optional[dict], vector_db_provider: Optional[str]
+    datasource_id: str,
+    options: Optional[dict],
+    vector_db_provider: Optional[str],
+    embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
     await handle_delete_datasource(
         datasource_id=datasource_id,
         options=options,
         vector_db_provider=vector_db_provider,
+        embeddings_model_provider=embeddings_model_provider,
     )

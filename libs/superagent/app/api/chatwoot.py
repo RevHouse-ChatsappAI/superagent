@@ -74,13 +74,19 @@ async def get_platformkey(api_user=Depends(get_current_api_user)):
 async def send_platformkey(
     body: ApiPlaformKeyRequest, api_user=Depends(get_current_api_user)
 ):
+    print(body)
     try:
         existing_key = await prisma.platformkey.find_first(
             where={"apiUserId": api_user.id}
         )
         if existing_key:
             updated_key = await prisma.platformkey.update(
-                where={"apiUserId": api_user.id}, data={"key": body.key}
+                where={"apiUserId": api_user.id},
+                data={
+                    "key": body.key,
+                    "url": body.url,
+                    "subscriptionId": body.subscriptionId,
+                },
             )
             response_data = {
                 "success": True,
@@ -90,7 +96,12 @@ async def send_platformkey(
         else:
             validate = validate_url(body.url)
             if validate:
-                key_data = {"key": body.key, "apiUserId": api_user.id, "url": body.url}
+                key_data = {
+                    "key": body.key,
+                    "apiUserId": api_user.id,
+                    "url": body.url,
+                    "subscriptionId": body.subscriptionId,
+                }
                 new_key = await prisma.platformkey.create(data=key_data)
                 response_data = {
                     "success": True,
@@ -128,7 +139,11 @@ async def update_platformkey(
             if validate:
                 updated_key = await prisma.platformkey.update(
                     where={"apiUserId": api_user.id},
-                    data={"url": str(body.url), "key": str(body.key)},
+                    data={
+                        "url": str(body.url),
+                        "key": str(body.key),
+                        "subscriptionId": body.subscriptionId,
+                    },
                 )
                 return GetKeyPlatformResponse(
                     success=True,

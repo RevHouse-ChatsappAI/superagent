@@ -9,6 +9,7 @@ import { fontSans } from "@/lib/fonts"
 import PostHogClient from "@/lib/posthog"
 import { cn } from "@/lib/utils"
 import Analytics from "@/components/analytics"
+import { ChatsAppAI } from "@/components/svg/ChatsAppAI"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import Container from "./container"
@@ -63,8 +64,20 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="relative flex min-h-screen flex-col overflow-hidden">
-              <div className="flex-1">
-                <Container profile={profile}>{children}</Container>
+              <div className="flex flex-1">
+                {!session && (
+                  <div className="flex w-1/2 flex-col justify-between border-r-2 border-white bg-slate-400 p-2 dark:bg-slate-900 md:p-10">
+                    <ChatsAppAI />
+                    <p className="w-[80%]">
+                      “Los Agentes de IA nos ahorraron mas de 1000 horas de
+                      trabajo manual en solo un mes, una locura para una empresa
+                      como la nuestra.”Martin David
+                    </p>
+                  </div>
+                )}
+                <div className={session ? "flex-1" : "w-1/2"}>
+                  <Container profile={profile}>{children}</Container>
+                </div>
               </div>
             </div>
           </ThemeProvider>

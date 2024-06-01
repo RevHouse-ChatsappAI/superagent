@@ -86,6 +86,12 @@ class AgentInvoke(BaseModel):
     llm_params: Optional[LLMParams]
 
 
+class GeneratePrompt(BaseModel):
+    task: str
+    result: str
+    description: str
+
+
 class EmbeddingsModelProvider(str, Enum):
     OPENAI = "OPENAI"
     AZURE_OPENAI = "AZURE_OPENAI"
@@ -191,6 +197,7 @@ class ApiPayment(BaseModel):
 class ApiPlaformKey(BaseModel):
     key: str
     url: str
+    subscriptionId: str
 
 
 class ApiTokenUpdate(BaseModel):

@@ -201,6 +201,15 @@ async def update(
 async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
     """Endpoint for deleting a specific datasource"""
     try:
+        datasource_count = await prisma.count.find_unique(
+            where={"apiUserId": api_user.id}
+        )
+        if datasource_count and datasource_count.datasourceCount > 0:
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"datasourceCount": datasource_count.datasourceCount - 1},
+            )
+
         if SEGMENT_WRITE_KEY:
             analytics.track(api_user.id, "Deleted Datasource")
         datasource = await prisma.datasource.find_first(
@@ -211,12 +220,14 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
             datasource_id: str,
             options: Optional[dict],
             vector_db_provider: Optional[str],
+            embeddings_model_provider: EmbeddingsModelProvider,
         ) -> None:
             try:
                 await delete_datasource(
                     datasource_id=datasource_id,
                     options=options,
                     vector_db_provider=vector_db_provider,
+                    embeddings_model_provider=embeddings_model_provider,
                 )
             except Exception as flow_exception:
                 handle_exception(flow_exception)
@@ -228,6 +239,7 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
                 vector_db_provider=(
                     datasource.vectorDb.provider if datasource.vectorDb else None
                 ),
+                embeddings_model_provider="AZURE_OPENAI",
             )
         )
         # deleting datasources and agentdatasources if there are not any errors

@@ -1,6 +1,10 @@
 import { cookies } from "next/headers"
+import Image from "next/image"
 import Script from "next/script"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { PlayIcon } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 
 export const dynamic = "force-dynamic"
 
@@ -48,35 +52,100 @@ export default async function Agents({
         }}
       />
       <div className="flex flex-col gap-2 py-4">
-        <h2 className="text-2xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
+        <h2 className="text-3xl font-medium">Bienvenido a ChatsApp CLOUD</h2>
         <p className="text-md mt-1 w-2/3 font-light">
           ChatsApp es una plataforma innovadora que ofrece agentes inteligentes
           desarrollados con IA, diseñados para transformar la manera en que
           interactúas y te comunicas.
         </p>
       </div>
-      <div className="border-t-2 pt-6">
+      <div className="py-6">
         <h2 className="mb-5 text-xl font-semibold">
           ¡Inicia la aventura con nuestros tutoriales de IA para agentes!
         </h2>
-        <div className="flex gap-2">
-          <div className="relative flex max-w-sm rounded-lg border border-gray-200 bg-white p-5 shadow-md transition-colors hover:border-black dark:border-gray-700 dark:bg-gray-800 dark:hover:border-white">
-            <div className="grow">
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Creación de un Agente
-              </h5>
-              <p className="mb-3 text-sm font-normal text-gray-700 dark:text-gray-400">
-                Aprende a crear tu propio agente inteligente en ChatsApp y
+        <div className="grid grid-cols-4 gap-3">
+          <div className="rounded-lg border px-6 pb-5 pt-3 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="rounded-full bg-gray-600 px-2 py-1 text-xs font-medium uppercase tracking-wider text-white">
+                  Original
+                </span>
+              </div>
+              <div>
+                <Button
+                  className="flex w-full items-center gap-1 p-2 hover:bg-slate-200 dark:hover:bg-black/50"
+                  size="icon"
+                  variant="ghost"
+                >
+                  <PlayIcon className="h-3 w-3 fill-white text-xs" />
+                  <span className="text-xs">Ver video</span>
+                </Button>
+              </div>
+            </div>
+            <div>
+              <div className="mb-6 h-[150px] w-full">
+                <Image
+                  src={"/agenttuto.webp"}
+                  alt="Agent Tutorials"
+                  width={0}
+                  height={0}
+                  sizes="20vw"
+                  className="rounded-md"
+                  objectFit="cover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+              <h3 className="text-xl font-bold">Creación de multiagentes</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Aprende a crear y gestionar múltiples agentes inteligentes en
+                ChatsappAI para mejorar la interacción con tus usuarios.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border px-6 pb-5 pt-3 shadow-sm dark:bg-[#1F1F1F] dark:text-white">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="rounded-full bg-gray-600 px-2 py-1 text-xs font-medium uppercase tracking-wider text-white">
+                  Original
+                </span>
+              </div>
+              <div>
+                <Button
+                  className="flex w-full items-center gap-1 p-2 hover:bg-slate-200 dark:hover:bg-black/50"
+                  size="icon"
+                  variant="ghost"
+                >
+                  <PlayIcon className="h-3 w-3 fill-white text-xs" />
+                  <span className="text-xs">Ver video</span>
+                </Button>
+              </div>
+            </div>
+            <div>
+              <div className="mb-6 h-[150px] w-full">
+                <Image
+                  src={"/tuto1.webp"}
+                  alt="Agent Tutorials"
+                  width={0}
+                  height={0}
+                  sizes="20vw"
+                  objectFit="cover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+              <h3 className="text-xl font-bold">Creación de un agente</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Aprende a crear tu propio agente inteligente en ChatsappAI y
                 mejora la interacción con tus usuarios.
               </p>
-              <div className="mt-3 flex justify-end">
-                <button
-                  className="inline-flex cursor-not-allowed items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white opacity-50 dark:bg-blue-600"
-                  disabled
-                >
-                  Próximamente
-                </button>
-              </div>
             </div>
           </div>
         </div>
