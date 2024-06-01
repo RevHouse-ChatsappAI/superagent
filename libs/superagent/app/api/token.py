@@ -50,9 +50,7 @@ async def create(body: ApiTokenRequest, api_user=Depends(get_current_api_user)):
                 "apiUserChatwoot": body.apiUserChatwoot,
                 "isAgentActive": body.isAgentActive,
             }
-            print(token_data)
             new_token = await prisma.token.create(data=token_data)
-            print(new_token)
             response_data = {
                 "success": True,
                 "message": "Token Successfully Created",

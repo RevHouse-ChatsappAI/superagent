@@ -191,8 +191,6 @@ async def invoke(
     enable_streaming = body.enableStreaming
     output_schemas = body.outputSchemas
     last_output_schema = body.outputSchema
-    print(last_output_schema)
-    print(workflow_data)
     workflow_steps = []
     for idx, step in enumerate(workflow_data.steps):
         agent_data = await prisma.agent.find_unique_or_raise(
@@ -207,7 +205,6 @@ async def invoke(
         )
         output_schema = agent_data.outputSchema
         llm_model = LLM_MAPPING.get(agent_data.llmModel)
-        print(llm_model)
         metadata = agent_data.metadata or {}
 
         if not llm_model and metadata.get("model"):
@@ -226,8 +223,6 @@ async def invoke(
             "output_schema": output_schema,
             "agent_data": agent_data,
         }
-        print("---------------------item")
-        print(item)
         session_tracker_handler = get_session_tracker_handler(
             workflow_data.id, agent_data.id, session_id, api_user.id
         )

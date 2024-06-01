@@ -8,10 +8,6 @@ from app.models.request import EmbeddingsModelProvider
 
 def get_embeddings_model_provider(embeddings_model_provider: EmbeddingsModelProvider):
     print(embeddings_model_provider)
-    # print("---------------------------------------------")
-    # print(embeddings_model_provider)
-    # print("---------------------------------------------")
-
     # if embeddings_model_provider == EmbeddingsModelProvider.AZURE_OPENAI:
     #     return AzureOpenAIEmbeddings(
     #         azure_deployment=config("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT"),

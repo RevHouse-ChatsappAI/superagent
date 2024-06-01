@@ -64,12 +64,10 @@ async def create(
         )
 
         vector_db = None
-        print(body.vectorDbId)
         if body.vectorDbId is not None:
             vector_db = await prisma.vectordb.find_first(
                 where={"id": body.vectorDbId, "apiUserId": api_user.id}
             )
-            print(body.vector_db)
 
             if not vector_db:
                 raise HTTPException(
@@ -111,8 +109,6 @@ async def create(
                     data={"status": DatasourceStatus.FAILED},
                 )
                 handle_exception(flow_exception)
-
-        print(body.embeddingsModelProvider)
 
         asyncio.create_task(
             run_vectorize_flow(
