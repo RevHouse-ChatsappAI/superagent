@@ -7,20 +7,43 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {
   ColumnDef,
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import {
+  FileArchiveIcon,
+  FileIcon,
+  FileSpreadsheetIcon,
+  TrashIcon,
+} from "lucide-react"
 import { useForm } from "react-hook-form"
-import { CiSquarePlus } from "react-icons/ci"
+import { BsFiletypeDocx, BsFiletypePptx } from "react-icons/bs"
+import { CiCircleCheck, CiSquarePlus } from "react-icons/ci"
+import { FaRegFilePdf } from "react-icons/fa6"
+import { FiYoutube } from "react-icons/fi"
+import { MdOutlineWebAsset } from "react-icons/md"
 import { RxCross2 } from "react-icons/rx"
+import { SiGoogleads } from "react-icons/si"
+import { TbProgressAlert } from "react-icons/tb"
+import { VscError } from "react-icons/vsc"
 import { v4 as uuidv4 } from "uuid"
 import * as z from "zod"
 
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -40,14 +63,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
@@ -110,6 +125,7 @@ export function DataTable<TData, TValue>({
       },
     },
   })
+
   const { ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -132,17 +148,26 @@ export function DataTable<TData, TValue>({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { data: vectorDbs } = await api.getVectorDbs()
-      await api.createDatasource({
+      const { data: datasource } = await api.createDatasource({
         ...values,
         vectorDbId: vectorDbs[0]?.id,
+        embeddingsModelProvider: "AZURE_OPENAI",
       })
-      toast({
-        description: "Fuente de datos creada con éxito",
-      })
+
+      if (datasource?.id) {
+        // await api.createAgentDatasource('d9b1e2a0-0751-42a2-b69a-d58987f40a3f', datasource.id)
+        form.reset()
+        toast({
+          description: "Fuente de datos creada exitosamente",
+        })
+      } else {
+        toast({
+          description: "Se alcanzo el limite de datos",
+        })
+      }
       router.refresh()
       setOpen(false)
       setSelectedType(null)
-      form.reset()
     } catch (error: any) {
       toast({
         description: error?.message,
@@ -203,6 +228,21 @@ export function DataTable<TData, TValue>({
     if (error) {
       toast({
         description: "Vaya, algo salió mal, ¡intenta de nuevo!",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleDeleteFile = async (fileId: string) => {
+    try {
+      await api.deleteDatasource(fileId)
+      toast({
+        description: "Fuente de datos eliminada con éxito",
+      })
+      router.refresh()
+    } catch (error: any) {
+      toast({
+        description: error.message,
         variant: "destructive",
       })
     }
@@ -547,54 +587,76 @@ export function DataTable<TData, TValue>({
       </div>
       <div>
         <div>
-          <div className="flex w-full">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <div
-                className="grid flex-1 grid-cols-12 gap-4"
-                key={headerGroup.id}
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <div
-                      className="col-span-2 text-xs text-gray-400"
-                      key={header.id}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </div>
-                  )
-                })}
-              </div>
-            ))}
-          </div>
-          <div className="mt-2 flex w-full flex-col items-center gap-2">
+          <div className="mt-2 flex flex-wrap gap-3">
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row: any) => (
                 <div
-                  className="hover:dark:bg-white-100 grid flex-1 cursor-pointer grid-cols-12 gap-4 rounded-sm px-4 hover:bg-slate-200"
+                  className="relative flex w-[200px] flex-col items-center justify-center rounded-md bg-[#222] p-4"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <div key={cell.id} className="col-span-2 py-3">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="absolute right-1 top-1"
+                        size="sm"
+                        variant="destructive"
+                      >
+                        <TrashIcon className="h-3 w-3" />
+                        <span className="sr-only">Eliminar</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Eliminar Archivo</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          ¿Estás seguro de que quieres eliminar este archivo?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          <Button variant="ghost">No</Button>
+                        </AlertDialogCancel>
+                        <AlertDialogAction>
+                          <Button
+                            onClick={() => handleDeleteFile(row.original.id)}
+                          >
+                            Sí
+                          </Button>
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <FileIcon className="mb-2 h-[52px] w-[52px] text-[#bbb]" />
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className="flex items-center space-x-2">
+                      {getFileIcon(row.original.type)}
+                      <div className="text-xs text-white">
+                        <div>{row.original.name}</div>
+                        <div className="text-[#aaa]">
+                          {row.original.type} •{" "}
+                          {new Date(
+                            row.original.createdAt
+                          ).toLocaleDateString()}
+                        </div>
+                      </div>
+                      {row.original.status === "DONE" && (
+                        <CiCircleCheck className="h-4 w-4 text-green-500" />
+                      )}
+                      {row.original.status === "IN_PROGRESS" && (
+                        <TbProgressAlert className="h-4 w-4 text-yellow-500" />
+                      )}
+                      {row.original.status === "FAILED" && (
+                        <VscError className="h-4 w-4 text-red-500" />
                       )}
                     </div>
-                  ))}
+                  </div>
                 </div>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No se encontraron fuentes de datos.
-                </TableCell>
-              </TableRow>
+              <div className="col-span-12 h-24 text-center text-white">
+                No se encontraron fuentes de datos.
+              </div>
             )}
           </div>
         </div>
@@ -607,4 +669,43 @@ export function DataTable<TData, TValue>({
       <Toaster />
     </div>
   )
+}
+
+const getFileIcon = (type: any) => {
+  switch (type) {
+    case "PPTX":
+      return <BsFiletypePptx className="h-4 w-4 text-[#D97706]" />
+    case "DOCX":
+      return <BsFiletypeDocx className="h-4 w-4 text-[#2563EB]" />
+    case "CSV":
+      return <FileSpreadsheetIcon className="h-4 w-4 text-[#16A34A]" />
+    case "PDF":
+      return <FaRegFilePdf className="h-4 w-4 text-[#E53E3E]" />
+    case "GOOGLE_DOC":
+      return <SiGoogleads className="h-4 w-4 text-[#4285F4]" />
+    case "YOUTUBE":
+      return <FiYoutube className="h-4 w-4 text-[#FF0000]" />
+    case "GITHUB_REPOSITORY":
+      return <FileIcon className="h-4 w-4 text-[#333]" />
+    case "MARKDOWN":
+      return <FileIcon className="h-4 w-4 text-[#000]" />
+    case "WEBPAGE":
+      return <MdOutlineWebAsset className="h-4 w-4 text-[#00A4E4]" />
+    case "AIRTABLE":
+      return <FileIcon className="h-4 w-4 text-[#18BFFF]" />
+    case "STRIPE":
+      return <FileIcon className="h-4 w-4 text-[#6772E5]" />
+    case "NOTION":
+      return <FileIcon className="h-4 w-4 text-[#000]" />
+    case "SITEMAP":
+      return <FileIcon className="h-4 w-4 text-[#D97706]" />
+    case "URL":
+      return <FileIcon className="h-4 w-4 text-[#2563EB]" />
+    case "FUNCTION":
+      return <FileIcon className="h-4 w-4 text-[#F56565]" />
+    case "ZIP":
+      return <FileArchiveIcon className="h-4 w-4 text-[#A78BFA]" />
+    default:
+      return <FileIcon className="h-4 w-4 text-[#bbb]" />
+  }
 }
