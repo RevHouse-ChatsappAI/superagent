@@ -7,7 +7,7 @@ interface FunctionCallsProps {
 function FunctionCalls({ functionCalls }: FunctionCallsProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-primary/70">Run Logs</h3>
+      <h3 className="text-primary/70">Correr Registros</h3>
 
       {functionCalls?.map((call, index) => (
         <div key={index} className="flex flex-row items-center space-x-2">
