@@ -28,7 +28,7 @@ export default function Overview({ data }: { profile: any; data: LogItem[] }) {
     <div className="flex space-x-6">
       <div className="mt-8 flex-1 flex-col space-y-4">
         <Card className="bg-muted">
-          <CardHeader>Requests</CardHeader>
+          <CardHeader>Peticiones</CardHeader>
           <ResponsiveContainer width="100%" height={200} className="p-0">
             <BarChart
               width={500}
@@ -53,7 +53,7 @@ export default function Overview({ data }: { profile: any; data: LogItem[] }) {
           <div className="flex items-end space-x-2 px-6 pb-6 text-2xl">
             <p className="leading-none"></p>
             <p className="leading-none">{data.length}</p>
-            <p className="text-sm text-muted-foreground">Total requests</p>
+            <p className="text-sm text-muted-foreground">Solicitudes totales</p>
           </div>
         </Card>
       </div>

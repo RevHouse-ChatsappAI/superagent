@@ -31,13 +31,17 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 
 const azureSchema = z.object({
-  azure_endpoint: z.string().nonempty("Endpoint cannot be empty"),
-  openai_api_version: z.string().nonempty("API version cannnot be empty"),
-  azure_deployment: z.string().nonempty("Deployment cannnot be empty"),
+  azure_endpoint: z.string().nonempty("El punto final no puede estar vacío"),
+  openai_api_version: z
+    .string()
+    .nonempty("La versión de API no puede estar vacía"),
+  azure_deployment: z
+    .string()
+    .nonempty("La implementación no puede estar vacía"),
 })
 
 const formSchema = z.object({
-  apiKey: z.string().nonempty("API key is mandatory"),
+  apiKey: z.string().nonempty("La clave API es obligatoria"),
   options: azureSchema.optional(),
 })
 
@@ -89,9 +93,9 @@ export default function LLM({
   return (
     <div className="container flex max-w-4xl flex-col space-y-10 pt-10">
       <div className="flex flex-col">
-        <p className="text-lg font-medium">Language Models</p>
+        <p className="text-lg font-medium">Modelos de lenguaje</p>
         <p className="text-muted-foreground">
-          Connect to your preferred provider of Language Models.
+          Conéctese con su proveedor preferido de modelos de lenguaje.
         </p>
       </div>
       <div className="flex-col border-b">
@@ -124,7 +128,7 @@ export default function LLM({
                   setOpen(true)
                 }}
               >
-                Settings
+                Configuración
               </Button>
             </div>
           )
@@ -188,14 +192,14 @@ export default function LLM({
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button type="button" variant="ghost">
-                      Close
+                      Cerrar
                     </Button>
                   </DialogClose>
                   <Button type="submit" size="sm">
                     {form.control._formState.isSubmitting ? (
                       <Spinner />
                     ) : (
-                      "Save"
+                      "Guardar"
                     )}
                   </Button>
                 </DialogFooter>

@@ -51,7 +51,7 @@ export const CardAgent = ({
   )
 
   return (
-    <Card className="overflow-hidden rounded-xl border-2 bg-slate-200 px-4 shadow-xl dark:bg-neutral-900">
+    <Card className="flex flex-col justify-between overflow-hidden rounded-xl border-2 bg-slate-200 px-4 shadow-xl dark:bg-neutral-900">
       <div>
         <h2 className="pt-2 text-lg font-bold text-neutral-900 dark:text-neutral-50">
           {agent.name}
@@ -67,7 +67,7 @@ export const CardAgent = ({
         />
       </div>
       <div className="relative"></div>
-      <CardContent className="!px-0">
+      <CardContent className="flex flex-col justify-between !px-0 ">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Badge
@@ -89,7 +89,7 @@ export const CardAgent = ({
             {agent.description}
           </p>
         </div>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-1 justify-center">
           <Button
             onClick={() => router.push(`/agents/${agent.id}`)}
             className="w-full rounded-lg border border-primary bg-transparent px-8 py-4 text-sm font-semibold text-primary hover:bg-primary hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"

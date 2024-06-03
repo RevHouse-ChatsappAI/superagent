@@ -31,16 +31,16 @@ const DeleteAgentButton: React.FC<DeleteAgentButtonProps> = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the agent
-            and remove your data from our servers.
+            Esta acción no se puede deshacer. Esto eliminará permanentemente al
+            agente. y eliminar sus datos de nuestros servidores.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={() => handleDelete()}>
-            Delete
+            Eliminar
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

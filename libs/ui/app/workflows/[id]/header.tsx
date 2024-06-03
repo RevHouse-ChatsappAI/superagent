@@ -42,7 +42,7 @@ const Header = ({ profile, workflow }: HeaderProps) => {
     <>
       <div className="flex space-x-2 px-6 text-sm text-muted-foreground">
         <Link passHref href="/workflows">
-          <span>Workflows</span>
+          <span>Flujos de trabajo</span>
         </Link>
         <span>/</span>
         <Badge variant="secondary">
@@ -75,7 +75,7 @@ const Header = ({ profile, workflow }: HeaderProps) => {
               onClick={() => setOpen(true)}
             >
               <TbTrash size={20} />
-              <span>Delete</span>
+              <span>Eliminar</span>
             </Button>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -89,7 +89,7 @@ const Header = ({ profile, workflow }: HeaderProps) => {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={async () => {
                     await api.deleteWorkflow(workflow.id)

@@ -23,9 +23,9 @@ export default function ApiKeysTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Key</TableCell>
-          <TableCell>Created At</TableCell>
+          <TableCell>Nombre</TableCell>
+          <TableCell>Clave</TableCell>
+          <TableCell>Creado el</TableCell>
         </TableRow>
       </TableHeader>
       <TableBody>

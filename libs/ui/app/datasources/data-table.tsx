@@ -120,7 +120,7 @@ export function DataTable<TData, TValue>({
     state: {
       columnFilters,
       pagination: {
-        pageIndex: 0, // we are setting pageIndex to 0 because we have only the current page's data
+        pageIndex: 0,
         pageSize: take,
       },
     },
@@ -155,7 +155,6 @@ export function DataTable<TData, TValue>({
       })
 
       if (datasource?.id) {
-        // await api.createAgentDatasource('d9b1e2a0-0751-42a2-b69a-d58987f40a3f', datasource.id)
         form.reset()
         toast({
           description: "Fuente de datos creada exitosamente",
@@ -332,7 +331,7 @@ export function DataTable<TData, TValue>({
                             setSelectedType("local")
                           }}
                         >
-                          Upload files
+                          Subir archivos
                         </Button>
                       </Alert>
                       <Alert className="flex items-center justify-between">
