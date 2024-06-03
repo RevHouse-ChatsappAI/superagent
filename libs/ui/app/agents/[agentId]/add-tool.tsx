@@ -97,7 +97,7 @@ function AddTool({
       }
       await api.createAgentTool(agent.id, tool.id)
       toast({
-        description: "Tool created successfully",
+        description: "Herramienta creada exitosamente",
       })
       form.reset()
       setOpen(false)
@@ -144,10 +144,9 @@ function AddTool({
               className="w-full space-y-4"
             >
               <DialogHeader>
-                <DialogTitle>Create new API connection</DialogTitle>
+                <DialogTitle>Crear nueva conexión API</DialogTitle>
                 <DialogDescription>
-                  Connect your agents to thousands of third-party APIs and
-                  tools.
+                  Conecte sus agentes a miles de API de terceros y herramientas.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col space-y-2">
@@ -156,7 +155,7 @@ function AddTool({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Nombre</FormLabel>
                       <FormControl>
                         <Input placeholder="E.g My API" {...field} />
                       </FormControl>
@@ -169,10 +168,10 @@ function AddTool({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>Descripción</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Useful for doing X..."
+                          placeholder="Útil para hacer X..."
                           {...field}
                         />
                       </FormControl>
@@ -185,14 +184,14 @@ function AddTool({
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Type</FormLabel>
+                      <FormLabel>Tipo</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select tool type" />
+                            <SelectValue placeholder="Seleccionar tipo de herramienta" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -257,7 +256,7 @@ function AddTool({
                                   defaultValue={field.value}
                                 >
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Select tool type" />
+                                    <SelectValue placeholder="Seleccionar tipo de herramienta" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {metadataField?.options?.map((option) => (
@@ -289,7 +288,7 @@ function AddTool({
                   {form.control._formState.isSubmitting ? (
                     <Spinner />
                   ) : (
-                    "Create API"
+                    "Crear API"
                   )}
                 </Button>
               </DialogFooter>
