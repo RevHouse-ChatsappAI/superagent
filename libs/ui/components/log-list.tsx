@@ -22,14 +22,14 @@ function LogPanel({ panel, onClose }: LogPanelType) {
   return (
     <div className="absolute right-0 h-full max-w-[500px] border-l bg-background">
       <div className="flex items-center justify-between space-x-2 border-b px-6 py-2">
-        <p className="font-medium">Log details</p>
+        <p className="font-medium">Detalles del registro</p>
         <Button variant="outline" className="h-7 w-7 p-0" onClick={onClose}>
           <TbX size={20} />
         </Button>
       </div>
       <div className="px-6 py-4">
         <div className="flex items-center justify-between border-b py-4">
-          <p className="text-muted-foreground">Timestamp</p>
+          <p className="text-muted-foreground">Marca de tiempo</p>
           <p>
             {new Date(panel.received_at)
               .toLocaleString("en-US", {
@@ -47,23 +47,25 @@ function LogPanel({ panel, onClose }: LogPanelType) {
           <p className="max-w-[70%] truncate">{panel.id}</p>
         </div>
         <div className="flex items-center justify-between border-b py-4">
-          <p className="text-muted-foreground">User ID</p>
+          <p className="text-muted-foreground">ID del usuario</p>
           <p className="max-w-[70%] truncate">{panel.user_id}</p>
         </div>
         <div className="flex items-center justify-between border-b py-4">
-          <p className="text-muted-foreground">Agent ID</p>
+          <p className="text-muted-foreground">ID del agente</p>
           <p className="max-w-[70%] truncate">{panel.agent_id || "n/a"}</p>
         </div>
         <div className="flex items-center justify-between border-b py-4">
-          <p className="text-muted-foreground">Session ID</p>
+          <p className="text-muted-foreground">ID de sesión</p>
           <p className="max-w-[70%] truncate">{panel.session_id || "n/a"}</p>
         </div>
         <div className="flex flex-col items-start justify-start space-y-4 overflow-hidden border-b py-4">
-          <p className="text-muted-foreground">Run logs</p>
+          <p className="text-muted-foreground">Ejecutar registros</p>
           <div className="flex w-full flex-1 justify-between space-x-12">
             <div className="flex items-center space-x-2">
               <div className="h-2 w-2 rounded-full bg-green-400" />
-              <p className="font-mono uppercase text-muted-foreground">Input</p>
+              <p className="font-mono uppercase text-muted-foreground">
+                Entrada
+              </p>
             </div>
             <p className="max-w-[70%] truncate">{panel.input || "n/a"}</p>
           </div>
@@ -93,7 +95,7 @@ function LogPanel({ panel, onClose }: LogPanelType) {
             <div className="flex items-center space-x-2">
               <div className="h-2 w-2 rounded-full bg-green-400" />
               <p className="font-mono uppercase text-muted-foreground">
-                Output
+                Salida
               </p>
             </div>
             <p className="max-w-[70%] truncate">{panel.output || "n/a"}</p>
@@ -103,7 +105,7 @@ function LogPanel({ panel, onClose }: LogPanelType) {
           <Link href={`/assistants/${panel.agent_id}`} passHref>
             <Button className="mt-8 w-full space-x-2" variant="outline">
               <TbBrain />
-              <span>View assistant</span>
+              <span>Ver asistente</span>
             </Button>
           </Link>
         )}
@@ -188,7 +190,7 @@ export default function Logs({
         <div className="absolute bottom-0 flex w-full items-center justify-center bg-transparent py-10">
           <Button size="sm" className="space-x-2" onClick={handleLoadMore}>
             {isLoading ? <Spinner /> : <TbArrowDown />}
-            <span>Load more</span>
+            <span>Cargar más</span>
           </Button>
         </div>
       )}
