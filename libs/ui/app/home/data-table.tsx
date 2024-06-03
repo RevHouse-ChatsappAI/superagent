@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { IoClose } from "react-icons/io5"
 import { MdPublishedWithChanges } from "react-icons/md"
 
 import { Profile } from "@/types/profile"
 import { Api } from "@/lib/api"
+import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -77,8 +79,13 @@ export function DataTable({ profile }: { profile: Profile }) {
     <div className="px-6">
       {isModalVisible && (
         <div className="animate__animated animate__fadeOut fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-40 dark:bg-black dark:bg-opacity-40">
-          <div className="max-w-md rounded-lg border-2 bg-white p-6 text-center dark:bg-black">
-            <h3 className="text-lg font-semibold">
+          <div className="relative max-w-md rounded-lg border-2 bg-white p-6 text-center dark:bg-black">
+            <div className="absolute inset-x-2 top-2 flex items-center justify-end">
+              <Button type="button" size="xs" onClick={handleCloseModal}>
+                <IoClose />
+              </Button>
+            </div>
+            <h3 className="text-xl font-semibold">
               Bienvenido a ChatsApp CLOUD
             </h3>
             <p className="mt-2 text-sm">

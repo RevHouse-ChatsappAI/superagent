@@ -6,6 +6,8 @@ import { PlayIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
+import { DataTable } from "./data-table"
+
 export const dynamic = "force-dynamic"
 
 export default async function Agents({
@@ -150,6 +152,7 @@ export default async function Agents({
           </div>
         </div>
       </div>
+      <DataTable profile={profile} />
     </div>
   )
 }
