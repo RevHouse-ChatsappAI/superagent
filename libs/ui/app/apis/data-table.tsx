@@ -73,13 +73,13 @@ interface DataTableProps<TData, TValue> {
 
 const formSchema = z.object({
   name: z.string().nonempty({
-    message: "Name is required",
+    message: "El nombre es requerido",
   }),
   description: z.string().nonempty({
-    message: "Description is required",
+    message: "La descripción es requerida",
   }),
   type: z.string().nonempty({
-    message: "Type is required",
+    message: "El tipo de herramienta es requerida",
   }),
   metadata: z.any(),
   returnDirect: z.boolean(),
@@ -108,7 +108,7 @@ export function DataTable<TData, TValue>({
     state: {
       columnFilters,
       pagination: {
-        pageIndex: 0, // we are setting pageIndex to 0 because we have only the current page's data
+        pageIndex: 0,
         pageSize: take,
       },
     },
@@ -131,7 +131,7 @@ export function DataTable<TData, TValue>({
         ...values,
       })
       toast({
-        description: "Tool created successfully",
+        description: "Herramienta creada correctamente",
       })
       setOpen(false)
       router.refresh()
@@ -151,7 +151,7 @@ export function DataTable<TData, TValue>({
             setOpen(true)
           }}
         >
-          {form.control._formState.isSubmitting ? <Spinner /> : "New API"}
+          {form.control._formState.isSubmitting ? <Spinner /> : "Nueva API"}
         </Button>
         <Dialog
           open={open}
@@ -169,10 +169,10 @@ export function DataTable<TData, TValue>({
                 className="w-full space-y-4"
               >
                 <DialogHeader>
-                  <DialogTitle>Create new API connection</DialogTitle>
+                  <DialogTitle>Crear nueva conexión API</DialogTitle>
                   <DialogDescription>
-                    Connect your agents to thousands of third-party APIs and
-                    tools.
+                    Conecte sus agentes a miles de API de terceros y
+                    herramientas.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col space-y-2">
@@ -181,9 +181,9 @@ export function DataTable<TData, TValue>({
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input placeholder="E.g My API" {...field} />
+                          <Input placeholder="Ejemplo: mi API" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -194,10 +194,10 @@ export function DataTable<TData, TValue>({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Useful for doing X..."
+                            placeholder="Útil para hacer X..."
                             {...field}
                           />
                         </FormControl>
@@ -210,14 +210,14 @@ export function DataTable<TData, TValue>({
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Type</FormLabel>
+                        <FormLabel>Tipo</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select tool type" />
+                              <SelectValue placeholder="Seleccionar tipo de herramienta" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -290,7 +290,7 @@ export function DataTable<TData, TValue>({
                     {form.control._formState.isSubmitting ? (
                       <Spinner />
                     ) : (
-                      "Create API"
+                      "Crear API"
                     )}
                   </Button>
                 </DialogFooter>
@@ -346,7 +346,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  No tools found.
+                  No se han encontrado herramientas.
                 </TableCell>
               </TableRow>
             )}
