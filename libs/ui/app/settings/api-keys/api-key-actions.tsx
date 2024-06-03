@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { ApiKey } from "@/models/models"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { RxPencil1, RxTrash } from "react-icons/rx"
+import { RxTrash } from "react-icons/rx"
 import { TbPencil } from "react-icons/tb"
 import * as z from "zod"
 
@@ -60,18 +60,18 @@ const DeleteButton = ({ profile, api_key }: ActionButtonProps) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete API Key</DialogTitle>
+          <DialogTitle>Eliminar clave de API</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this API key? This action is
+            ¿Está seguro de que desea eliminar esta clave API? Esta acción es
             irreversible.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">Cancelar</Button>
           </DialogClose>
           <Button onClick={onDeleteApiKey} variant="destructive">
-            Delete
+            Eliminar
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -80,7 +80,7 @@ const DeleteButton = ({ profile, api_key }: ActionButtonProps) => {
 }
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required."),
+  name: z.string().min(1, "El nombre es requerido"),
 })
 
 const EditButton = ({ profile, api_key }: ActionButtonProps) => {
@@ -103,7 +103,7 @@ const EditButton = ({ profile, api_key }: ActionButtonProps) => {
     if (!res?.success) {
       toast({
         title: "Error",
-        description: "An error occured while updating the API key",
+        description: "Se produjo un error al actualizar la clave API",
       })
       return
     }
@@ -129,7 +129,7 @@ const EditButton = ({ profile, api_key }: ActionButtonProps) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit API Key</DialogTitle>
+          <DialogTitle>Editar clave API</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -138,9 +138,12 @@ const EditButton = ({ profile, api_key }: ActionButtonProps) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name">Nombre</Label>
                   <FormControl>
-                    <Input placeholder="Enter API key name" {...field} />
+                    <Input
+                      placeholder="Ingrese el nombre de la clave API"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,10 +152,10 @@ const EditButton = ({ profile, api_key }: ActionButtonProps) => {
             <DialogFooter className="mt-8">
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancel
+                  Cancelar
                 </Button>
               </DialogClose>
-              <Button variant="default">Save</Button>
+              <Button variant="default">Guardar</Button>
             </DialogFooter>
           </form>
         </Form>

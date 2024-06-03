@@ -50,8 +50,8 @@ export default function WorkflowDetail({
         profile={profile}
         workflow={workflow}
         onSave={handleLLMSave}
-        title="Configure a Language Model"
-        description="Before you can start creating your first workflow you need to configure a Language Model from one of the options below."
+        title="Configurar un modelo de lenguaje"
+        description="Antes de que pueda comenzar a crear su primer flujo de trabajo, debe configurar un modelo de lenguaje a partir de una de las siguientes opciones."
       />
 
       <Header workflow={workflow} profile={profile} />
@@ -80,9 +80,10 @@ export default function WorkflowDetail({
             <div className="container flex max-w-lg flex-col space-y-6 rounded-lg border p-6">
               <RxPieChart size={20} />
               <div className="flex flex-col space-y-2">
-                <p className="text-sm font-semibold">Coming soon</p>
+                <p className="text-sm font-semibold">Muy pronto</p>
                 <p className="text-sm text-muted-foreground">
-                  We will be rolling out detailed logs for your workflows soon!
+                  ¡Pronto implementaremos registros detallados para sus flujos
+                  de trabajo!
                 </p>
               </div>
             </div>
@@ -93,9 +94,10 @@ export default function WorkflowDetail({
             <div className="container flex max-w-lg flex-col space-y-6 rounded-lg border p-6">
               <RxActivityLog size={20} />
               <div className="flex flex-col space-y-2">
-                <p className="text-sm font-semibold">Coming soon</p>
+                <p className="text-sm font-semibold">Muy pronto</p>
                 <p className="text-sm text-muted-foreground">
-                  We will be rolling out detailed logs for your workflows soon!
+                  ¡Pronto implementaremos registros detallados para sus flujos
+                  de trabajo!
                 </p>
               </div>
             </div>

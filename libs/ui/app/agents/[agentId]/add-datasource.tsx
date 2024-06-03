@@ -209,9 +209,9 @@ function AddDatasource({
               className="w-full space-y-6"
             >
               <DialogHeader>
-                <DialogTitle>Create new datasource</DialogTitle>
+                <DialogTitle>Crear nueva base de datos</DialogTitle>
                 <DialogDescription>
-                  Connect your to your custom datasources or files.
+                  Conéctelo a tus fuentes de datos o archivos personalizados.
                 </DialogDescription>
               </DialogHeader>
 
@@ -222,7 +222,7 @@ function AddDatasource({
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Nombre</FormLabel>
                         <FormControl>
                           <Input placeholder="E.g My API" {...field} />
                         </FormControl>
@@ -235,7 +235,7 @@ function AddDatasource({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Useful for doing X..."
@@ -252,9 +252,9 @@ function AddDatasource({
                   {!selectedFile ? (
                     <div className="relative flex flex-col items-center justify-between space-y-4 rounded-lg border border-dashed p-4">
                       <div className="flex flex-col items-center justify-center">
-                        <p className="text-sm">Select files</p>
+                        <p className="text-sm">Seleccionar los archivos</p>
                         <p className="text-sm text-muted-foreground">
-                          Upload local files from your device
+                          Cargue archivos locales desde su dispositivo
                         </p>
                       </div>
                       <UploadButton
@@ -286,7 +286,7 @@ function AddDatasource({
                   {form.control._formState.isSubmitting || isDownloadingFile ? (
                     <Spinner />
                   ) : (
-                    "Create datasource"
+                    "Crear base de datos"
                   )}
                 </Button>
               </DialogFooter>

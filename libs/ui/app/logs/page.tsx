@@ -27,16 +27,17 @@ export default async function Agents({
 
   return (
     <div className="flex h-screen flex-col justify-between space-y-0 overflow-hidden">
-      <p className="border-b px-6 py-4 font-medium">Logs</p>
+      <p className="border-b px-6 py-4 font-medium">Registros</p>
       <div className="flex grow overflow-auto">
         {/*<LogList data={logs} profile={profile} /> */}
         <div className="flex h-full w-full items-center justify-center ">
           <div className="container flex max-w-lg flex-col space-y-6 rounded-lg border p-6">
             <TbTerminal2 fontSize="30px" />
             <div className="flex flex-col space-y-2">
-              <p className="text-sm font-semibold">Coming soon</p>
+              <p className="text-sm font-semibold">Muy pronto</p>
               <p className="text-sm text-muted-foreground">
-                We will be rolling out detailed logs for your workflows soon!
+                ¡Pronto implementaremos registros detallados para sus flujos de
+                trabajo!
               </p>
             </div>
           </div>

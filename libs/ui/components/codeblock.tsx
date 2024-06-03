@@ -68,7 +68,10 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
       3,
       true
     )}${fileExtension}`
-    const fileName = window.prompt("Enter file name" || "", suggestedFileName)
+    const fileName = window.prompt(
+      "Introduzca el nombre del archivo" || "",
+      suggestedFileName
+    )
 
     if (!fileName) {
       // User pressed cancel on prompt.
@@ -104,7 +107,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
             size="icon"
           >
             <RxDownload size="18px" />
-            <span className="sr-only">Download</span>
+            <span className="sr-only">Descargar</span>
           </Button>
           <Button
             variant="ghost"
@@ -113,7 +116,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
             onClick={onCopy}
           >
             {isCopied ? <RxCheck size="18px" /> : <RxCopy size="18px" />}
-            <span className="sr-only">Copy code</span>
+            <span className="sr-only">Copiar código</span>
           </Button>
         </div>
       </div>

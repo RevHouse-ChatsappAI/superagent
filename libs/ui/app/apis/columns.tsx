@@ -47,10 +47,10 @@ import { toast, useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   name: z.string().nonempty({
-    message: "Name is required",
+    message: "Se requiere el nombre",
   }),
   description: z.string().nonempty({
-    message: "Description is required",
+    message: "Se requiere descripción",
   }),
   metadata: z.any(),
 })
@@ -76,12 +76,12 @@ export function DeleteButton({
     try {
       await api.deleteTool(id)
       toast({
-        description: "API deleted successfully",
+        description: "API eliminada con éxito",
       })
       router.refresh()
     } catch (error: any) {
       toast({
-        description: "Oops! Something went wrong.",
+        description: "¡Ups! Algo salió mal.",
         variant: "destructive",
       })
     }
@@ -104,11 +104,11 @@ export function CopyButton({ id }: { id: string }) {
       onClick={() => {
         navigator.clipboard.writeText(id)
         toast({
-          description: "API ID copied to clipboard",
+          description: "ID de API copiado al portapapeles",
         })
       }}
     >
-      Copy ID
+      Copiar ID
     </DropdownMenuItem>
   )
 }
@@ -139,7 +139,7 @@ export function EditTool({
         ...values,
       })
       toast({
-        description: "Tool updated successfully",
+        description: "Herramienta actualizada exitosamente",
       })
       router.refresh()
     } catch (error: any) {
@@ -158,7 +158,7 @@ export function EditTool({
           className="w-full space-y-4 overflow-hidden"
         >
           <DialogHeader>
-            <DialogTitle>Update API connection</DialogTitle>
+            <DialogTitle>Actualizar conexión API</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col space-y-2">
             <FormField
@@ -166,9 +166,9 @@ export function EditTool({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="E.g My API" {...field} />
+                    <Input placeholder="Por ejemplo, mi API" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -179,9 +179,9 @@ export function EditTool({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Useful for doing X..." {...field} />
+                    <Textarea placeholder="Útil para hacer X..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -223,7 +223,7 @@ export function EditTool({
                               } catch (error) {
                                 form.setError(`metadata.${metadataField.key}`, {
                                   type: "manual",
-                                  message: "Invalid JSON",
+                                  message: "JSON invalido",
                                 })
                               }
                             }}
@@ -251,7 +251,7 @@ export function EditTool({
               {form.control._formState.isSubmitting ? (
                 <Spinner />
               ) : (
-                "Update API"
+                "Actualizar API"
               )}
             </Button>
           </DialogFooter>
