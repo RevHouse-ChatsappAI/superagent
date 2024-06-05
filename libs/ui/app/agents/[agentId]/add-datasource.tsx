@@ -94,7 +94,7 @@ function AddDatasource({
       const { data: datasource } = await api.createDatasource({
         ...values,
         vectorDbId: vectorDbs[0]?.id,
-        embeddingsModelProvider: getEmbeddingsModelProvider(llmProvider),
+        embeddingsModelProvider: "OPENAI",
       })
 
       if (datasource?.id) {
