@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+import { Api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -49,6 +50,19 @@ export default function OnboardingClientPage() {
     })
 
     const profile = await res.json()
+
+    if (profile) {
+      console.log("Customer ID:", profile?.stripe_customer_id)
+      console.log("Customer api key", profile?.api_key)
+      const apiNewSubs = new Api(profile?.api_key)
+
+      const freeSubscriptionResponse =
+        await apiNewSubs.createAccountFreeSubscription({
+          user_customer_id: profile?.stripe_customer_id,
+          nickname: "FREE",
+        })
+      console.log("Free subscription response:", freeSubscriptionResponse)
+    }
 
     if (!res.ok || !profile) {
       return toast({
