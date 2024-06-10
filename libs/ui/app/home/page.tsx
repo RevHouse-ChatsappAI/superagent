@@ -152,7 +152,7 @@ export default async function Agents({
           </div>
         </div>
       </div>
-      <DataTable profile={profile} />
+      {/* <DataTable profile={profile} /> */}
     </div>
   )
 }
