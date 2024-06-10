@@ -1,19 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import NextLink from "next/link"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BsLayoutSidebarInset } from "react-icons/bs"
-import { FaRegPlayCircle } from "react-icons/fa"
-import { IoIosClose, IoMdSettings } from "react-icons/io"
+import { IoMdSettings } from "react-icons/io"
+import { IoTicketOutline } from "react-icons/io5"
 import { useAsync } from "react-use"
 
 import { Profile } from "@/types/profile"
 import { siteConfig } from "@/config/site"
+import { Api } from "@/lib/api"
 import { getSupabase } from "@/lib/supabase"
 
-import { Agents } from "./icons/Agents"
 import Logo from "./logo"
 import { Button } from "./ui/button"
 
@@ -22,8 +22,9 @@ const supabase = getSupabase()
 export default function Sidebar() {
   const [profile, setProfile] = useState<Profile | null>()
 
-  const [closeModal, setCloseModal] = useState<Boolean>(false)
+  // const [closeModal, setCloseModal] = useState<Boolean>(false)
   const [toggleModal, setToggleModal] = useState<Boolean>(true)
+  const [credit, setCredit] = useState(0)
 
   const { value: showSidebar } = useAsync(async () => {
     const {
@@ -46,10 +47,30 @@ export default function Sidebar() {
   }, [])
 
   const pathname = usePathname()
+  const api = useMemo(() => new Api(profile?.api_key), [profile?.api_key])
 
-  const handleClose = () => {
-    setCloseModal(true)
-  }
+  useEffect(() => {
+    const getApiCount = async () => {
+      try {
+        const [count, credit] = await Promise.all([
+          api.getCount(),
+          api.getCredit(),
+        ])
+
+        const tokenSpent = count?.data?.queryCount ?? 0
+        const creditEnable = credit?.data?.credits ?? 0
+        setCredit(creditEnable - tokenSpent)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      }
+    }
+
+    getApiCount()
+  }, [api, toggleModal])
+
+  // const handleClose = () => {
+  //   setCloseModal(true)
+  // }
 
   const handleToggleModal = () => {
     setToggleModal(() => !toggleModal)
@@ -122,7 +143,39 @@ export default function Sidebar() {
         </div>
       </div>
       <div className="flex flex-col justify-center space-y-2 px-4 align-bottom">
-        {!toggleModal && (
+        <div
+          key="1"
+          className={`max-w-sm rounded-lg bg-[#33373B] text-white ${
+            !toggleModal ? "p-4" : "py-2"
+          }`}
+        >
+          {!toggleModal && (
+            <div className="mb-2 flex items-center">
+              <h3 className="text-xs font-semibold">Creditos Disponibles</h3>
+            </div>
+          )}
+          <div className={`${!toggleModal ? "mb-4" : ""}`}>
+            <div
+              className={`flex items-center gap-2 text-sm font-semibold ${
+                !toggleModal ? "flex-row" : "flex-col"
+              }`}
+            >
+              <IoTicketOutline />{" "}
+              <span>
+                {credit} {!toggleModal && "Restante"}
+              </span>
+            </div>
+          </div>
+          {!toggleModal && (
+            <Button
+              size="xs"
+              className="flex w-full items-center justify-center bg-white py-2 text-xs text-black"
+            >
+              Actualizar
+            </Button>
+          )}
+        </div>
+        {/* {!toggleModal && (
           <div
             className={`relative flex flex-col items-center justify-center gap-2 rounded-lg bg-slate-900 p-4 ${
               closeModal && "hidden"
@@ -147,7 +200,7 @@ export default function Sidebar() {
               <span>Mirar una Demo</span>
             </Button>
           </div>
-        )}
+        )} */}
         <div
           className={`${
             !toggleModal
