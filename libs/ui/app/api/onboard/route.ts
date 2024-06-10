@@ -127,18 +127,18 @@ export const POST = async (req: NextRequest) => {
     )
   }
   console.log(data)
-  if (data[0]?.api_key) {
-    console.log("Customer ID:", customer?.id)
-    console.log("Customer api key", data[0]?.api_key)
-    const apiNewSubs = new Api(data[0]?.api_key)
+  // if (data[0]?.api_key) {
+  //   console.log("Customer ID:", customer?.id)
+  //   console.log("Customer api key", data[0]?.api_key)
+  //   const apiNewSubs = new Api(data[0]?.api_key)
 
-    const freeSubscriptionResponse =
-      await apiNewSubs.createAccountFreeSubscription({
-        user_customer_id: customer?.id,
-        nickname: "FREE",
-      })
-    console.log("Free subscription response:", freeSubscriptionResponse)
-  }
+  //   const freeSubscriptionResponse =
+  //     await apiNewSubs.createAccountFreeSubscription({
+  //       user_customer_id: customer?.id,
+  //       nickname: "FREE",
+  //     })
+  //   console.log("Free subscription response:", freeSubscriptionResponse)
+  // }
 
   return NextResponse.json(data[0])
 }
