@@ -92,7 +92,7 @@ export const POST = async (req: NextRequest) => {
         },
       ],
       // 7 days trial
-      // trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+      trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
       payment_settings: {
         save_default_payment_method: "on_subscription",
       },
