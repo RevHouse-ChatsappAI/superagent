@@ -77,7 +77,7 @@ class DatasourceTool(BaseTool):
         vector_store = VectorStoreMain(
             options=self.metadata["options"],
             vector_db_provider=self.metadata["provider"],
-            embeddings_model_provider=self.metadata["embeddings_model_provider"],
+            embeddings_model_provider="OPENAI",
         )
         result = vector_store.query_documents(
             prompt=question,
@@ -92,6 +92,8 @@ class DatasourceTool(BaseTool):
         question: str,
     ) -> str:
         """Use the tool asynchronously."""
+        print("Embedding _arun")
+        print(self.metadata["embeddings_model_provider"])
 
         vector_store = VectorStoreMain(
             options=self.metadata["options"],
