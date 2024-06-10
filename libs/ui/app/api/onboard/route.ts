@@ -70,6 +70,7 @@ export const POST = async (req: NextRequest) => {
     .select("*")
     .eq("user_id", user?.id)
     .single()
+  console.log(profile)
 
   let api_key = profile?.api_key
   if (!api_key) {
@@ -81,6 +82,8 @@ export const POST = async (req: NextRequest) => {
       lastName: last_name,
       company,
     })
+
+    console.log(api_key)
     await supabase
       .from("profiles")
       .update({
