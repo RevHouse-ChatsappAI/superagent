@@ -13,6 +13,7 @@ import { onboardFormSchema } from "./form-schema"
 const api = new Api()
 
 export const POST = async (req: NextRequest) => {
+  console.log(req)
   const supabase = createRouteHandlerClient({ cookies })
   const body = await req.json()
   let parsedBody
@@ -20,6 +21,7 @@ export const POST = async (req: NextRequest) => {
     parsedBody = onboardFormSchema.parse(body)
   } catch (error) {
     let errorMessage = "Invalid form data"
+    console.error("Form validation error:", errorMessage)
     if (error instanceof z.ZodError) {
       errorMessage = error.errors[0].message
     }
@@ -37,7 +39,22 @@ export const POST = async (req: NextRequest) => {
 
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
+
+  console.log(user)
+  if (authError) {
+    console.error("Auth error:", authError.message)
+    return NextResponse.json(
+      {
+        error: {
+          message: authError.message,
+        },
+      },
+      { status: 400 }
+    )
+  }
+
   if (!user?.email) {
     return NextResponse.json(
       {
@@ -80,6 +97,7 @@ export const POST = async (req: NextRequest) => {
       last_name,
     },
   }
+  console.log(params)
   let customer: Stripe.Customer | null = null
   let subscription: Stripe.Subscription | null = null
   if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -92,7 +110,7 @@ export const POST = async (req: NextRequest) => {
         },
       ],
       // 7 days trial
-      trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+      // trial_end: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
       payment_settings: {
         save_default_payment_method: "on_subscription",
       },
@@ -103,6 +121,8 @@ export const POST = async (req: NextRequest) => {
       },
     })
   }
+  console.log(customer)
+  console.log(subscription)
   const { error, data } = await supabase
     .from("profiles")
     .update({
@@ -115,6 +135,8 @@ export const POST = async (req: NextRequest) => {
     })
     .eq("user_id", user?.id)
     .select()
+
+  console.log(data)
 
   if (error) {
     return NextResponse.json(
