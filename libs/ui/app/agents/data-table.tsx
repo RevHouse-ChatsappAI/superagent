@@ -57,9 +57,19 @@ export function DataTable<TData, TValue>({
   return (
     <div className="px-6">
       <div className="mb-10 grid grid-cols-1 gap-5 rounded-md md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
-        {data.map((agent: any) => (
-          <CardAgent agent={agent} profile={profile} />
-        ))}
+        {data.length === 0 ? (
+          <div className="col-span-full rounded-md border p-5 text-center shadow-md">
+            <span className="text-3xl">🤖</span>
+            <p className="mt-2 text-lg font-semibold">
+              Aún no se han creado agentes.
+            </p>
+            <p className="mt-1">¡Comienza creando tu primer agente ahora!</p>
+          </div>
+        ) : (
+          data.map((agent: any) => (
+            <CardAgent key={agent.id} agent={agent} profile={profile} />
+          ))
+        )}
       </div>
 
       <DataTablePagination
