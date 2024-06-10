@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-import { initialSamlValue } from "@/config/saml"
-import { Api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -59,7 +57,7 @@ export default function OnboardingClientPage() {
       })
     }
 
-    window.location.href = `/pricing`
+    window.location.href = `/home`
   }
 
   return (
