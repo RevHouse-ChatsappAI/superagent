@@ -52,16 +52,22 @@ async def create(
         datasource_count = await prisma.count.find_unique(
             where={"apiUserId": api_user.id}
         )
-        if datasource_count.datasourceCount >= datasource_limit:
-            return {
-                "success": False,
-                "data": None,
-                "message": "Se alcanzo el limite de tu plan",
-            }
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"datasourceCount": datasource_count.datasourceCount + 1},
-        )
+        if datasource_count is None:
+            if datasource_count is None:
+                await prisma.count.create(
+                    data={"apiUserId": api_user.id, "datasourceCount": 1}
+                )
+        else:
+            if datasource_count.datasourceCount >= datasource_limit:
+                return {
+                    "success": False,
+                    "data": None,
+                    "message": "Se alcanzo el limite de tu plan",
+                }
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"datasourceCount": datasource_count.datasourceCount + 1},
+            )
 
         vector_db = None
         if body.vectorDbId is not None:

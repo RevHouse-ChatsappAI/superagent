@@ -58,12 +58,14 @@ export function DataTable<TData, TValue>({
     <div className="px-6">
       <div className="mb-10 grid grid-cols-1 gap-5 rounded-md md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
         {data.length === 0 ? (
-          <div className="col-span-full rounded-md border p-5 text-center shadow-md">
+          <div className="col-span-full mx-auto w-[500px] rounded-md border p-5 shadow-md">
             <span className="text-3xl">🤖</span>
-            <p className="mt-2 text-lg font-semibold">
+            <p className="my-2 text-sm font-bold">
               Aún no se han creado agentes.
             </p>
-            <p className="mt-1">¡Comienza creando tu primer agente ahora!</p>
+            <p className="text-md mt-1 text-gray-600 dark:text-gray-500">
+              ¡Comienza creando tu primer agente ahora!
+            </p>
           </div>
         ) : (
           data.map((agent: any) => (
