@@ -154,7 +154,7 @@ export default function Sidebar() {
               <h3 className="text-xs font-semibold">Creditos Disponibles</h3>
             </div>
           )}
-          <div className={`${!toggleModal ? "mb-4" : ""}`}>
+          <div className={`${!toggleModal ? "" : ""}`}>
             <div
               className={`flex items-center gap-2 text-sm font-semibold ${
                 !toggleModal ? "flex-row" : "flex-col"
@@ -166,14 +166,6 @@ export default function Sidebar() {
               </span>
             </div>
           </div>
-          {!toggleModal && (
-            <Button
-              size="xs"
-              className="flex w-full items-center justify-center bg-white py-2 text-xs text-black"
-            >
-              Actualizar
-            </Button>
-          )}
         </div>
         <div
           className={`${
