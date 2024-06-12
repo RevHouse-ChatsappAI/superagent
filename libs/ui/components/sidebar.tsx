@@ -1,17 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import NextLink from "next/link"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BsLayoutSidebarInset } from "react-icons/bs"
 import { IoMdSettings } from "react-icons/io"
-// import { IoTicketOutline } from "react-icons/io5"
+import { IoTicketOutline } from "react-icons/io5"
 import { useAsync } from "react-use"
 
 import { Profile } from "@/types/profile"
 import { siteConfig } from "@/config/site"
-// import { Api } from "@/lib/api"
+import { Api } from "@/lib/api"
 import { getSupabase } from "@/lib/supabase"
 
 import Logo from "./logo"
@@ -24,7 +24,7 @@ export default function Sidebar() {
 
   // const [closeModal, setCloseModal] = useState<Boolean>(false)
   const [toggleModal, setToggleModal] = useState<Boolean>(true)
-  // const [credit, setCredit] = useState(0)
+  const [credit, setCredit] = useState(0)
 
   const { value: showSidebar } = useAsync(async () => {
     const {
@@ -47,26 +47,26 @@ export default function Sidebar() {
   }, [])
 
   const pathname = usePathname()
-  // const api = useMemo(() => new Api(profile?.api_key), [profile?.api_key])
+  const api = useMemo(() => new Api(profile?.api_key), [profile?.api_key])
 
-  // useEffect(() => {
-  //   const getApiCount = async () => {
-  //     try {
-  //       const [count, credit] = await Promise.all([
-  //         api.getCount(),
-  //         api.getCredit(),
-  //       ])
+  useEffect(() => {
+    const getApiCount = async () => {
+      try {
+        const [count, credit] = await Promise.all([
+          api.getCount(),
+          api.getCredit(),
+        ])
 
-  //       const tokenSpent = count?.data?.queryCount ?? 0
-  //       const creditEnable = credit?.data?.credits ?? 0
-  //       setCredit(creditEnable - tokenSpent)
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error)
-  //     }
-  //   }
+        const tokenSpent = count?.data?.queryCount ?? 0
+        const creditEnable = credit?.data?.credits ?? 0
+        setCredit(creditEnable - tokenSpent)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      }
+    }
 
-  //   getApiCount()
-  // }, [api, toggleModal])
+    getApiCount()
+  }, [api, toggleModal])
 
   // const handleClose = () => {
   //   setCloseModal(true)
@@ -143,7 +143,7 @@ export default function Sidebar() {
         </div>
       </div>
       <div className="flex flex-col justify-center space-y-2 px-4 align-bottom">
-        {/*<div
+        <div
           key="1"
           className={`max-w-sm rounded-lg bg-[#33373B] text-white ${
             !toggleModal ? "p-4" : "py-2"
@@ -174,33 +174,7 @@ export default function Sidebar() {
               Actualizar
             </Button>
           )}
-        </div> */}
-        {/* {!toggleModal && (
-          <div
-            className={`relative flex flex-col items-center justify-center gap-2 rounded-lg bg-slate-900 p-4 ${
-              closeModal && "hidden"
-            }`}
-          >
-            <button
-              type="button"
-              className="absolute end-2 top-2 rounded-full bg-slate-400/50 transition-all hover:bg-gray-50/20"
-              onClick={handleClose}
-            >
-              <IoIosClose />
-            </button>
-            <Agents />
-            <h2 className="text-center text-xs font-medium text-white">
-              Te presentamos los Agentes Inteligencia Artificial
-            </h2>
-            <p className="text-center text-xs font-light text-gray-400">
-              La IA ha madurado como para reemplazar su fuerza laboral
-            </p>
-            <Button className="flex items-center gap-2 text-xs">
-              <FaRegPlayCircle />
-              <span>Mirar una Demo</span>
-            </Button>
-          </div>
-        )} */}
+        </div>
         <div
           className={`${
             !toggleModal
