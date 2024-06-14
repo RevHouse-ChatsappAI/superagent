@@ -52,16 +52,22 @@ async def create(
         datasource_count = await prisma.count.find_unique(
             where={"apiUserId": api_user.id}
         )
-        if datasource_count.datasourceCount >= datasource_limit:
-            return {
-                "success": False,
-                "data": None,
-                "message": "Se alcanzo el limite de tu plan",
-            }
-        await prisma.count.update(
-            where={"apiUserId": api_user.id},
-            data={"datasourceCount": datasource_count.datasourceCount + 1},
-        )
+        if datasource_count is None:
+            if datasource_count is None:
+                await prisma.count.create(
+                    data={"apiUserId": api_user.id, "datasourceCount": 1}
+                )
+        else:
+            if datasource_count.datasourceCount >= datasource_limit:
+                return {
+                    "success": False,
+                    "data": None,
+                    "message": "Se alcanzo el limite de tu plan",
+                }
+            await prisma.count.update(
+                where={"apiUserId": api_user.id},
+                data={"datasourceCount": datasource_count.datasourceCount + 1},
+            )
 
         vector_db = None
         if body.vectorDbId is not None:
@@ -87,14 +93,20 @@ async def create(
             }
         )
 
+        print("Datasource a")
+        print(data)
+
         async def run_vectorize_flow(
             datasource: Datasource,
             options: Optional[dict],
             vector_db_provider: Optional[str],
             embeddings_model_provider: EmbeddingsModelProvider,
         ):
+            print("Api Datasource")
             print(embeddings_model_provider)
             print(vector_db_provider)
+            print(datasource)
+            print(options)
             try:
                 await vectorize_datasource(
                     datasource=datasource,
@@ -239,7 +251,7 @@ async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
                 vector_db_provider=(
                     datasource.vectorDb.provider if datasource.vectorDb else None
                 ),
-                embeddings_model_provider="AZURE_OPENAI",
+                embeddings_model_provider="OPENAI",
             )
         )
         # deleting datasources and agentdatasources if there are not any errors

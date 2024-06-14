@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
-import { ButtonAuth } from "@/components/ui/buttonAuth"
 import {
   Form,
   FormControl,
@@ -19,7 +18,6 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
-import Logo from "@/components/logo"
 import { GoogleIcon } from "@/components/svg/GoogleIcon"
 import { MicrosoftIcon } from "@/components/svg/MicrosoftIcon"
 
@@ -59,7 +57,7 @@ export default function IndexPage() {
     })
   }
 
-  async function handleGithubLogin() {
+  async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
     })
@@ -122,10 +120,9 @@ export default function IndexPage() {
       </Form>
       <p className="my-6 text-center uppercase">O continuar con</p>
       <div className="flex flex-col items-center justify-center">
-        <div className="mb-4 text-xl font-semibold">Próximamente</div>
         <div className="flex flex-wrap justify-center gap-4">
           <button
-            onClick={handleGithubLogin}
+            onClick={handleGoogleLogin}
             className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300"
           >
             <GoogleIcon />

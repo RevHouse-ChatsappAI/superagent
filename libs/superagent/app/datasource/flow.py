@@ -46,7 +46,10 @@ async def vectorize(
     embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
     data = DataLoader(datasource=datasource).load()
-
+    print("Vectorize step 2 @task")
+    print(options)
+    print(vector_db_provider)
+    print(embeddings_model_provider)
     vector_store = VectorStoreMain(
         options=options,
         vector_db_provider=vector_db_provider,
@@ -62,6 +65,8 @@ async def handle_delete_datasource(
     vector_db_provider: Optional[str],
     embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
+    print("Embeddings delete @task")
+    print(embeddings_model_provider)
     vector_store = VectorStoreMain(
         options=options,
         vector_db_provider=vector_db_provider,
@@ -92,6 +97,7 @@ async def vectorize_datasource(
     vector_db_provider: Optional[str],
     embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
+    print("Vectorize step 1 flow.py")
     if datasource.type in VALID_UNSTRUCTURED_DATA_TYPES:
         await vectorize(
             datasource=datasource,

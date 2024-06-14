@@ -92,10 +92,11 @@ class VectorStoreMain(VectorStoreBase):
 
         if index_name is None:
             index_name = index_names.get(self.vectorstore)
+        print(self.embeddings_model_provider)
         return vectorstore_classes.get(self.vectorstore)(
             index_name=index_name,
             options=self.options,
-            embeddings_model_provider=self.embeddings_model_provider,
+            embeddings_model_provider="OPENAI",
         )
 
     def query(

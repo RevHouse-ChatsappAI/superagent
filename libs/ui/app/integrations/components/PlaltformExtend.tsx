@@ -45,7 +45,7 @@ export const PlatformExtend = ({ profile }: { profile: any }) => {
           />
         </div>
       </div>
-      {integrationsConfig.map((integration) => (
+      {/* {integrationsConfig.map((integration) => (
         <div className="flex-col border-b">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
@@ -69,7 +69,7 @@ export const PlatformExtend = ({ profile }: { profile: any }) => {
             </Link>
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   )
 }
