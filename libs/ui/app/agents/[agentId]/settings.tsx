@@ -123,7 +123,7 @@ export default function Settings({
     try {
       await api.patchAgent(agent.id, values)
 
-      const originalToolIds = agent.tools.map((tool: any) => tool.tool.id)
+      const originalToolIds = agent?.tools.map((tool: any) => tool.tool.id)
       await updateResources(
         originalToolIds,
         tools,
@@ -131,7 +131,7 @@ export default function Settings({
         (toolId) => api.deleteAgentTool(agent.id, toolId)
       )
 
-      const originalDatasourceIds = agent.datasources.map(
+      const originalDatasourceIds = agent?.datasources.map(
         (datasource: any) => datasource.datasource.id
       )
       await updateResources(
@@ -228,7 +228,7 @@ export default function Settings({
           />
           <div className="flex flex-col space-y-2">
             <h2 className="text-xs font-medium">Azure Openai - Por defecto</h2>
-            {agent.llms.length > 0 ? (
+            {agent?.llms.length > 0 ? (
               <div className="flex flex-col">
                 <FormField
                   control={form.control}
@@ -247,7 +247,7 @@ export default function Settings({
                         <SelectContent>
                           {siteConfig.llms
                             .filter(({ id }) =>
-                              configuredLLMs.some((llm) => llm.provider === id)
+                              configuredLLMs?.some((llm) => llm?.provider === id)
                             )
                             .map(({ id, name }) => (
                               <SelectItem key={id} value={id}>
@@ -269,7 +269,7 @@ export default function Settings({
             ) : (
               <div className="flex flex-col space-y-4 rounded-lg border border-red-500 p-4">
                 <p className="text-sm">¡Atención!</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Necesitas añadir un Modelo de Lenguaje a este agente para que
                   funcione. Esto se puede hacer a través del SDK o la API.
                 </p>
@@ -296,14 +296,14 @@ export default function Settings({
                 <FormControl>
                   <MultiSelect
                     placeholder="Selecciona una herramienta..."
-                    data={tools.map((tool: any) => ({
+                    data={tools?.map((tool: any) => ({
                       value: tool.id,
                       label: tool.name,
                     }))}
                     onChange={(values: { value: string }[]) => {
                       field.onChange(values.map(({ value }) => value))
                     }}
-                    selectedValues={agent.tools.map((tool: any) => ({
+                    selectedValues={agent?.tools.map((tool: any) => ({
                       value: tool.tool.id,
                       label: tool.tool.name,
                     }))}
@@ -332,14 +332,14 @@ export default function Settings({
                 <FormControl>
                   <MultiSelect
                     placeholder="Selecciona fuentes de datos..."
-                    data={datasources.map((datasource: Datasource) => ({
+                    data={datasources?.map((datasource: Datasource) => ({
                       value: datasource.id,
                       label: datasource.name,
                     }))}
                     onChange={(values: { value: string }[]) => {
                       field.onChange(values.map(({ value }) => value))
                     }}
-                    selectedValues={agent.datasources.map(
+                    selectedValues={agent?.datasources.map(
                       (datasource: any) => ({
                         value: datasource.datasource.id,
                         label: datasource.datasource.name,
