@@ -37,30 +37,30 @@ export default function Header({
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false)
 
   const onAgentDelete = async () => {
-    await api.deleteAgentById(agent.id)
+    await api.deleteAgentById(agent?.id)
     toast({
-      description: `¡Agente con ID: ${agent.id} eliminado!`,
+      description: `¡Agente con ID: ${agent?.id} eliminado!`,
     })
     router.refresh()
     router.push("/agents")
   }
 
   const onUpdateAgentName = async (name: string) => {
-    await api.patchAgent(agent.id, { name })
+    await api.patchAgent(agent?.id, { name })
     router.refresh()
   }
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <div className="flex flex-col">
-        <div className="flex space-x-2 py-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex space-x-2 py-2 text-sm">
           <Link passHref href="/agents">
             <span>Volver a los agentes</span>
           </Link>
           <span>/</span>
           <Badge variant="secondary">
             <div className="flex items-center space-x-1">
-              <span className="font-mono font-normal text-muted-foreground">
+              <span className="text-muted-foreground font-mono font-normal">
                 {agent?.id}
               </span>
             </div>
@@ -68,7 +68,7 @@ export default function Header({
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col space-y-2">
-            {useEditableField(agent.name, onUpdateAgentName)}
+            {useEditableField(agent?.name, onUpdateAgentName)}
           </div>
         </div>
       </div>
