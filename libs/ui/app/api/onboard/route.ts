@@ -100,6 +100,7 @@ export const POST = async (req: NextRequest) => {
       last_name,
     },
   }
+  console.log('Initial subscription....')
   console.log(params)
   let customer: Stripe.Customer | null = null
   let subscription: Stripe.Subscription | null = null
@@ -124,6 +125,7 @@ export const POST = async (req: NextRequest) => {
       },
     })
   }
+  console.log('Process payment....')
   console.log(customer)
   console.log(subscription)
   const { error, data } = await supabase
