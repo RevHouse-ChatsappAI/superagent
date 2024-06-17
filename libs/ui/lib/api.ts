@@ -12,29 +12,40 @@ export class Api {
     options: RequestInit = {},
     searchParams: Record<string, any> = {}
   ) {
-    const url = new URL(
-      `${process.env.NEXT_PUBLIC_SUPERAGENT_API_URL}${endpoint}`
-    )
+    try {
+      const url = new URL(
+        `${process.env.NEXT_PUBLIC_SUPERAGENT_API_URL}${endpoint}`
+      )
 
-    Object.entries(searchParams).forEach(([key, value]) => {
-      url.searchParams.append(key, value)
-    })
+      Object.entries(searchParams).forEach(([key, value]) => {
+        url.searchParams.append(key, value)
+      })
 
-    const response = await fetch(url.toString(), {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${this.apiKey}`,
-        ...options.headers,
-      },
-    })
+      const response = await fetch(url.toString(), {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${this.apiKey}`,
+          ...options.headers,
+        },
+      })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`Fetch API error: ${error.message}`)
+        return { error: true, message: error.message }
+      } else {
+        console.error('An unknown error occurred')
+        return { error: true, message: 'An unknown error occurred' }
+      }
     }
-
-    return await response.json()
   }
+
 
   async generateTemplatePrompt(payload: any) {
     return this.fetchFromApi("/generate-prompt", {

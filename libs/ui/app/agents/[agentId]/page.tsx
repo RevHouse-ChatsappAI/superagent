@@ -37,7 +37,7 @@ export default async function AgentPage({ params }: { params: any }) {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <Header agent={agent} profile={profile} />
-      {agent.type === "SUPERAGENT" ? (
+      {agent?.type === "SUPERAGENT" ? (
         <div className="flex grow overflow-auto">
           <Chat agent={agent} profile={profile} />
           <Settings
