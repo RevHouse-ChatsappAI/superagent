@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 from langchain.agents import AgentExecutor
 from langchain.chains import LLMChain
 
-from app.agents.base import AgentBase
+from app.agents.base import AgentFactory
 from app.models.request import ApiPlaformKey as ApiPlaformKeyRequest
 from app.models.response import GetCredit as GetCreditResponse
 from app.models.response import GetKeyPlatform as GetKeyPlatformResponse
@@ -319,36 +319,31 @@ async def chatwoot_webhook(agent_id: str, request: Request):
         enable_streaming = body.get("enableStreaming", False)
         output_schema = agent_config.outputSchema
 
-        agent_base = AgentBase(
-            agent_id=agent_id,
+        agent_base = AgentFactory(
             session_id=session_id,
             enable_streaming=False,
             output_schema={},
             callbacks=monitoring_callbacks,
             llm_params=None,
-            agent_config=agent_config,
+            agent_data=agent_config,
         )
         agent = await agent_base.get_agent()
 
-        agent_input = agent_base.get_input(
-            content,
-            agent_type=agent_config.type,
-        )
-
         if enable_streaming:
             logger.info("Streaming enabled. Preparing streaming response...")
-
             generator = send_message(
                 agent,
-                input=agent_input,
+                input=content,
+                # streaming_callback=streaming_callback,
+                # callbacks=[costCallback],
             )
-
             return StreamingResponse(generator, media_type="text/event-stream")
 
         logger.info("Streaming not enabled. Invoking agent synchronously...")
         output = await agent.ainvoke(
-            input=agent_input,
+            input=content,
             config={
+                # "callbacks": [constCallback],
                 "tags": [agent_id],
             },
         )
