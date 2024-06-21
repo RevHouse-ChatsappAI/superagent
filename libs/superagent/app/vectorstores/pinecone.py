@@ -3,9 +3,9 @@ import uuid
 from typing import Literal
 
 import backoff
-import pinecone
 from decouple import config
 from langchain.docstore.document import Document
+from pinecone.grpc import PineconeGRPC as Pinecone
 from pinecone.core.client.models import QueryResponse
 from pydantic.dataclasses import dataclass
 
@@ -15,7 +15,6 @@ from app.vectorstores.abstract import VectorStoreBase
 from app.vectorstores.embeddings import get_embeddings_model_provider
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class Response:
@@ -31,11 +30,9 @@ class Response:
         }
 
     def __init__(self, id: str, text: str, metadata: dict | None = None):
-        """Core dataclass for single record."""
         self.id = id
         self.text = text
         self.metadata = metadata or {}
-
 
 class PineconeVectorStore(VectorStoreBase):
     def __init__(
@@ -43,7 +40,6 @@ class PineconeVectorStore(VectorStoreBase):
         options: dict,
         embeddings_model_provider: EmbeddingsModelProvider,
         index_name: str = None,
-        environment: str = None,
         pinecone_api_key: str = None,
     ) -> None:
         self.options = options
@@ -53,11 +49,6 @@ class PineconeVectorStore(VectorStoreBase):
                 index_name,
                 options.get("PINECONE_INDEX"),
                 config("PINECONE_INDEX", None),
-            ),
-            "PINECONE_ENVIRONMENT": get_first_non_null(
-                environment,
-                options.get("PINECONE_ENVIRONMENT"),
-                config("PINECONE_ENVIRONMENT", None),
             ),
             "PINECONE_API_KEY": get_first_non_null(
                 pinecone_api_key,
@@ -76,14 +67,16 @@ class PineconeVectorStore(VectorStoreBase):
                     "or check the `VectorDb` table in the database."
                 )
 
-        pinecone.init(
-            api_key=variables["PINECONE_API_KEY"],
-            environment=variables["PINECONE_ENVIRONMENT"],
-        )
-
+        pc = Pinecone(api_key=variables["PINECONE_API_KEY"])
+        print(pc)
         self.index_name = variables["PINECONE_INDEX"]
         logger.info(f"Index name: {self.index_name}")
-        self.index = pinecone.Index(self.index_name)
+
+        if index_name not in pc.list_indexes().names():
+            logger.error(f"Index {self.index_name} does not exist. Please create the index first.")
+            raise ValueError(f"Index {self.index_name} does not exist.")
+
+        self.index = pc.Index(self.index_name)
         self.embeddings = get_embeddings_model_provider(embeddings_model_provider)
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)
@@ -127,7 +120,6 @@ class PineconeVectorStore(VectorStoreBase):
         return self.index.describe_index_stats()
 
     def _extract_match_data(self, match):
-        """Extracts id, text, and metadata from a match."""
         id = match.id
         text = match.metadata.get("text")
         metadata = match.metadata
@@ -135,10 +127,6 @@ class PineconeVectorStore(VectorStoreBase):
         return id, text, metadata
 
     def _format_response(self, response: QueryResponse) -> list[Response]:
-        """
-        Formats the response dictionary from the vector database into a list of
-        Response objects.
-        """
         if not response.get("matches"):
             return []
 
@@ -159,11 +147,8 @@ class PineconeVectorStore(VectorStoreBase):
         metadata_filter: dict | None = None,
         top_k: int = 3,
         namespace: str | None = None,
-        min_score: float | None = None,  # new argument for minimum similarity score
+        min_score: float | None = None,
     ) -> list[Response]:
-        """
-        Returns results from the vector database.
-        """
         vector = self.embeddings.embed_query(prompt)
 
         raw_responses: QueryResponse = self.index.query(
@@ -173,9 +158,8 @@ class PineconeVectorStore(VectorStoreBase):
             include_metadata=True,
             namespace=namespace,
         )
-        logger.debug(f"Raw responses: {raw_responses}")  # leaving for debugging
+        logger.debug(f"Raw responses: {raw_responses}")
 
-        # filter raw_responses based on the minimum similarity score if min_score is set
         if min_score is not None:
             raw_responses["matches"] = [
                 match
@@ -209,8 +193,6 @@ class PineconeVectorStore(VectorStoreBase):
                 top_k=top_k,
             )
 
-        # A hack if we want to search in all documents but with backwards compatibility
-        # with namespaces
         if documents_in_namespace == [] and query_type == "all":
             logger.info("Querying all documents.")
             documents_in_namespace = self.query(
