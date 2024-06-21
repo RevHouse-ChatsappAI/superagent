@@ -10,6 +10,7 @@ SUBSCRIPTION = getenv("SUBSCRIPTION")
 async def enviar_respuesta_chatwoot(
     conversation_id, respuesta, token, account_id, es_respuesta_de_bot=True
 ):
+    print("Chatwoot send response")
     str_account_id = str(account_id)
     str_conversation_id = str(conversation_id)
     str_response = str(respuesta)
