@@ -45,6 +45,8 @@ class Agent(BaseTool):
         result = agent.invoke(
             input=invoke_input,
         )
+        
+        print(result)
         return result.get("output")
 
     async def _arun(self, input: str) -> str:
